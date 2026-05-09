@@ -8,14 +8,10 @@ export default defineConfig({
     [
       'script',
       {
-        async: '',
-        src: 'https://analytics.kristoferlund.se/js/pa-x20i119tV8IYBI2i2d7HI.js'
+        defer: '',
+        'data-domain': 'ostt.ai',
+        src: '/js/script.js'
       }
-    ],
-    [
-      'script',
-      {},
-      `window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`
     ]
   ],
   themeConfig: {
