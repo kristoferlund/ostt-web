@@ -1,0 +1,41 @@
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+  background: #000;
+}
+
+body {
+  color: #fff;
+}
+
+.landing {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: #000;
+  text-align: center;
+}
+
+.landing .logo {
+  width: min(420px, 78vw);
+  height: auto;
+}
+
+.landing p {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  line-height: 1.5;
+}
