@@ -25,6 +25,8 @@ curl -fsSL https://ostt.ai/install | bash
 
 The installer detects your platform, installs supported runtime dependencies, downloads the latest release, verifies its checksum, and installs the `ostt` CLI.
 
+See the [Installation](./installation.md) page for alternative install methods and per-platform dependency setup.
+
 ## Authenticate
 
 OSTT is bring-your-own-API-key. Run the auth flow once, choose a provider/model, and paste the provider API key.
@@ -33,7 +35,7 @@ OSTT is bring-your-own-API-key. Run the auth flow once, choose a provider/model,
 ostt auth
 ```
 
-API keys are stored separately from the main config file at `~/.local/share/ostt/credentials` with restricted permissions.
+API keys are stored separately from the main config file at `~/.local/share/ostt/credentials` with restricted permissions (0600).
 
 ## Record
 
@@ -41,7 +43,16 @@ API keys are stored separately from the main config file at `~/.local/share/ostt
 ostt
 ```
 
-During recording:
+During recording, the terminal shows:
+
+- **Visualization**: Real-time audio display (spectrum or waveform, configurable)
+  - **Spectrum mode** (default): Frequency distribution across the voice range (100--1500 Hz focus), with noise gating that suppresses background noise automatically
+  - **Waveform mode**: Amplitude envelope over time, classic oscilloscope-style display
+- **Vol %**: Current volume level
+- **Peak %**: Maximum volume in the last 3 seconds
+- **Red indicator**: Clipping warning when volume exceeds the configured threshold
+
+### Controls
 
 | Key | Action |
 | --- | --- |
@@ -64,7 +75,7 @@ Bind this command in your desktop environment or macOS Shortcuts.app:
 ostt launch -c
 ```
 
-The first hotkey press opens a popup terminal and starts recording. Pressing the same hotkey again sends a signal to the running OSTT process, which stops recording and transcribes.
+The first hotkey press opens a popup terminal and starts recording. Pressing the same hotkey again sends a signal (`SIGUSR1`) to the running OSTT process, which stops recording and transcribes.
 
 See [Platform Setup](./platforms.md) for macOS, Omarchy/Hyprland, GNOME, and KDE setup notes.
 

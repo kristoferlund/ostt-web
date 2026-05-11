@@ -16,22 +16,21 @@ layout: false
   <section class="landing-hero">
     <img class="logo logo-dark" src="/logo-white.png" alt="OSTT" />
     <img class="logo logo-light" src="/logo-black.png" alt="OSTT" />
-    <p class="eyebrow">Open source voice-to-text for developers</p>
-    <h1>The open source speech-to-text tool for the terminal.</h1>
-    <p class="lede">OSTT records from your microphone, transcribes with your chosen provider, and sends the result to stdout, the clipboard, a file, an AI prompt, or a shell command.</p>
+    <h1>Open source voice-to-text for developers.</h1>
+    <p class="lede">OSTT is a terminal-native speech-to-text tool for Linux and macOS. Record from a hotkey, transcribe with your chosen provider, then send the result to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
     <div class="landing-actions">
-      <a href="/guide/getting-started">Get started</a>
-      <a href="/guide/why-ostt">Why OSTT?</a>
+      <a href="/guide/getting-started">Install</a>
+      <a href="/guide/why-ostt">About</a>
     </div>
     <pre><code>curl -fsSL https://ostt.ai/install | bash</code></pre>
   </section>
 
   <section class="landing-section split">
     <div>
-      <p class="eyebrow">What is OSTT?</p>
-      <h2>Voice input as a composable command-line tool.</h2>
+      <p class="eyebrow">Why</p>
+      <h2>Voice input for the terminal.</h2>
     </div>
-    <p>OSTT is for users who want speech-to-text without giving up normal developer workflows. It keeps the interface small and exposes the useful parts: provider selection, history, retry, file transcription, clipboard output, stdout, and process actions.</p>
+    <p>OSTT gives you stdout, clipboard, files, history, retry, provider choice, and process actions that fit the shell workflows you already use. It is not a GUI dictation app -- it is a command-line tool for voice.</p>
   </section>
 
   <section class="landing-grid">
@@ -74,8 +73,9 @@ layout: false
 
   <section class="landing-section split">
     <div>
-      <p class="eyebrow">Differentiator</p>
-      <h2>A transcription pipeline, not a closed text box.</h2>
+      <p class="eyebrow">Pipeline</p>
+      <h2>Transcribe once. Route anywhere.</h2>
+      <p>OSTT's pipeline plugs transcription into anything you already run. Process audio files from scripts and CI jobs. Wire the output to OpenCode, Claude Code, or any AI tool. Pipe through custom bash commands. The <code>-p</code> flag puts it all one flag away.</p>
     </div>
     <div class="command-card">
       <pre><code>ostt -p clean -c
@@ -84,18 +84,18 @@ ostt process 2 -a cmd</code></pre>
     </div>
   </section>
 
-  <section class="landing-grid compact">
+  <section class="landing-grid">
     <article>
-      <h3>For Linux desktop users</h3>
-      <p>Wayland-aware clipboard support, native packages, AUR, and desktop setup guides.</p>
+      <h3>File transcription in CI</h3>
+      <p>Transcribe audio files from scripts, cron jobs, or CI pipelines without a microphone. Process meeting recordings, voicemails, or dictation files with the same provider choice and processing pipeline as live recording.</p>
     </article>
     <article>
-      <h3>For terminal users</h3>
-      <p>Pipe output, use aliases, generate completions, inspect logs, and automate the result.</p>
+      <h3>Agent-ready transcription</h3>
+      <p>Connect OSTT to OpenCode, Claude Code, Gemini CLI, or Codex CLI. Your agent gets configurable, multi-provider transcription with per-action model selection and no vendor lock-in.</p>
     </article>
     <article>
-      <h3>For provider testing</h3>
-      <p>Compare models, retry recordings, and choose the backend that works for a language or workflow.</p>
+      <h3>Terminal-native automation</h3>
+      <p>Pipe transcription through <code>jq</code>, <code>sed</code>, <code>awk</code>, or any CLI tool. Chain recording, processing, and output into a single shell pipeline. Alias your most common workflow and run it from a hotkey.</p>
     </article>
   </section>
 
@@ -106,7 +106,7 @@ ostt process 2 -a cmd</code></pre>
 ostt auth
 ostt launch -c</code></pre>
     <div class="landing-actions">
-      <a href="/guide/getting-started">Read the guide</a>
+      <a href="/guide/getting-started">Documentation</a>
       <a href="/guide/processing">Processing actions</a>
     </div>
   </section>

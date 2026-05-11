@@ -125,7 +125,7 @@ Supported `tool` values:
 | `gemini-cli` | `gemini` |
 | `codex-cli` | `codex` |
 
-The selected tool must already be installed and authenticated outside OSTT.
+The selected tool must already be installed and authenticated outside OSTT. OpenCode 1.4.3 or newer is required. AI tool invocations have a 300-second (5 minute) timeout.
 
 ## Input Sources
 
