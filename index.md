@@ -2,9 +2,20 @@
 layout: false
 ---
 
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="header-logo">OSTT</a>
+    <nav class="header-nav">
+      <a href="/guide/getting-started">Documentation</a>
+      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
+    </nav>
+  </div>
+</header>
+
 <main class="landing">
   <section class="landing-hero">
-    <img class="logo" src="/logo.png" alt="OSTT" />
+    <img class="logo logo-dark" src="/logo-white.png" alt="OSTT" />
+    <img class="logo logo-light" src="/logo-black.png" alt="OSTT" />
     <p class="eyebrow">Open source voice-to-text for developers</p>
     <h1>The open source speech-to-text tool for the terminal.</h1>
     <p class="lede">OSTT records from your microphone, transcribes with your chosen provider, and sends the result to stdout, the clipboard, a file, an AI prompt, or a shell command.</p>
@@ -100,3 +111,23 @@ ostt launch -c</code></pre>
     </div>
   </section>
 </main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <strong>OSTT</strong>
+      <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
+    </div>
+    <div class="footer-links">
+      <a href="/guide/getting-started">Documentation</a>
+      <a href="/guide/why-ostt">Why OSTT?</a>
+      <a href="/guide/commands">Commands</a>
+      <a href="/guide/platforms">Platforms</a>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
+      <a href="/reference/providers">Providers</a>
+      <a href="/guide/troubleshooting">Troubleshooting</a>
+    </div>
+  </div>
+</footer>
