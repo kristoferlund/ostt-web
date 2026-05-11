@@ -1,0 +1,117 @@
+# Omarchy / Hyprland Setup
+
+Omarchy is an Arch-based desktop built on Hyprland. OSTT works well as a floating voice-to-text popup triggered by a Hyprland keybinding.
+
+## Install OSTT
+
+```bash
+curl -fsSL https://ostt.ai/install | bash
+ostt auth
+```
+
+Prefer the Arch package route? Use an AUR helper:
+
+```bash
+paru -S ostt
+# or
+yay -S ostt
+```
+
+`pacman` does not install AUR packages directly unless you build them manually.
+
+## Keybinding
+
+Add the binding to `~/.config/hypr/bindings.conf`:
+
+```text
+# OSTT speech-to-text hotkey, clipboard output
+bindd = SUPER, R, ostt, exec, ostt launch -c
+```
+
+## Window Rules
+
+Add window rules to `~/.config/hypr/hyprland.conf`:
+
+```text
+# OSTT window overrides
+windowrule = float on, match:title ostt
+windowrule = move ((monitor_w*0.5)-(window_w*0.5)) (monitor_h*0.85), match:title ostt
+```
+
+Reload Hyprland:
+
+```bash
+hyprctl reload
+```
+
+## Usage
+
+1. Press `Super+R` to open the popup and start recording.
+2. Speak.
+3. Press `Super+R` again, or press `Enter` in the popup, to stop recording and transcribe.
+4. Paste with `Ctrl+V`.
+
+## Output Options
+
+Clipboard output:
+
+```text
+bindd = SUPER, R, ostt, exec, ostt launch -c
+```
+
+Stdout output:
+
+```text
+bindd = SUPER, R, ostt, exec, ostt launch
+```
+
+File output:
+
+```text
+bindd = SUPER, R, ostt, exec, ostt launch -o ~/transcription.txt
+```
+
+Processing output:
+
+```text
+bindd = SUPER SHIFT, R, ostt clean, exec, ostt launch -c -p clean
+```
+
+## Popup Appearance
+
+On Hyprland, position is controlled by Hyprland window rules. Terminal selection, size, font size, and borderless behavior are configured in `~/.config/ostt/ostt.toml`:
+
+```toml
+[popup]
+terminal = "ghostty"
+width = 90
+height = 15
+font_size = 6
+borderless = true
+```
+
+Change the move rule to adjust position:
+
+```text
+# Centered horizontally near the bottom
+windowrule = move ((monitor_w*0.5)-(window_w*0.5)) (monitor_h*0.85), match:title ostt
+
+# Centered on screen
+windowrule = move ((monitor_w*0.5)-(window_w*0.5)) ((monitor_h*0.5)-(window_h*0.5)), match:title ostt
+```
+
+## Troubleshooting
+
+Test launch directly:
+
+```bash
+ostt launch -c
+```
+
+Reload Hyprland config:
+
+```bash
+hyprctl reload
+```
+
+If the popup appears in the wrong position, make sure the OSTT window rules are placed before catch-all rules that might override them.

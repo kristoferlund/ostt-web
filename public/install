@@ -1,0 +1,495 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO="kristoferlund/ostt"
+APP_NAME="OSTT"
+BIN_NAME="ostt"
+DEFAULT_INSTALL_DIR="$HOME/.local/bin"
+INSTALL_DIR="${OSTT_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
+VERSION="latest"
+ASSUME_YES=0
+INSTALL_DEPS=1
+
+usage() {
+  cat <<'EOF'
+OSTT installer
+
+Usage:
+  curl -fsSL https://ostt.ai/install | bash
+  curl -fsSL https://ostt.ai/install | bash -s -- --yes
+
+Options:
+  -y, --yes             Skip confirmation prompts
+      --no-deps         Do not install system dependencies
+      --version VERSION Install a specific version, for example v0.0.8
+      --install-dir DIR Install ostt to DIR (default: ~/.local/bin)
+  -h, --help            Show this help
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -y|--yes)
+      ASSUME_YES=1
+      shift
+      ;;
+    --no-deps)
+      INSTALL_DEPS=0
+      shift
+      ;;
+    --version)
+      VERSION="${2:-}"
+      if [ -z "$VERSION" ]; then
+        echo "error: --version requires a value" >&2
+        exit 1
+      fi
+      shift 2
+      ;;
+    --install-dir)
+      INSTALL_DIR="${2:-}"
+      if [ -z "$INSTALL_DIR" ]; then
+        echo "error: --install-dir requires a value" >&2
+        exit 1
+      fi
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "error: unknown option: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
+log() {
+  printf '%s\n' "$*"
+}
+
+warn() {
+  printf 'warning: %s\n' "$*" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+has() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+confirm() {
+  if [ "$ASSUME_YES" -eq 1 ]; then
+    return 0
+  fi
+
+  printf 'Continue? [Y/n] '
+  read -r answer
+  case "$answer" in
+    ''|Y|y|YES|Yes|yes) return 0 ;;
+    *) die "installation cancelled" ;;
+  esac
+}
+
+sudo_cmd() {
+  if [ "$(id -u)" -eq 0 ]; then
+    "$@"
+  else
+    if ! has sudo; then
+      die "sudo is required to install system dependencies"
+    fi
+    sudo "$@"
+  fi
+}
+
+detect_os() {
+  case "$(uname -s)" in
+    Darwin) echo "macos" ;;
+    Linux) echo "linux" ;;
+    *) die "unsupported operating system: $(uname -s)" ;;
+  esac
+}
+
+detect_arch() {
+  case "$(uname -m)" in
+    x86_64|amd64) echo "x86_64" ;;
+    arm64|aarch64) echo "aarch64" ;;
+    *) die "unsupported CPU architecture: $(uname -m)" ;;
+  esac
+}
+
+detect_distro() {
+  if [ -r /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    echo "${ID:-unknown}"
+  else
+    echo "unknown"
+  fi
+}
+
+detect_package_manager() {
+  local os="$1"
+
+  if [ "$os" = "macos" ]; then
+    if has brew; then echo "brew"; return; fi
+  else
+    if has apt-get; then echo "apt"; return; fi
+    if has dnf; then echo "dnf"; return; fi
+    if has zypper; then echo "zypper"; return; fi
+    if has pacman; then echo "pacman"; return; fi
+  fi
+
+  echo "unknown"
+}
+
+detect_session() {
+  case "${XDG_SESSION_TYPE:-}" in
+    wayland) echo "wayland" ;;
+    x11) echo "x11" ;;
+    *)
+      if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+        echo "wayland"
+      elif [ -n "${DISPLAY:-}" ]; then
+        echo "x11"
+      else
+        echo "unknown"
+      fi
+      ;;
+  esac
+}
+
+target_triple() {
+  local os="$1"
+  local arch="$2"
+
+  case "$os:$arch" in
+    macos:x86_64) echo "x86_64-apple-darwin" ;;
+    macos:aarch64) echo "aarch64-apple-darwin" ;;
+    linux:x86_64) echo "x86_64-unknown-linux-gnu" ;;
+    linux:aarch64) echo "aarch64-unknown-linux-gnu" ;;
+    *) die "unsupported platform: $os $arch" ;;
+  esac
+}
+
+missing_deps() {
+  local os="$1"
+  local session="$2"
+  local deps=()
+
+  if ! has ffmpeg; then
+    deps+=("ffmpeg")
+  fi
+
+  if [ "$os" = "linux" ]; then
+    case "$session" in
+      wayland)
+        if ! has wl-copy; then deps+=("wl-clipboard"); fi
+        ;;
+      x11)
+        if ! has xclip; then deps+=("xclip"); fi
+        ;;
+      *)
+        if ! has wl-copy; then deps+=("wl-clipboard"); fi
+        if ! has xclip; then deps+=("xclip"); fi
+        ;;
+    esac
+  fi
+
+  printf '%s\n' "${deps[@]}"
+}
+
+install_dependencies() {
+  local pm="$1"
+  shift
+  local deps=("$@")
+
+  if [ "${#deps[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  case "$pm" in
+    brew)
+      brew install "${deps[@]}"
+      ;;
+    apt)
+      sudo_cmd apt-get update
+      sudo_cmd apt-get install -y "${deps[@]}"
+      ;;
+    dnf)
+      sudo_cmd dnf install -y "${deps[@]}"
+      ;;
+    zypper)
+      sudo_cmd zypper --non-interactive install "${deps[@]}"
+      ;;
+    pacman)
+      sudo_cmd pacman -S --needed --noconfirm "${deps[@]}"
+      ;;
+    *)
+      warn "could not detect a supported package manager"
+      warn "please install manually: ${deps[*]}"
+      ;;
+  esac
+}
+
+release_base_url() {
+  if [ "$VERSION" = "latest" ]; then
+    echo "https://github.com/${REPO}/releases/latest/download"
+  else
+    echo "https://github.com/${REPO}/releases/download/${VERSION}"
+  fi
+}
+
+native_package_kind() {
+  local os="$1"
+  local arch="$2"
+  local pm="$3"
+
+  case "$os:$arch:$pm" in
+    linux:x86_64:apt) echo "deb" ;;
+    linux:x86_64:dnf|linux:x86_64:zypper) echo "rpm" ;;
+    *) echo "" ;;
+  esac
+}
+
+download_and_install_native_package() {
+  local kind="$1"
+  local pm="$2"
+  local base_url pkg checksum tmpdir url checksum_url
+
+  case "$kind" in
+    deb) pkg="ostt_latest_amd64.deb" ;;
+    rpm) pkg="ostt-latest.x86_64.rpm" ;;
+    *) return 1 ;;
+  esac
+
+  checksum="${pkg}.sha256"
+  base_url="$(release_base_url)"
+  url="${base_url}/${pkg}"
+  checksum_url="${base_url}/${checksum}"
+
+  if ! curl -fsI "$url" >/dev/null 2>&1 || ! curl -fsI "$checksum_url" >/dev/null 2>&1; then
+    return 1
+  fi
+
+  tmpdir="$(mktemp -d)"
+  trap "rm -rf '$tmpdir'" RETURN
+
+  log "Downloading ${url}"
+  curl -fsSL "$url" -o "${tmpdir}/${pkg}"
+  log "Downloading ${checksum_url}"
+  curl -fsSL "$checksum_url" -o "${tmpdir}/${checksum}"
+
+  log "Verifying checksum"
+  verify_checksum "${tmpdir}/${pkg}" "${tmpdir}/${checksum}"
+
+  case "$pm" in
+    apt)
+      sudo_cmd apt-get install -y "${tmpdir}/${pkg}"
+      ;;
+    dnf)
+      sudo_cmd dnf install -y "${tmpdir}/${pkg}"
+      ;;
+    zypper)
+      sudo_cmd zypper --non-interactive install "${tmpdir}/${pkg}"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+verify_checksum() {
+  local archive_path="$1"
+  local checksum_path="$2"
+  local expected
+  local actual
+
+  expected="$(awk '{print $1}' "$checksum_path")"
+  if [ -z "$expected" ]; then
+    die "checksum file was empty or invalid"
+  fi
+
+  if has sha256sum; then
+    actual="$(sha256sum "$archive_path" | awk '{print $1}')"
+  elif has shasum; then
+    actual="$(shasum -a 256 "$archive_path" | awk '{print $1}')"
+  else
+    die "sha256sum or shasum is required to verify the download"
+  fi
+
+  if [ "$actual" != "$expected" ]; then
+    die "checksum verification failed for $(basename "$archive_path")"
+  fi
+}
+
+check_macos_terminal() {
+  local found=0
+
+  if [ -d "/Applications/Ghostty.app" ] || has ghostty; then found=1; fi
+  if [ -d "/Applications/kitty.app" ] || has kitty; then found=1; fi
+  if [ -d "/Applications/Alacritty.app" ] || has alacritty; then found=1; fi
+
+  if [ "$found" -eq 0 ]; then
+    cat <<'EOF'
+
+No supported popup terminal was detected on macOS.
+
+OSTT can still be installed and used from your terminal, but `ostt launch`
+requires one of these terminal emulators for popup mode:
+  - Ghostty
+  - kitty
+  - Alacritty
+
+Install one of them before setting up a global hotkey.
+EOF
+  fi
+}
+
+download_and_install() {
+  local triple="$1"
+  local archive="ostt-${triple}.tar.gz"
+  local checksum="${archive}.sha256"
+  local base_url
+  local url
+  local checksum_url
+  local tmpdir
+  local extracted_bin
+
+  base_url="$(release_base_url)"
+  url="${base_url}/${archive}"
+  checksum_url="${base_url}/${checksum}"
+
+  tmpdir="$(mktemp -d)"
+  trap "rm -rf '$tmpdir'" RETURN
+
+  log "Downloading ${url}"
+  curl -fsSL "$url" -o "${tmpdir}/${archive}"
+  log "Downloading ${checksum_url}"
+  curl -fsSL "$checksum_url" -o "${tmpdir}/${checksum}"
+
+  log "Verifying checksum"
+  verify_checksum "${tmpdir}/${archive}" "${tmpdir}/${checksum}"
+
+  tar -xzf "${tmpdir}/${archive}" -C "$tmpdir"
+  extracted_bin="$(find "$tmpdir" -type f -name "$BIN_NAME" -perm -111 | head -n 1)"
+  if [ -z "$extracted_bin" ]; then
+    die "downloaded archive did not contain an executable ${BIN_NAME} binary"
+  fi
+
+  mkdir -p "$INSTALL_DIR"
+  install -m 0755 "$extracted_bin" "${INSTALL_DIR}/${BIN_NAME}"
+}
+
+main() {
+  local os arch distro pm session triple package_kind install_mode installed_bin
+  local deps=()
+
+  os="$(detect_os)"
+  arch="$(detect_arch)"
+  distro="unknown"
+  session="unknown"
+  if [ "$os" = "linux" ]; then
+    distro="$(detect_distro)"
+    session="$(detect_session)"
+  fi
+  pm="$(detect_package_manager "$os")"
+  triple="$(target_triple "$os" "$arch")"
+  package_kind="$(native_package_kind "$os" "$arch" "$pm")"
+  install_mode="archive"
+  if [ -n "$package_kind" ] && [ "$INSTALL_DIR" = "$DEFAULT_INSTALL_DIR" ] && [ "$INSTALL_DEPS" -eq 1 ]; then
+    install_mode="native-package"
+  fi
+
+  if [ "$os" = "macos" ]; then
+    check_macos_terminal
+  fi
+
+  if [ "$INSTALL_DEPS" -eq 1 ]; then
+    while IFS= read -r dep; do
+      [ -n "$dep" ] && deps+=("$dep")
+    done < <(missing_deps "$os" "$session")
+  fi
+
+  cat <<EOF
+
+Installing ${APP_NAME}
+
+Detected:
+  OS: ${os}
+  Architecture: ${arch}
+  Target: ${triple}
+  Distro: ${distro}
+  Session: ${session}
+  Package manager: ${pm}
+
+Will install:
+EOF
+
+  if [ "$install_mode" = "native-package" ]; then
+    printf '  method: native %s package via %s\n' "$package_kind" "$pm"
+    printf '  %s -> /usr/bin/%s\n' "$BIN_NAME" "$BIN_NAME"
+  else
+    printf '  method: release archive\n'
+    printf '  %s -> %s/%s\n' "$BIN_NAME" "$INSTALL_DIR" "$BIN_NAME"
+  fi
+
+  if [ "$INSTALL_DEPS" -eq 1 ] && [ "${#deps[@]}" -gt 0 ]; then
+    printf '  dependencies: %s\n' "${deps[*]}"
+  elif [ "$INSTALL_DEPS" -eq 0 ]; then
+    printf '  dependencies: skipped\n'
+  else
+    printf '  dependencies: already satisfied\n'
+  fi
+  printf '\n'
+
+  confirm
+
+  if [ "$INSTALL_DEPS" -eq 1 ] && [ "${#deps[@]}" -gt 0 ]; then
+    install_dependencies "$pm" "${deps[@]}"
+  fi
+
+  if [ "$install_mode" = "native-package" ]; then
+    if ! download_and_install_native_package "$package_kind" "$pm"; then
+      warn "native package artifact was unavailable; falling back to release archive"
+      download_and_install "$triple"
+      installed_bin="${INSTALL_DIR}/${BIN_NAME}"
+      install_mode="archive"
+    else
+      installed_bin="$(command -v "$BIN_NAME" || true)"
+      if [ -z "$installed_bin" ]; then
+        installed_bin="/usr/bin/${BIN_NAME}"
+      fi
+    fi
+  else
+    download_and_install "$triple"
+    installed_bin="${INSTALL_DIR}/${BIN_NAME}"
+  fi
+
+  if ! "$installed_bin" --version >/dev/null 2>&1; then
+    warn "installed binary did not respond to '${BIN_NAME} --version'"
+  fi
+
+  cat <<EOF
+
+${APP_NAME} installed successfully.
+
+Next steps:
+  ${BIN_NAME} auth
+  ${BIN_NAME} record
+
+EOF
+
+  if [ "$install_mode" != "native-package" ]; then
+    cat <<EOF
+
+If '${INSTALL_DIR}' is not on your PATH, add it to your shell profile.
+EOF
+  fi
+}
+
+main "$@"
