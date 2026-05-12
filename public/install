@@ -288,6 +288,8 @@ download_and_install_native_package() {
   curl -fsSL "$url" -o "${tmpdir}/${pkg}"
   log "Downloading ${checksum_url}"
   curl -fsSL "$checksum_url" -o "${tmpdir}/${checksum}"
+  chmod 755 "$tmpdir"
+  chmod 644 "${tmpdir}/${pkg}" "${tmpdir}/${checksum}"
 
   log "Verifying checksum"
   verify_checksum "${tmpdir}/${pkg}" "${tmpdir}/${checksum}"
