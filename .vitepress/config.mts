@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: 'OSTT',
-  description: 'Open source voice-to-text for developers who want Linux-first support, provider choice, and a scriptable pipeline',
+  description: 'Open source speech-to-text for the terminal: Linux-first, provider-agnostic, and scriptable',
   head: [
     [
       'script',

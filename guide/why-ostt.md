@@ -1,8 +1,8 @@
 # Why OSTT?
 
-OSTT exists for developers and power users who want voice-to-text to behave like the rest of their toolchain: transparent, scriptable, provider-agnostic, and comfortable on Linux.
+OSTT exists for developers and power users who want speech-to-text to behave like the rest of their toolchain: transparent, scriptable, provider-agnostic, and comfortable on Linux.
 
-Most voice dictation apps are polished GUI products built around a proprietary cloud, a subscription, or a Mac-first workflow. OSTT takes the opposite approach. It is open source, terminal-native, bring-your-own-key, and designed so transcription output can move through shell pipelines, AI prompts, files, clipboards, hotkeys, and scripts.
+Many dictation apps are polished GUI products built around a proprietary cloud, a subscription, or a Mac-first workflow. OSTT takes a smaller approach. It is open source, terminal-native, bring-your-own-key, and designed so transcription output can move through shell pipelines, AI prompts, files, clipboards, hotkeys, and scripts.
 
 ## Where OSTT Is Different
 
@@ -44,11 +44,11 @@ ostt transcribe meeting.mp3 -p summary -o summary.txt
 ostt process 2 -a cmd
 ```
 
-For users who live in the terminal, this is the product.
+For users who live in the terminal, this is the main idea.
 
 ## Comparison
 
-This table is a high-level comparison against common voice-to-text tools. Product capabilities change over time, so treat it as positioning rather than a permanent claim.
+This table is a high-level comparison against common voice-to-text tools. Capabilities change over time, so treat it as positioning rather than a permanent claim.
 
 | Capability | OSTT | Typical GUI Dictation Apps |
 | --- | --- | --- |
@@ -71,6 +71,6 @@ This table is a high-level comparison against common voice-to-text tools. Produc
 
 ## What OSTT Does Not Try To Be
 
-OSTT is not trying to be a mobile dictation app, a real-time streaming transcription overlay, or a screen-aware assistant that reads every app you use. Those are valid products, but they pull in a different direction from a terminal-native, scriptable tool.
+OSTT is not trying to be a mobile dictation app, a real-time streaming transcription overlay, or a screen-aware assistant that reads every app you use. Those are valid tools, but they pull in a different direction from a terminal-native, scriptable tool.
 
 OSTT optimizes for control, composability, provider choice, and developer workflows. If you want voice input that behaves like a command-line tool, OSTT is built for that niche.

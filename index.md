@@ -6,8 +6,8 @@ layout: false
   <section class="landing-hero">
     <img class="logo" src="/logo.png" alt="OSTT" />
     <p class="eyebrow">Open source voice-to-text for developers</p>
-    <h1>Speak once. Choose the model. Shape the output.</h1>
-    <p class="lede">OSTT is a terminal-native speech-to-text tool for Linux and macOS. Record from a hotkey, transcribe with your chosen provider, then send the result to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
+    <h1>The open source speech-to-text tool for the terminal.</h1>
+    <p class="lede">OSTT records from your microphone, transcribes with your chosen provider, and sends the result to stdout, the clipboard, a file, an AI prompt, or a shell command.</p>
     <div class="landing-actions">
       <a href="/guide/getting-started">Get started</a>
       <a href="/guide/why-ostt">Why OSTT?</a>
@@ -17,10 +17,10 @@ layout: false
 
   <section class="landing-section split">
     <div>
-      <p class="eyebrow">The point</p>
-      <h2>Voice input that behaves like a developer tool.</h2>
+      <p class="eyebrow">What is OSTT?</p>
+      <h2>Voice input as a composable command-line tool.</h2>
     </div>
-    <p>Most dictation apps optimize for a polished GUI and a single product workflow. OSTT optimizes for control: stdout, clipboard, files, history, retry, provider choice, and process actions that fit the shell workflows you already use.</p>
+    <p>OSTT is for users who want speech-to-text without giving up normal developer workflows. It keeps the interface small and exposes the useful parts: provider selection, history, retry, file transcription, clipboard output, stdout, and process actions.</p>
   </section>
 
   <section class="landing-grid">
@@ -30,11 +30,11 @@ layout: false
     </article>
     <article>
       <h3>Bring your own provider</h3>
-      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, or ElevenLabs. Switch models when quality, latency, price, or data residency matters.</p>
+      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, or ElevenLabs. Switch models when quality, latency, price, or data location matters.</p>
     </article>
     <article>
       <h3>Process with AI or bash</h3>
-      <p>Clean dictation, translate notes, generate commands, summarize files, or pipe text through scripts with `ostt -p` and `ostt process`.</p>
+      <p>Run AI prompts or shell commands after transcription with `ostt -p` and `ostt process`.</p>
     </article>
     <article>
       <h3>Retry without re-recording</h3>
@@ -46,13 +46,13 @@ layout: false
     </article>
     <article>
       <h3>Open source, no subscription</h3>
-      <p>The code is transparent, the config is local, and the providers are the ones you choose.</p>
+      <p>The code is public, the config is local, and the providers are the ones you choose.</p>
     </article>
   </section>
 
   <section class="landing-section">
     <p class="eyebrow">Workflow</p>
-    <h2>From speech to useful output.</h2>
+    <h2>From speech to text you can route.</h2>
     <div class="steps">
       <div><strong>1. Record</strong><span>Use the terminal or a global hotkey popup.</span></div>
       <div><strong>2. Transcribe</strong><span>Choose the provider and model that fit the job.</span></div>
@@ -64,7 +64,7 @@ layout: false
   <section class="landing-section split">
     <div>
       <p class="eyebrow">Differentiator</p>
-      <h2>A transcription pipeline, not just a text box.</h2>
+      <h2>A transcription pipeline, not a closed text box.</h2>
     </div>
     <div class="command-card">
       <pre><code>ostt -p clean -c
@@ -83,8 +83,8 @@ ostt process 2 -a cmd</code></pre>
       <p>Pipe output, use aliases, generate completions, inspect logs, and automate the result.</p>
     </article>
     <article>
-      <h3>For provider tinkerers</h3>
-      <p>Compare models, retry recordings, and choose the best backend for each language or workflow.</p>
+      <h3>For provider testing</h3>
+      <p>Compare models, retry recordings, and choose the backend that works for a language or workflow.</p>
     </article>
   </section>
 
