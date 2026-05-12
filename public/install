@@ -88,7 +88,7 @@ confirm() {
   fi
 
   printf 'Continue? [Y/n] '
-  read -r answer
+  read -r answer </dev/tty 2>/dev/null || return 0
   case "$answer" in
     ''|Y|y|YES|Yes|yes) return 0 ;;
     *) die "installation cancelled" ;;
