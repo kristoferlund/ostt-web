@@ -17,10 +17,13 @@ ostt transcribe meeting.mp3 -p summary -o summary.txt
 Process an existing transcription from history:
 
 ```bash
-ostt process
-ostt process 3
-ostt process -a clean -c
+ostt process              # Most recent, show action picker
+ostt process clean        # Most recent, run "clean" directly
+ostt process 3            # History item #3, show action picker
+ostt process 3 clean -c   # History item #3, run "clean", copy to clipboard
 ```
+
+The `process` subcommand follows the same positional convention as `retry` and `replay`: the first positional argument is the history index (when numeric) or the action ID (when non-numeric). Provide both to target a specific item and action.
 
 If you pass `-p` without an action ID, OSTT shows an action picker. If there is only one configured action, OSTT skips the picker and runs it directly.
 
@@ -36,7 +39,7 @@ ostt launch -c -p    # Popup recording, picker, copy result
 ostt process --list
 ```
 
-Each action has an `id` and a display `name`. The `id` is what you pass to `-p` or `--action`.
+Each action has an `id` (used on the CLI) and a display `name` (shown in the picker).
 
 ## Output Rules
 
@@ -58,32 +61,33 @@ Edit `~/.config/ostt/ostt.toml`:
 ostt config
 ```
 
-Actions live under `[[process.actions]]`.
+Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id`:
 
 ```toml
-[[process.actions]]
-id = "clean"
+[process.actions.clean]
 name = "Clean up text"
 type = "ai"
 tool = "opencode"
 model = "anthropic/claude-sonnet-4-6"
-
-[[process.actions.inputs]]
-role = "system"
-content = "Clean up the transcript. Remove filler words, fix grammar, and preserve meaning. Output only the cleaned text."
-
-[[process.actions.inputs]]
-role = "user"
-source = "transcription"
+inputs = [
+  { role = "system", content = "Clean up the transcript. Remove filler words, fix grammar, and preserve meaning. Output only the cleaned text." },
+  { role = "user", source = "transcription" },
+]
 ```
+
+Each action type uses its own set of keys:
+
+| Type | Required keys | Optional keys |
+| --- | --- | --- |
+| `"ai"` | `name`, `type`, `tool`, `model`, `inputs` | `tool_binary`, `tool_args` |
+| `"bash"` | `name`, `type`, `command` | — |
 
 ## Bash Actions
 
 Bash actions receive the transcription on stdin and return stdout as the processed result.
 
 ```toml
-[[process.actions]]
-id = "upper"
+[process.actions.upper]
 name = "UPPERCASE"
 type = "bash"
 command = "tr '[:lower:]' '[:upper:]'"
@@ -93,20 +97,18 @@ Run it:
 
 ```bash
 ostt -p upper
-ostt process -a upper -c
+ostt process upper
 ```
 
 More bash examples:
 
 ```toml
-[[process.actions]]
-id = "wrap"
+[process.actions.wrap]
 name = "Wrap at 72 columns"
 type = "bash"
 command = "fmt -w 72"
 
-[[process.actions]]
-id = "append-date"
+[process.actions.append_date]
 name = "Append date"
 type = "bash"
 command = "awk '{print} END {print strftime(\"%Y-%m-%d\")}'"
@@ -129,82 +131,85 @@ The selected tool must already be installed and authenticated outside OSTT. Open
 
 ## Input Sources
 
-Each AI input has a `role` and exactly one content source.
+An AI action's `inputs` field is an array of inline tables. Each entry has a `role` (`"system"` or `"user"`) and exactly one content source.
 
 Use the transcription:
 
 ```toml
-[[process.actions.inputs]]
-role = "user"
-source = "transcription"
+inputs = [
+  { role = "user", source = "transcription" },
+]
 ```
 
 Use your keyword list:
 
 ```toml
-[[process.actions.inputs]]
-role = "user"
-source = "keywords"
+inputs = [
+  { role = "user", source = "keywords" },
+]
 ```
 
 Use inline content:
 
 ```toml
-[[process.actions.inputs]]
-role = "system"
-content = "You are a concise editor."
+inputs = [
+  { role = "system", content = "You are a concise editor." },
+]
 ```
 
 Use a prompt file:
 
 ```toml
-[[process.actions.inputs]]
-role = "system"
-file = "~/prompts/meeting-summary.md"
+inputs = [
+  { role = "system", file = "~/prompts/meeting-summary.md" },
+]
 ```
+
+Combine multiple inputs in any order:
+
+```toml
+inputs = [
+  { role = "system", content = "You are a helpful assistant." },
+  { role = "user", source = "keywords" },
+  { role = "user", content = "The text to process:" },
+  { role = "user", source = "transcription" },
+]
+```
+
+If multiple content sources are given in a single entry, precedence is: `source` > `file` > `content`.
 
 ## Example: Translate to English
 
 ```toml
-[[process.actions]]
-id = "translate-en"
+[process.actions.translate_en]
 name = "Translate to English"
 type = "ai"
 tool = "opencode"
 model = "anthropic/claude-sonnet-4-6"
-
-[[process.actions.inputs]]
-role = "system"
-content = "Translate the user's transcript to natural English. Keep names and technical terms intact. Output only the translation."
-
-[[process.actions.inputs]]
-role = "user"
-source = "transcription"
+inputs = [
+  { role = "system", content = "Translate the user's transcript to natural English. Keep names and technical terms intact. Output only the translation." },
+  { role = "user", source = "transcription" },
+]
 ```
 
 Run it from a popup hotkey:
 
 ```bash
-ostt launch -c -p translate-en
+ostt launch -c -p translate_en
 ```
 
 ## Example: Meeting Summary
 
 ```toml
-[[process.actions]]
-id = "summary"
+[process.actions.summary]
 name = "Meeting summary"
 type = "ai"
 tool = "opencode"
 model = "anthropic/claude-sonnet-4-6"
-
-[[process.actions.inputs]]
-role = "system"
-content = "Summarize the transcript into decisions, action items, and open questions. Use concise bullets."
-
-[[process.actions.inputs]]
-role = "user"
-source = "transcription"
+inputs = [
+  { role = "system", content = "Summarize the transcript into decisions, action items, and open questions. Use concise bullets." },
+  { role = "user", source = "transcription" },
+]
 ```
 
 Run it on an audio file:
@@ -216,20 +221,15 @@ ostt transcribe meeting.mp3 -p summary -o meeting-summary.md
 ## Example: Generate a CLI Command
 
 ```toml
-[[process.actions]]
-id = "cmd"
+[process.actions.cmd]
 name = "Generate CLI command"
 type = "ai"
 tool = "opencode"
 model = "anthropic/claude-sonnet-4-6"
-
-[[process.actions.inputs]]
-role = "system"
-content = "The user described a task via voice. Generate the exact CLI command to accomplish it. Output only the command, no markdown and no explanation."
-
-[[process.actions.inputs]]
-role = "user"
-source = "transcription"
+inputs = [
+  { role = "system", content = "The user described a task via voice. Generate the exact CLI command to accomplish it. Output only the command, no markdown and no explanation." },
+  { role = "user", source = "transcription" },
+]
 ```
 
 Run it:
@@ -245,22 +245,17 @@ Review generated commands before executing them. OSTT returns text; it does not 
 For AI actions, you can override the binary or append extra CLI arguments.
 
 ```toml
-[[process.actions]]
-id = "clean-local"
+[process.actions.clean_local]
 name = "Clean with custom opencode"
 type = "ai"
 tool = "opencode"
 tool_binary = "/usr/local/bin/opencode"
 tool_args = ["--quiet"]
 model = "anthropic/claude-sonnet-4-6"
-
-[[process.actions.inputs]]
-role = "system"
-content = "Clean up the transcript. Output only the cleaned text."
-
-[[process.actions.inputs]]
-role = "user"
-source = "transcription"
+inputs = [
+  { role = "system", content = "Clean up the transcript. Output only the cleaned text." },
+  { role = "user", source = "transcription" },
+]
 ```
 
 Extra arguments are appended after OSTT's required arguments for the selected tool.

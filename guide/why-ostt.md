@@ -41,7 +41,7 @@ OSTT treats stdout, files, clipboard output, command aliases, logs, shell comple
 ostt | grep invoice
 ostt -p clean -c
 ostt transcribe meeting.mp3 -p summary -o summary.txt
-ostt process 2 -a cmd
+ostt process 2 cmd
 ```
 
 For users who live in the terminal, this is the main idea.

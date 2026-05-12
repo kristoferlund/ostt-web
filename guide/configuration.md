@@ -163,26 +163,27 @@ fallback_language = "auto"
 
 ## Processing Actions
 
-Actions are configured under `[[process.actions]]`. Each action has a `type` of either `"ai"` (runs an AI CLI tool) or `"bash"` (runs a shell command).
+Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id` on the CLI. Each action has a `type` of either `"ai"` (runs an AI CLI tool) or `"bash"` (runs a shell command).
 
-See [Processing Actions](./processing.md) for full examples.
+See [Processing Actions](./processing.md) for full examples and common recipes.
 
 ### AI Actions
 
 ```toml
-[[process.actions]]
-id = "clean"
+[process.actions.clean]
 name = "Clean up text"
 type = "ai"
 tool = "opencode"
 model = "anthropic/claude-sonnet-4-6"
 # tool_binary = "/usr/local/bin/opencode"  # Override binary path
 # tool_args = ["--quiet"]                   # Extra CLI arguments
-
-[[process.actions.inputs]]
-role = "system"
-content = "Clean up the transcribed text."
+inputs = [
+  { role = "system", content = "Clean up the transcribed text." },
+  { role = "user", source = "transcription" },
+]
 ```
+
+The `inputs` field is an array of inline tables. Each entry has a `role` and exactly one content source.
 
 Supported AI tools:
 
@@ -198,8 +199,7 @@ The selected tool must be installed and authenticated outside OSTT.
 ### Bash Actions
 
 ```toml
-[[process.actions]]
-id = "upper"
+[process.actions.upper]
 name = "UPPERCASE"
 type = "bash"
 command = "tr '[:lower:]' '[:upper:]'"
@@ -209,14 +209,14 @@ Bash actions receive the transcription on stdin and return stdout as the process
 
 ### Input Sources
 
-Each AI input has a `role` (`"system"` or `"user"`) and exactly one content source. If multiple sources are specified, precedence is: `source` > `file` > `content`.
+Each AI input entry has a `role` (`"system"` or `"user"`) and exactly one content source. If multiple sources are specified in the same entry, precedence is: `source` > `file` > `content`.
 
 | Source | Example | Description |
 | --- | --- | --- |
-| `source = "transcription"` | `source = "transcription"` | Dynamic content: the recorded transcription |
-| `source = "keywords"` | `source = "keywords"` | Dynamic content: the keyword list |
-| `content = "..."` | `content = "You are a helpful assistant."` | Literal inline text |
-| `file = "..."` | `file = "~/prompts/clean.txt"` | Path to a file whose contents become the message |
+| `source = "transcription"` | `{ role = "user", source = "transcription" }` | Dynamic content: the recorded transcription |
+| `source = "keywords"` | `{ role = "user", source = "keywords" }` | Dynamic content: the keyword list |
+| `content = "..."` | `{ role = "system", content = "You are a helpful assistant." }` | Literal inline text |
+| `file = "..."` | `{ role = "system", file = "~/prompts/clean.txt" }` | Path to a file whose contents become the message |
 
 ## Popup
 

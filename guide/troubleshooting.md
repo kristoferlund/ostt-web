@@ -135,7 +135,7 @@ codex --version
 Run with debug logs:
 
 ```bash
-RUST_LOG=debug ostt process -a clean
+RUST_LOG=debug ostt process clean
 ```
 
 ## Binary Not Found After Install

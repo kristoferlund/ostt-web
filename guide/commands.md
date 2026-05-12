@@ -92,13 +92,13 @@ Alias: `ostt rp`.
 
 ## Process
 
-Run a processing action on an existing transcription from history.
+Run a processing action on an existing transcription from history. The first argument is the history index (if numeric) or the action ID (if non-numeric). Provide both to target a specific item.
 
 ```bash
 ostt process                    # Process most recent, show action picker
+ostt process clean              # Process most recent with "clean" action
 ostt process 3                  # Process #3, show picker
-ostt process -a clean           # Process most recent with "clean" action
-ostt process 5 -a cmd -c        # Process #5 with "cmd", copy to clipboard
+ostt process 3 clean -c         # Process #3 with "clean", copy to clipboard
 ostt process --list             # List configured actions
 ```
 
@@ -109,7 +109,7 @@ Alias: `ostt p`.
 | Flag | Description |
 | --- | --- |
 | `N` | History index (1 = most recent) |
-| `-a ID` / `--action ID` | Run action by ID, skip picker |
+| `ACTION` | Action ID to run directly, skip picker |
 | `--list` | List all configured actions |
 | `-c` / `--clipboard` | Copy result to clipboard |
 | `-o FILE` / `--output FILE` | Write result to file |

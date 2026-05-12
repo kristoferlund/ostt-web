@@ -77,7 +77,7 @@ layout: false
       <p>OSTT's pipeline plugs transcription into anything you already run. Process audio files from scripts and CI jobs. Wire the output to OpenCode, Claude Code, or any AI tool. Pipe through custom bash commands. The <code>-p</code> flag puts it all one flag away.</p>
     </div>
     <div class="command-card">
-      <pre><code># Record and transcribe, run &quot;clean&quot; action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Transcribe mp3, run &quot;summary&quot; action, write to file&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Process second latest recording, run &quot;cmd&quot; action, print to stdout&#10;ostt process 2 -a cmd</code></pre>
+      <pre><code># Record and transcribe, run &quot;clean&quot; action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Transcribe mp3, run &quot;summary&quot; action, write to file&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Process second latest recording, run &quot;cmd&quot; action, print to stdout&#10;ostt process 2 cmd</code></pre>
     </div>
   </section>
 
