@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_NAME="OSTT"
+BIN_NAME="ostt"
+
+log() {
+  printf '%s\n' "$*"
+}
+
+warn() {
+  printf 'warning: %s\n' "$*" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
+}
+
+has() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+confirm_yes() {
+  local prompt="$1"
+  local answer
+
+  printf '%s [Y/n] ' "$prompt"
+  read -r answer </dev/tty 2>/dev/null || return 0
+  case "$answer" in
+    ''|Y|y|YES|Yes|yes) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+confirm_no() {
+  local prompt="$1"
+  local answer
+
+  printf '%s [y/N] ' "$prompt"
+  read -r answer </dev/tty 2>/dev/null || return 1
+  case "$answer" in
+    Y|y|YES|Yes|yes) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+find_binary() {
+  if has "$BIN_NAME"; then
+    command -v "$BIN_NAME"
+    return 0
+  fi
+
+  return 1
+}
+
+remove_binary() {
+  local bin_path="$1"
+
+  if [ ! -w "$(dirname "$bin_path")" ]; then
+    log "Removing ${bin_path} (requires sudo)"
+    sudo rm -f "$bin_path"
+  else
+    rm -f "$bin_path"
+  fi
+  log "Removed ${bin_path}"
+
+  if [ -x "$bin_path" ]; then
+    die "failed to remove ${bin_path}"
+  fi
+}
+
+main() {
+  local bin_path config_dir data_dir state_dir
+
+  log "Uninstalling ${APP_NAME}"
+  log ""
+
+  bin_path="$(find_binary || true)"
+
+  if [ -z "$bin_path" ]; then
+    log "No ${BIN_NAME} binary found."
+    log ""
+  else
+    log "Found ${BIN_NAME} at: ${bin_path}"
+    if confirm_yes "Remove the binary?"; then
+      remove_binary "$bin_path"
+      log ""
+    fi
+  fi
+
+  config_dir="${HOME}/.config/${BIN_NAME}"
+  data_dir="${HOME}/.local/share/${BIN_NAME}"
+  state_dir="${HOME}/.local/state/${BIN_NAME}"
+
+  if [ -d "$config_dir" ]; then
+    log "Config directory: ${config_dir}"
+    if confirm_no "Remove settings and keywords?"; then
+      rm -rf "$config_dir"
+      log "Removed ${config_dir}"
+      log ""
+    fi
+  fi
+
+  if [ -d "$data_dir" ] || [ -d "$state_dir" ]; then
+    log "Data and state directories:"
+    [ -d "$data_dir" ] && log "  ${data_dir} (credentials, recordings, history)"
+    [ -d "$state_dir" ] && log "  ${state_dir} (logs)"
+    if confirm_no "Remove all history, recordings, and logs?"; then
+      [ -d "$data_dir" ] && rm -rf "$data_dir" && log "Removed ${data_dir}"
+      [ -d "$state_dir" ] && rm -rf "$state_dir" && log "Removed ${state_dir}"
+      log ""
+    fi
+  fi
+
+  log "${APP_NAME} uninstalled."
+}
+
+main "$@"
