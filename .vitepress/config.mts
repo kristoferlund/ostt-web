@@ -1,8 +1,13 @@
 import { defineConfig } from 'vitepress'
 
+const siteUrl = 'https://ostt.ai'
+const siteTitle = 'OSTT - Open source voice-to-text for Linux and macOS'
+const siteDescription = 'Terminal-native speech-to-text. Record from a hotkey, choose your provider, and route transcripts to your clipboard, files, AI prompts, or shell commands.'
+const shareImage = `${siteUrl}/og-image.png`
+
 export default defineConfig({
   title: 'OSTT',
-  description: 'Open source speech-to-text for the terminal: Linux-first, provider-agnostic, and scriptable',
+  description: siteDescription,
   appearance: 'dark',
   vite: {
     build: {
@@ -22,6 +27,23 @@ export default defineConfig({
     }
   },
   head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/icon.png' }],
+    ['link', { rel: 'apple-touch-icon', href: '/icon.png' }],
+    ['meta', { name: 'theme-color', content: '#0a0a0a' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:site_name', content: 'OSTT' }],
+    ['meta', { property: 'og:title', content: siteTitle }],
+    ['meta', { property: 'og:description', content: siteDescription }],
+    ['meta', { property: 'og:url', content: siteUrl }],
+    ['meta', { property: 'og:image', content: shareImage }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { property: 'og:image:alt', content: siteTitle }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: siteTitle }],
+    ['meta', { name: 'twitter:description', content: siteDescription }],
+    ['meta', { name: 'twitter:image', content: shareImage }],
+    ['meta', { name: 'twitter:image:alt', content: siteTitle }],
     [
       'link',
       {
