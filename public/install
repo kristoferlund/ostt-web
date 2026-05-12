@@ -296,7 +296,7 @@ download_and_install_native_package() {
 
   case "$pm" in
     apt)
-      sudo_cmd apt-get install -y "${tmpdir}/${pkg}"
+      sudo_cmd apt-get install -y --reinstall "${tmpdir}/${pkg}"
       ;;
     dnf)
       sudo_cmd dnf install -y "${tmpdir}/${pkg}"
@@ -467,6 +467,7 @@ EOF
       installed_bin="${INSTALL_DIR}/${BIN_NAME}"
       install_mode="archive"
     else
+      hash -r 2>/dev/null || true
       installed_bin="$(command -v "$BIN_NAME" || true)"
       if [ -z "$installed_bin" ]; then
         installed_bin="/usr/bin/${BIN_NAME}"
@@ -477,8 +478,12 @@ EOF
     installed_bin="${INSTALL_DIR}/${BIN_NAME}"
   fi
 
+  if [ ! -x "$installed_bin" ]; then
+    die "installed binary was not found at ${installed_bin}"
+  fi
+
   if ! "$installed_bin" --version >/dev/null 2>&1; then
-    warn "installed binary did not respond to '${BIN_NAME} --version'"
+    die "installed binary did not respond to '${BIN_NAME} --version'"
   fi
 
   cat <<EOF
