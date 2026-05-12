@@ -105,6 +105,12 @@ code {
   font-family: var(--font-code);
 }
 
+p code {
+  background: rgb(255 255 255 / 10%);
+  border-radius: var(--rounded-sm);
+  padding: 0.1em 0.35em;
+}
+
 /* ------------------------------------------------
    Site Header
 ------------------------------------------------ */
@@ -196,7 +202,7 @@ code {
 }
 
 .landing-hero .logo {
-  width: min(80px, 40vw);
+  width: min(120px, 40vw);
   height: auto;
   padding: 10px 0 100px;
 }
@@ -325,6 +331,10 @@ html:not(.dark) .logo-light {
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-xxl);
   align-items: center;
+}
+
+.pipeline-section {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
 }
 
 .split > p, .split > div > p {

@@ -29,27 +29,6 @@ layout: false
     </button>
   </section>
 
-  <section class="landing-section split">
-    <div>
-      <p class="eyebrow">Why</p>
-      <h2>Voice input for the terminal.</h2>
-    </div>
-    <p>OSTT gives you stdout, clipboard, files, history, retry, provider choice, and process actions that fit the shell workflows you already use. It is not a GUI dictation app -- it is a command-line tool for voice.</p>
-  </section>
-
-  <section class="landing-section split">
-    <div class="command-card">
-      <pre><code>ostt launch -c
-# Press once to start. Press again to transcribe.</code></pre>
-    </div>
-    <div>
-      <p class="eyebrow">Global hotkey</p>
-      <h2>Pop up from any app.</h2>
-      <p>OSTT is a terminal app that stays out of your way until you need it. Bind <code>ostt launch -c</code> to a keyboard shortcut in your desktop environment, macOS Shortcuts.app, or window manager. Press it once: a popup terminal appears and starts recording. Press it again: recording stops, the audio is transcribed, and the text lands on your clipboard.</p>
-      <p>It works on Hyprland, GNOME, KDE, and macOS. The popup is configurable -- set the size, position, font size, and whether to show window decorations. OSTT auto-detects a supported terminal or you can set one explicitly.</p>
-    </div>
-  </section>
-
   <section class="landing-grid">
     <article>
       <h3>Linux-first</h3>
@@ -61,15 +40,15 @@ layout: false
     </article>
     <article>
       <h3>Process with AI or bash</h3>
-      <p>Run AI prompts or shell commands after transcription with `ostt -p` and `ostt process`.</p>
+      <p>Run AI prompts or shell commands after transcription with <code>ostt -p</code> and <code>ostt process</code>.</p>
     </article>
     <article>
       <h3>Retry without re-recording</h3>
       <p>Recordings are saved locally, so you can re-transcribe the same audio with a different provider or model.</p>
     </article>
     <article>
-      <h3>Recordings saved locally</h3>
-      <p>Every recording stays on your machine. Replay them, retry with a different provider, or delete them. Nothing is uploaded unless you choose to transcribe.</p>
+      <h3>Bind it to a hotkey</h3>
+      <p>Launch OSTT from anywhere. Press your global hotkey to open the recorder, speak in any application, then stop and copy the transcription to your clipboard.</p>
     </article>
     <article>
       <h3>Open source, no subscription</h3>
@@ -90,16 +69,14 @@ layout: false
     </section>
   </div>
 
-  <section class="landing-section split">
+  <section class="landing-section split pipeline-section">
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>Transcribe once. Route anywhere.</h2>
       <p>OSTT's pipeline plugs transcription into anything you already run. Process audio files from scripts and CI jobs. Wire the output to OpenCode, Claude Code, or any AI tool. Pipe through custom bash commands. The <code>-p</code> flag puts it all one flag away.</p>
     </div>
     <div class="command-card">
-      <pre><code>ostt -p clean -c
-ostt transcribe meeting.mp3 -p summary -o notes.md
-ostt process 2 -a cmd</code></pre>
+      <pre><code># Record and transcribe, run &quot;clean&quot; action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Transcribe mp3, run &quot;summary&quot; action, write to file&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Process second latest recording, run &quot;cmd&quot; action, print to stdout&#10;ostt process 2 -a cmd</code></pre>
     </div>
   </section>
 
@@ -110,7 +87,7 @@ ostt process 2 -a cmd</code></pre>
     </article>
     <article>
       <h3>Agent-ready transcription</h3>
-      <p>Connect OSTT to OpenCode, Claude Code, Gemini CLI, or Codex CLI. Your agent gets configurable, multi-provider transcription with per-action model selection and no vendor lock-in.</p>
+      <p>Use OSTT with OpenCode, Claude Code, Gemini CLI, Codex CLI, OpenClaw, Hermes, or other agentic harnesses when their built-in voice tools are too limited. Configure providers, models, prompts, and shell actions once, then route flexible transcription into the agents you already use.</p>
     </article>
     <article>
       <h3>Terminal-native automation</h3>
@@ -118,23 +95,6 @@ ostt process 2 -a cmd</code></pre>
     </article>
   </section>
 
-  <section class="landing-section final-cta">
-    <p class="eyebrow">Start</p>
-    <h2>Install OSTT and bind your first hotkey.</h2>
-    <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
-      <code>
-        <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
-      </code>
-      <span class="copy-icons">
-        <svg class="icon-copy" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-      </span>
-    </button>
-    <div class="landing-actions">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="/guide/processing">Processing actions</a>
-    </div>
-  </section>
 </main>
 
 <footer class="site-footer">
