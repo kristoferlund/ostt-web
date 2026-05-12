@@ -4,6 +4,23 @@ export default defineConfig({
   title: 'OSTT',
   description: 'Open source speech-to-text for the terminal: Linux-first, provider-agnostic, and scriptable',
   appearance: 'dark',
+  vite: {
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          if (
+            warning.code === 'INVALID_ANNOTATION' &&
+            warning.message.includes('@vueuse/core') &&
+            warning.message.includes('#__PURE__')
+          ) {
+            return
+          }
+
+          warn(warning)
+        }
+      }
+    }
+  },
   head: [
     [
       'link',
@@ -37,6 +54,7 @@ export default defineConfig({
     ]
   ],
   themeConfig: {
+    logo: '/logo.svg',
     nav: [
       { text: 'Start', link: '/guide/getting-started' },
       { text: 'Why OSTT?', link: '/guide/why-ostt' },

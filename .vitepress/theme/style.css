@@ -135,11 +135,22 @@ p code {
 }
 
 .header-logo {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
+  display: inline-flex;
+  align-items: center;
   color: var(--color-ink);
+}
+
+.logo-mark,
+.hero-logo {
+  display: inline-block;
+  background: currentColor;
+  mask: url('/logo.svg') center / contain no-repeat;
+  -webkit-mask: url('/logo.svg') center / contain no-repeat;
+}
+
+.logo-mark {
+  width: 30px;
+  height: 22px;
 }
 
 .header-nav {
@@ -201,26 +212,11 @@ p code {
   padding: var(--spacing-section) var(--spacing-lg) 0;
 }
 
-.landing-hero .logo {
+.landing-hero .hero-logo {
   width: min(120px, 40vw);
-  height: auto;
-  padding: 10px 0 100px;
-}
-
-.logo-dark {
-  display: block;
-}
-
-.logo-light {
-  display: none;
-}
-
-html:not(.dark) .logo-dark {
-  display: none;
-}
-
-html:not(.dark) .logo-light {
-  display: block;
+  height: min(88px, 29vw);
+  color: var(--color-ink);
+  margin: 10px 0 100px;
 }
 
 .landing-hero h1 {
@@ -644,6 +640,19 @@ html:not(.dark) .logo-light {
   border-bottom: 1px solid var(--color-hairline) !important;
 }
 
+.VPNavBarTitle .logo {
+  width: 30px;
+  height: 22px;
+}
+
+.VPNavBarTitle .title span {
+  display: none;
+}
+
+html.dark .VPNavBarTitle .logo {
+  filter: invert(1);
+}
+
 /* ------------------------------------------------
    Responsive
 ------------------------------------------------ */
@@ -697,9 +706,10 @@ html:not(.dark) .logo-light {
 }
 
 @media (max-width: 600px) {
-  .landing-hero .logo {
+  .landing-hero .hero-logo {
     width: min(180px, 60vw);
-    padding: 48px 0 40px;
+    height: min(132px, 44vw);
+    margin: 48px 0 40px;
   }
 
   .landing-actions {

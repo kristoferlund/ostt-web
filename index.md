@@ -4,7 +4,9 @@ layout: false
 
 <header class="site-header">
   <div class="header-inner">
-    <a href="/" class="header-logo">OSTT</a>
+    <a href="/" class="header-logo" aria-label="OSTT home">
+      <span class="logo-mark" aria-hidden="true"></span>
+    </a>
     <nav class="header-nav">
       <a href="/guide/getting-started">Documentation</a>
       <a href="https://github.com/kristoferlund/ostt">GitHub</a>
@@ -14,10 +16,9 @@ layout: false
 
 <main class="landing">
   <section class="landing-hero">
-    <img class="logo logo-dark" src="/logo-white.png" alt="OSTT" />
-    <img class="logo logo-light" src="/logo-black.png" alt="OSTT" />
+    <span class="logo hero-logo" aria-label="OSTT"></span>
     <h1>Open source voice-to-text for Linux. And macOS.</h1>
-    <p className="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe with your chosen provider, then send the result to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
+    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe with your chosen provider, then send the result to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
