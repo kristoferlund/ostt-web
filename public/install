@@ -484,11 +484,28 @@ Next steps:
 
 EOF
 
-  if [ "$install_mode" != "native-package" ]; then
-    cat <<EOF
+  if [ "$install_mode" != "native-package" ] && [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+    local shell_name
+    shell_name="$(basename "${SHELL:-/bin/bash}")"
 
-If '${INSTALL_DIR}' is not on your PATH, add it to your shell profile.
-EOF
+    log "Note: ${INSTALL_DIR} is not on your PATH."
+    log "Add it to your shell profile:"
+    log ""
+
+    case "$shell_name" in
+      fish)
+        log "  fish_add_path ${INSTALL_DIR}"
+        ;;
+      zsh)
+        log "  echo 'export PATH=\"\$PATH:${INSTALL_DIR}\"' >> ~/.zshrc"
+        ;;
+      *)
+        log "  echo 'export PATH=\"\$PATH:${INSTALL_DIR}\"' >> ~/.bashrc"
+        ;;
+    esac
+
+    log ""
+    log "Then restart your shell or source your profile."
   fi
 }
 
