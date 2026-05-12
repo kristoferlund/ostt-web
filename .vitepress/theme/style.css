@@ -203,6 +203,7 @@ p code {
 /* Hero */
 
 .landing-hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -210,6 +211,25 @@ p code {
   max-width: var(--max-content);
   margin: 0 auto;
   padding: var(--spacing-section) var(--spacing-lg) 0;
+}
+
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  z-index: 0;
+  width: min(600px, 92vw);
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(5 255 255 / 10%) 10%, rgb(255 255 255 / 0%) 62%);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.landing-hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .landing-hero .hero-logo {
