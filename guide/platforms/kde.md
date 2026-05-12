@@ -30,7 +30,7 @@ Native packages install declared dependencies and support normal uninstall comma
 1. Open System Settings > Shortcuts > Custom Shortcuts.
 2. Click Edit > New > Global Shortcut > Command/URL.
 3. Name it `OSTT`.
-4. In the Trigger tab, press your preferred key combination, such as `Meta+Space`.
+4. In the Trigger tab, press your preferred key combination, such as `Alt+Space`.
 5. In the Action tab, enter:
 
 ```bash
@@ -54,8 +54,8 @@ Create additional Custom Shortcuts for common workflows:
 
 | Name | Command | Example hotkey |
 | --- | --- | --- |
-| OSTT | `ostt launch -c` | `Meta+Space` |
-| OSTT Clean | `ostt launch -c -p clean` | `Meta+Shift+Space` |
+| OSTT | `ostt launch -c` | `Alt+Space` |
+| OSTT Process | `ostt launch -c -p` | `Alt+Ctrl+Space` |
 | OSTT Translate | `ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
 
 ## Terminal Selection

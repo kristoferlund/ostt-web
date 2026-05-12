@@ -23,7 +23,7 @@ Full setup: [macOS Setup](./platforms/macos.md).
 Add the binding to `~/.config/hypr/bindings.conf`:
 
 ```text
-bindd = SUPER, R, ostt, exec, ostt launch -c
+bindd = ALT, SPACE, ostt, exec, ostt launch -c
 ```
 
 Add window rules to `~/.config/hypr/hyprland.conf`:
@@ -57,12 +57,17 @@ ostt launch -c
 
 Full setup: [KDE Plasma Setup](./platforms/kde.md).
 
-## Processing Hotkeys
+## Suggested Hotkeys
+
+The recommended default key combinations:
+
+- **`Alt+Space`** — Basic popup: `ostt launch -c`
+- **`Alt+Ctrl+Space`** — Popup with action picker: `ostt launch -c -p`
 
 Create separate hotkeys for common workflows:
 
 ```bash
 ostt launch -c                 # Raw transcription to clipboard
-ostt launch -c -p clean         # Cleaned transcription to clipboard
+ostt launch -c -p               # Show action picker
 ostt launch -c -p translate-en  # Translated transcription to clipboard
 ```

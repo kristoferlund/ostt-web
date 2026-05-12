@@ -34,7 +34,7 @@ Native packages install declared dependencies and support normal uninstall comma
 ostt launch -c
 ```
 
-6. Click Set Shortcut and press your preferred key combination, such as `Super+Space`.
+6. Click Set Shortcut and press your preferred key combination, such as `Alt+Space`.
 7. Click Add.
 
 ## Usage
@@ -50,8 +50,8 @@ Create multiple GNOME custom shortcuts for common workflows:
 
 | Name | Command | Example hotkey |
 | --- | --- | --- |
-| OSTT | `ostt launch -c` | `Super+Space` |
-| OSTT Clean | `ostt launch -c -p clean` | `Super+Shift+Space` |
+| OSTT | `ostt launch -c` | `Alt+Space` |
+| OSTT Process | `ostt launch -c -p` | `Alt+Ctrl+Space` |
 | OSTT Translate | `ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
 
 ## Terminal Selection

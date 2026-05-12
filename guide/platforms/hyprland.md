@@ -25,7 +25,7 @@ Add the binding to `~/.config/hypr/bindings.conf`:
 
 ```text
 # OSTT speech-to-text hotkey, clipboard output
-bindd = SUPER, R, ostt, exec, ostt launch -c
+bindd = ALT, SPACE, ostt, exec, ostt launch -c
 ```
 
 ## Window Rules
@@ -46,9 +46,9 @@ hyprctl reload
 
 ## Usage
 
-1. Press `Super+R` to open the popup and start recording.
+1. Press `Alt+Space` to open the popup and start recording.
 2. Speak.
-3. Press `Super+R` again, or press `Enter` in the popup, to stop recording and transcribe.
+3. Press `Alt+Space` again, or press `Enter` in the popup, to stop recording and transcribe.
 4. Paste with `Ctrl+V`.
 
 ## Output Options
@@ -56,25 +56,25 @@ hyprctl reload
 Clipboard output:
 
 ```text
-bindd = SUPER, R, ostt, exec, ostt launch -c
+bindd = ALT, SPACE, ostt, exec, ostt launch -c
 ```
 
 Stdout output:
 
 ```text
-bindd = SUPER, R, ostt, exec, ostt launch
+bindd = ALT, SPACE, ostt, exec, ostt launch
 ```
 
 File output:
 
 ```text
-bindd = SUPER, R, ostt, exec, ostt launch -o ~/transcription.txt
+bindd = ALT, SPACE, ostt, exec, ostt launch -o ~/transcription.txt
 ```
 
 Processing output:
 
 ```text
-bindd = SUPER SHIFT, R, ostt clean, exec, ostt launch -c -p clean
+bindd = ALT CTRL, SPACE, ostt process, exec, ostt launch -c -p
 ```
 
 ## Popup Appearance
