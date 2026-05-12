@@ -25,7 +25,7 @@ Add the binding to `~/.config/hypr/bindings.conf`. Use the full path to the OSTT
 
 ```text
 # OSTT speech-to-text hotkey, clipboard output
-bindd = ALT, SPACE, ostt, exec, /Users/kristoferlund/.local/bin/ostt launch -c
+bindd = ALT, SPACE, ostt, exec, /home/you/.local/bin/ostt launch -c
 ```
 
 ## Window Rules

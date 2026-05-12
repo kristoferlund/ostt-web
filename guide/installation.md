@@ -30,21 +30,36 @@ paru -S ostt
 ### Debian / Ubuntu / Mint -- .deb
 
 ```bash
+# x86_64
 curl -sLO https://github.com/kristoferlund/ostt/releases/latest/download/ostt_latest_amd64.deb
 sudo apt install ./ostt_latest_amd64.deb
+
+# ARM64 (Raspberry Pi, etc.)
+curl -sLO https://github.com/kristoferlund/ostt/releases/latest/download/ostt_latest_arm64.deb
+sudo apt install ./ostt_latest_arm64.deb
 ```
 
 ### Fedora / RHEL -- .rpm
 
 ```bash
+# x86_64
 sudo dnf install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.x86_64.rpm
+
+# ARM64
+sudo dnf install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.aarch64.rpm
 ```
 
 ### openSUSE -- .rpm
 
 ```bash
+# x86_64
 sudo zypper install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.x86_64.rpm
+
+# ARM64
+sudo zypper install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.aarch64.rpm
 ```
+
+Run `uname -m` to check your architecture (`x86_64` or `aarch64`).
 
 ### Direct Binary Download
 

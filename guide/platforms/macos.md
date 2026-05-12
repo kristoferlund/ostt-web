@@ -17,7 +17,7 @@ brew install ostt
 ostt auth
 ```
 
-Homebrew installs OSTT as a managed package and supports normal uninstall with `brew uninstall ostt`.
+Homebrew installs OSTT as a managed package and supports normal uninstall with `brew uninstall ostt`. The install script (`curl -fsSL https://ostt.ai/install | bash`) detects your platform and architecture automatically and is the simplest option.
 
 ## Locate the Binary
 

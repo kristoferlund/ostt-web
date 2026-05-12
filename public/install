@@ -251,7 +251,9 @@ native_package_kind() {
 
   case "$os:$arch:$pm" in
     linux:x86_64:apt) echo "deb" ;;
+    linux:aarch64:apt) echo "deb" ;;
     linux:x86_64:dnf|linux:x86_64:zypper) echo "rpm" ;;
+    linux:aarch64:dnf|linux:aarch64:zypper) echo "rpm" ;;
     *) echo "" ;;
   esac
 }
@@ -259,11 +261,14 @@ native_package_kind() {
 download_and_install_native_package() {
   local kind="$1"
   local pm="$2"
+  local arch="$3"
   local base_url pkg checksum tmpdir url checksum_url
 
-  case "$kind" in
-    deb) pkg="ostt_latest_amd64.deb" ;;
-    rpm) pkg="ostt-latest.x86_64.rpm" ;;
+  case "$kind:$arch" in
+    deb:x86_64) pkg="ostt_latest_amd64.deb" ;;
+    deb:aarch64) pkg="ostt_latest_arm64.deb" ;;
+    rpm:x86_64) pkg="ostt-latest.x86_64.rpm" ;;
+    rpm:aarch64) pkg="ostt-latest.aarch64.rpm" ;;
     *) return 1 ;;
   esac
 
@@ -454,7 +459,7 @@ EOF
   fi
 
   if [ "$install_mode" = "native-package" ]; then
-    if ! download_and_install_native_package "$package_kind" "$pm"; then
+    if ! download_and_install_native_package "$package_kind" "$pm" "$arch"; then
       warn "native package artifact was unavailable; falling back to release archive"
       download_and_install "$triple"
       installed_bin="${INSTALL_DIR}/${BIN_NAME}"

@@ -9,21 +9,7 @@ curl -fsSL https://ostt.ai/install | bash
 ostt auth
 ```
 
-Prefer a native package on supported x86_64 Linux distributions?
-
-```bash
-# Debian, Ubuntu, Kubuntu
-curl -sLO https://github.com/kristoferlund/ostt/releases/latest/download/ostt_latest_amd64.deb
-sudo apt install ./ostt_latest_amd64.deb
-
-# Fedora KDE, RHEL, Rocky Linux
-sudo dnf install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.x86_64.rpm
-
-# openSUSE
-sudo zypper install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.x86_64.rpm
-```
-
-Native packages install declared dependencies and support normal uninstall commands such as `sudo apt remove ostt`, `sudo dnf remove ostt`, or `sudo zypper remove ostt`.
+Prefer a native `.deb` or `.rpm` package? See [Installation](../installation.md). The install script detects your distribution and CPU architecture automatically, so it is the simplest option for most users.
 
 ## Bind a Hotkey
 
@@ -40,7 +26,7 @@ which ostt
 For example:
 
 ```bash
-/Users/kristoferlund/.local/bin/ostt launch -c
+/home/you/.local/bin/ostt launch -c
 ```
 
 Desktop environments do not always include `~/.local/bin` in the PATH used for hotkey commands, so the full path is required for reliable operation.
