@@ -21,11 +21,11 @@ yay -S ostt
 
 ## Keybinding
 
-Add the binding to `~/.config/hypr/bindings.conf`:
+Add the binding to `~/.config/hypr/bindings.conf`. Use the full path to the OSTT binary -- find it with `which ostt`:
 
 ```text
 # OSTT speech-to-text hotkey, clipboard output
-bindd = ALT, SPACE, ostt, exec, ostt launch -c
+bindd = ALT, SPACE, ostt, exec, /Users/kristoferlund/.local/bin/ostt launch -c
 ```
 
 ## Window Rules
@@ -56,26 +56,28 @@ hyprctl reload
 Clipboard output:
 
 ```text
-bindd = ALT, SPACE, ostt, exec, ostt launch -c
+bindd = ALT, SPACE, ostt, exec, /path/to/ostt launch -c
 ```
 
 Stdout output:
 
 ```text
-bindd = ALT, SPACE, ostt, exec, ostt launch
+bindd = ALT, SPACE, ostt, exec, /path/to/ostt launch
 ```
 
 File output:
 
 ```text
-bindd = ALT, SPACE, ostt, exec, ostt launch -o ~/transcription.txt
+bindd = ALT, SPACE, ostt, exec, /path/to/ostt launch -o ~/transcription.txt
 ```
 
 Processing output:
 
 ```text
-bindd = ALT CTRL, SPACE, ostt process, exec, ostt launch -c -p
+bindd = ALT CTRL, SPACE, ostt process, exec, /path/to/ostt launch -c -p
 ```
+
+Replace `/path/to/ostt` with the output of `which ostt`.
 
 ## Popup Appearance
 

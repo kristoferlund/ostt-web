@@ -31,13 +31,19 @@ Native packages install declared dependencies and support normal uninstall comma
 2. Click Edit > New > Global Shortcut > Command/URL.
 3. Name it `OSTT`.
 4. In the Trigger tab, press your preferred key combination, such as `Alt+Space`.
-5. In the Action tab, enter:
+5. In the Action tab, enter the full path to the OSTT binary followed by `launch -c`. Find your path with:
 
 ```bash
-ostt launch -c
+which ostt
 ```
 
-If KDE cannot find `ostt`, use the full path from `which ostt`.
+For example:
+
+```bash
+/Users/kristoferlund/.local/bin/ostt launch -c
+```
+
+Desktop environments do not always include `~/.local/bin` in the PATH used for hotkey commands, so the full path is required for reliable operation.
 
 6. Click Apply.
 
@@ -54,9 +60,11 @@ Create additional Custom Shortcuts for common workflows:
 
 | Name | Command | Example hotkey |
 | --- | --- | --- |
-| OSTT | `ostt launch -c` | `Alt+Space` |
-| OSTT Process | `ostt launch -c -p` | `Alt+Ctrl+Space` |
-| OSTT Translate | `ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
+| OSTT | `/path/to/ostt launch -c` | `Alt+Space` |
+| OSTT Process | `/path/to/ostt launch -c -p` | `Alt+Ctrl+Space` |
+| OSTT Translate | `/path/to/ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
+
+Replace `/path/to/ostt` with the output of `which ostt`.
 
 ## Terminal Selection
 

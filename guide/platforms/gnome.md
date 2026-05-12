@@ -28,11 +28,16 @@ Native packages install declared dependencies and support normal uninstall comma
 2. Scroll to the bottom and open Custom Shortcuts.
 3. Click `+`.
 4. Use name `OSTT`.
-5. Use command:
+5. Use the full path to the OSTT binary. First find it with `which ostt`, then enter the path followed by `launch -c`:
 
 ```bash
-ostt launch -c
+# Example -- run this in a terminal to get your path:
+which ostt
+# Then enter the full path in the command field:
+/Users/kristoferlund/.local/bin/ostt launch -c
 ```
+
+Desktop environments do not always include `~/.local/bin` in the PATH used for hotkey commands, so the full path is required for reliable operation.
 
 6. Click Set Shortcut and press your preferred key combination, such as `Alt+Space`.
 7. Click Add.
@@ -50,9 +55,11 @@ Create multiple GNOME custom shortcuts for common workflows:
 
 | Name | Command | Example hotkey |
 | --- | --- | --- |
-| OSTT | `ostt launch -c` | `Alt+Space` |
-| OSTT Process | `ostt launch -c -p` | `Alt+Ctrl+Space` |
-| OSTT Translate | `ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
+| OSTT | `/path/to/ostt launch -c` | `Alt+Space` |
+| OSTT Process | `/path/to/ostt launch -c -p` | `Alt+Ctrl+Space` |
+| OSTT Translate | `/path/to/ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
+
+Replace `/path/to/ostt` with the output of `which ostt`.
 
 ## Terminal Selection
 
