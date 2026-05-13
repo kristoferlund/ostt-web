@@ -61,26 +61,32 @@ Edit `~/.config/ostt/ostt.toml`:
 ostt config
 ```
 
-Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id`:
+Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id`. AI actions can inherit `tool` and `model` from `[process]` defaults:
 
 ```toml
+[process]
+default_tool = "opencode"
+default_model = "anthropic/claude-sonnet-4-6"
+
 [process.actions.clean]
 name = "Clean up text"
 type = "ai"
-tool = "opencode"
-model = "anthropic/claude-sonnet-4-6"
 inputs = [
   { role = "system", content = "Clean up the transcript. Remove filler words, fix grammar, and preserve meaning. Output only the cleaned text." },
   { role = "user", source = "transcription" },
 ]
 ```
 
+Set `tool` or `model` on an individual AI action only when you want to override the defaults.
+
 Each action type uses its own set of keys:
 
 | Type | Required keys | Optional keys |
 | --- | --- | --- |
-| `"ai"` | `name`, `type`, `tool`, `model`, `inputs` | `tool_binary`, `tool_args` |
+| `"ai"` | `name`, `type`, `inputs`, plus resolved `tool` and `model` | `tool`, `model`, `tool_binary`, `tool_args` |
 | `"bash"` | `name`, `type`, `command` | — |
+
+For AI actions, `tool` and `model` may come from the action itself or from `[process]` defaults. OSTT errors at startup if an AI action has no resolved tool or model.
 
 ## Bash Actions
 
@@ -184,8 +190,6 @@ If multiple content sources are given in a single entry, precedence is: `source`
 [process.actions.translate_en]
 name = "Translate to English"
 type = "ai"
-tool = "opencode"
-model = "anthropic/claude-sonnet-4-6"
 inputs = [
   { role = "system", content = "Translate the user's transcript to natural English. Keep names and technical terms intact. Output only the translation." },
   { role = "user", source = "transcription" },
@@ -204,8 +208,6 @@ ostt launch -c -p translate_en
 [process.actions.summary]
 name = "Meeting summary"
 type = "ai"
-tool = "opencode"
-model = "anthropic/claude-sonnet-4-6"
 inputs = [
   { role = "system", content = "Summarize the transcript into decisions, action items, and open questions. Use concise bullets." },
   { role = "user", source = "transcription" },
@@ -224,8 +226,6 @@ ostt transcribe meeting.mp3 -p summary -o meeting-summary.md
 [process.actions.cmd]
 name = "Generate CLI command"
 type = "ai"
-tool = "opencode"
-model = "anthropic/claude-sonnet-4-6"
 inputs = [
   { role = "system", content = "The user described a task via voice. Generate the exact CLI command to accomplish it. Output only the command, no markdown and no explanation." },
   { role = "user", source = "transcription" },
@@ -248,10 +248,8 @@ For AI actions, you can override the binary or append extra CLI arguments.
 [process.actions.clean_local]
 name = "Clean with custom opencode"
 type = "ai"
-tool = "opencode"
 tool_binary = "/usr/local/bin/opencode"
 tool_args = ["--quiet"]
-model = "anthropic/claude-sonnet-4-6"
 inputs = [
   { role = "system", content = "Clean up the transcript. Output only the cleaned text." },
   { role = "user", source = "transcription" },
@@ -259,6 +257,8 @@ inputs = [
 ```
 
 Extra arguments are appended after OSTT's required arguments for the selected tool.
+
+If you need this action to use a different model or tool than the `[process]` defaults, add `tool = "..."` and/or `model = "..."` to the action.
 
 ## Troubleshooting Processing
 

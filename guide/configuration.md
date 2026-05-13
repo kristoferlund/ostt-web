@@ -165,16 +165,20 @@ fallback_language = "auto"
 
 Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id` on the CLI. Each action has a `type` of either `"ai"` (runs an AI CLI tool) or `"bash"` (runs a shell command).
 
+AI actions can inherit their tool and model from `[process]` defaults. Set `tool` or `model` on an individual action only when that action should override the default.
+
 See [Processing Actions](./processing.md) for full examples and common recipes.
 
 ### AI Actions
 
 ```toml
+[process]
+default_tool = "opencode"
+default_model = "anthropic/claude-sonnet-4-6"
+
 [process.actions.clean]
 name = "Clean up text"
 type = "ai"
-tool = "opencode"
-model = "anthropic/claude-sonnet-4-6"
 # tool_binary = "/usr/local/bin/opencode"  # Override binary path
 # tool_args = ["--quiet"]                   # Extra CLI arguments
 inputs = [
@@ -182,6 +186,8 @@ inputs = [
   { role = "user", source = "transcription" },
 ]
 ```
+
+For every AI action, OSTT must resolve both a `tool` and a `model` from either the action itself or `[process]` defaults. If either value is missing, config validation fails.
 
 The `inputs` field is an array of inline tables. Each entry has a `role` and exactly one content source.
 
