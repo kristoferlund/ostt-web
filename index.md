@@ -30,6 +30,12 @@ layout: false
     </button>
   </section>
 
+  <section class="landing-video">
+    <video src="/ostt-demo.mp4" controls playsinline poster="/ostt-demo-poster.png">
+      Your browser does not support the video tag.
+    </video>
+  </section>
+
   <section class="landing-grid">
     <article>
       <h3>Linux-first</h3>
