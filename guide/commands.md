@@ -178,6 +178,17 @@ ostt logs
 
 Generate shell completion scripts for tab completion of commands and options.
 
+Install directly to the standard location for your shell:
+
+```bash
+ostt completions bash --install          # requires sudo
+ostt completions zsh --install           # requires sudo
+ostt completions fish --install          # no sudo needed, uses ~/.config/fish
+ostt completions powershell --install    # current directory fallback
+```
+
+Or generate and place the file manually:
+
 ```bash
 ostt completions bash > ostt.bash
 ostt completions zsh > _ostt
@@ -195,6 +206,7 @@ sudo cp ostt.bash /etc/bash_completion.d/
 
 ```bash
 sudo cp _ostt /usr/local/share/zsh/site-functions/
+# Linux: /usr/share/zsh/site-functions/
 ```
 
 ### Fish
