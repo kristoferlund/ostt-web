@@ -97,6 +97,7 @@ export default defineConfig({
         text: 'Usage',
         items: [
           { text: 'Commands', link: '/guide/commands' },
+          { text: 'Local Models', link: '/guide/local-models' },
           { text: 'Processing Actions', link: '/guide/processing' },
           { text: 'Configuration', link: '/guide/configuration' }
         ]

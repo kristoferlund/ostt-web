@@ -79,7 +79,9 @@ Output audio format for API calls. All audio is saved as mono with ffmpeg handli
 | `"libopus -ab 32k -ar 16000"` | 32 kbps | ~3.6 MB/hour | Better quality, smaller than AAC |
 | `"aac -ab 32k -ar 16000"` | 32 kbps | ~3.6 MB/hour | Good quality, wide support |
 | `"flac -ar 16000"` | Lossless | ~20 MB/hour | Lossless, no quality loss |
-| `"pcm_s16le"` | Uncompressed | Largest | WAV PCM, no compression at all |
+| `"pcm_s16le -ar 16000"` | Uncompressed | Largest | Required for local transcription |
+
+Local models require `sample_rate = 16000` and `output_format = "pcm_s16le -ar 16000"`. The local model activation flow can update these settings for you.
 
 ### visualization
 
@@ -160,6 +162,42 @@ fallback_language = "auto"
 | Option | Default | Description |
 | --- | --- | --- |
 | `language_code` | unset | Optional ISO-639-1 or ISO-639-3 language code (e.g. `"en"` or `"eng"`, `"swe"`). When set, can improve accuracy for known languages. Leave unset to auto-detect. |
+
+## Local Transcription
+
+Local models are selected and managed with `ostt model`. The `[providers.local]` section controls local Whisper inference defaults and optional per-model overrides.
+
+```toml
+[providers.local]
+language = "auto"
+no_timestamps = true
+no_context = true
+temperature = 0.0
+entropy_thold = 2.4
+no_speech_thold = 0.6
+daemon = true
+daemon_idle_timeout_secs = 300
+# models_path = "/path/to/models"
+
+[providers.local.models.turbo]
+language = "en"
+```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `language` | `"auto"` | Language hint for local inference. Use `"auto"` or an ISO code such as `"en"` or `"sv"`. |
+| `no_timestamps` | `true` | Suppress timestamp output. |
+| `no_context` | `true` | Do not reuse text context between segments. |
+| `temperature` | `0.0` | Sampling temperature. `0.0` uses greedy deterministic decoding. |
+| `entropy_thold` | `2.4` | Entropy threshold for fallback behavior. |
+| `no_speech_thold` | `0.6` | No-speech probability threshold. |
+| `models_path` | unset | Optional override for the local model storage directory. |
+| `daemon` | `true` | Reserved for planned local model daemon support. Daemonized local models are not enabled yet. |
+| `daemon_idle_timeout_secs` | `300` | Reserved idle timeout for planned daemon support. |
+
+Per-model overrides live under `[providers.local.models.<model-id>]` and can set `language`, `no_timestamps`, `no_context`, `temperature`, `entropy_thold`, `no_speech_thold`, `daemon`, or `daemon_idle_timeout_secs` for that model only.
+
+See [Local Models](./local-models.md) for setup, storage, and audio-format requirements.
 
 ## Processing Actions
 
@@ -297,6 +335,7 @@ Display elements visible during recording:
 ~/.local/share/ostt/
 ├── credentials            # API keys (0600 permissions)
 ├── recordings/            # Saved recordings
+├── models/                # Local model files and metadata
 
 ~/.local/state/ostt/
 ├── ostt.log.*             # Daily-rotated logs (7-day retention)

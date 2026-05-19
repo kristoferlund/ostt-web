@@ -1,6 +1,30 @@
 # Providers and Models
 
-OSTT is bring-your-own-API-key. Run `ostt auth` to select a provider/model and save credentials.
+OSTT can use cloud providers or local Whisper-compatible models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
+
+## Local
+
+Local models run on your machine and do not require an API key. Open the local model manager with:
+
+```bash
+ostt model
+```
+
+Choose **Local provider** to download curated models, activate downloaded models, delete model files, inspect metadata, or add a custom Hugging Face/direct model URL.
+
+The curated model list is maintained in the [ostt-ai/models](https://github.com/ostt-ai/models) repository. Open a pull request there to suggest a model for inclusion in the default list shown to all users.
+
+Local transcription is CPU-only for now. GPU backends such as Vulkan, Metal, and CUDA, plus daemonized model loading for faster startup, are planned but not currently supported.
+
+Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
+
+```toml
+[audio]
+sample_rate = 16000
+output_format = "pcm_s16le -ar 16000"
+```
+
+See [Local Models](../guide/local-models.md) for setup details.
 
 ## OpenAI
 
