@@ -18,7 +18,7 @@ layout: false
   <section class="landing-hero">
     <span class="logo hero-logo" aria-label="OSTT"></span>
     <h1>Open source voice-to-text for Linux. And macOS.</h1>
-    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe with your chosen provider, then send the result to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
+    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe with your chosen cloud or local model, then send the result to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -42,8 +42,16 @@ layout: false
       <p>Global hotkey setup for Omarchy/Hyprland, GNOME, KDE, and other Linux desktops, with macOS support too.</p>
     </article>
     <article>
-      <h3>Bring your own provider</h3>
-      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, or ElevenLabs. Switch models when quality, latency, price, or data location matters.</p>
+      <h3>Cloud or local models</h3>
+      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or local Whisper-compatible models. Switch when quality, latency, price, privacy, or offline access matters.</p>
+    </article>
+    <article>
+      <h3>GPU acceleration</h3>
+      <p>Local models run on your GPU. Metal on macOS, CUDA on NVIDIA, Vulkan on AMD and Intel. The install script detects your hardware and picks the right build automatically.</p>
+    </article>
+    <article>
+      <h3>Daemon mode</h3>
+      <p>Keep a local model loaded in the background between calls. After the first load, transcription starts instantly with no model loading overhead. Install as a login service and the model is always ready.</p>
     </article>
     <article>
       <h3>Process with AI or bash</h3>

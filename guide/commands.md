@@ -116,15 +116,28 @@ Alias: `ostt p`.
 
 ## Auth
 
-Configure a transcription provider and save API key.
+Add or remove cloud provider credentials.
 
 ```bash
-ostt auth
+ostt auth login       # Add or update a cloud provider API key
+ostt auth logout      # Remove a cloud provider API key
 ```
 
-Shows available providers and models, lets you select your preferred model, prompts for your API key, and saves everything securely.
+`ostt auth` without a subcommand defaults to `ostt auth login`. API keys are stored securely outside the main config file.
 
 Alias: `ostt a`.
+
+## Model
+
+Choose and manage the active transcription model.
+
+```bash
+ostt model
+```
+
+The model picker lets you choose between cloud and local providers. Cloud models are shown for providers with saved credentials. Local models can be downloaded, activated, deleted, inspected, or added from a custom Hugging Face/direct model URL.
+
+See [Local Models](./local-models.md) for offline model setup.
 
 ## History
 
@@ -256,5 +269,5 @@ ostt -h               # Quick help
 ```bash
 ostt r -c            # Same as: ostt record -c
 ostt l -c            # Same as: ostt launch -c
-ostt a               # Same as: ostt auth
+ostt a               # Same as: ostt auth login
 ```

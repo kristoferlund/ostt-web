@@ -4,14 +4,14 @@ Processing actions transform transcription text after it has been created. They 
 
 Use processing when you want OSTT to produce the final text you intend to paste: cleaned dictation, a translated version, a generated command, release notes, an email draft, or any other transformation.
 
-## Two Ways to Process
+## Running Processing Actions
 
 Process immediately after recording, retrying, or transcribing:
 
 ```bash
 ostt -p clean -c
 ostt retry -p clean -c
-ostt transcribe meeting.mp3 -p summary -o summary.txt
+ostt transcribe meeting.mp3 -p clean -o cleaned.txt
 ```
 
 Process an existing transcription from history:
@@ -33,15 +33,7 @@ ostt -p clean        # Run clean directly
 ostt launch -c -p    # Popup recording, picker, copy result
 ```
 
-## List Actions
-
-```bash
-ostt process --list
-```
-
-Each action has an `id` (used on the CLI) and a display `name` (shown in the picker).
-
-## Output Rules
+If a processing action is cancelled from a recording flow, OSTT falls back to the raw transcription.
 
 Processing follows the same output rules as transcription:
 
@@ -51,7 +43,13 @@ ostt -p clean -c           # Copy processed output to clipboard
 ostt -p clean -o clean.txt # Write processed output to file
 ```
 
-If a processing action is cancelled from a recording flow, OSTT falls back to the raw transcription.
+List configured actions:
+
+```bash
+ostt process --list
+```
+
+Each action has an `id` (used on the CLI) and a display `name` (shown in the picker).
 
 ## Configure Actions
 
@@ -61,23 +59,21 @@ Edit `~/.config/ostt/ostt.toml`:
 ostt config
 ```
 
-Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id`. AI actions can inherit `tool` and `model` from `[process]` defaults:
+Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id`.
+
+### Defaults
+
+Set a default AI tool and model that all AI actions inherit:
 
 ```toml
 [process]
 default_tool = "opencode"
 default_model = "anthropic/claude-sonnet-4-6"
-
-[process.actions.clean]
-name = "Clean up text"
-type = "ai"
-inputs = [
-  { role = "system", content = "Clean up the transcript. Remove filler words, fix grammar, and preserve meaning. Output only the cleaned text." },
-  { role = "user", source = "transcription" },
-]
 ```
 
-Set `tool` or `model` on an individual AI action only when you want to override the defaults.
+Set `tool` or `model` on an individual AI action to override the defaults for that action.
+
+### Action Types
 
 Each action type uses its own set of keys:
 
@@ -135,7 +131,7 @@ Supported `tool` values:
 
 The selected tool must already be installed and authenticated outside OSTT. OpenCode 1.4.3 or newer is required. AI tool invocations have a 300-second (5 minute) timeout.
 
-## Input Sources
+### Input Sources
 
 An AI action's `inputs` field is an array of inline tables. Each entry has a `role` (`"system"` or `"user"`) and exactly one content source.
 
@@ -184,65 +180,9 @@ inputs = [
 
 If multiple content sources are given in a single entry, precedence is: `source` > `file` > `content`.
 
-## Example: Translate to English
+### Custom Tool Binary and Arguments
 
-```toml
-[process.actions.translate_en]
-name = "Translate to English"
-type = "ai"
-inputs = [
-  { role = "system", content = "Translate the user's transcript to natural English. Keep names and technical terms intact. Output only the translation." },
-  { role = "user", source = "transcription" },
-]
-```
-
-Run it from a popup hotkey:
-
-```bash
-ostt launch -c -p translate_en
-```
-
-## Example: Meeting Summary
-
-```toml
-[process.actions.summary]
-name = "Meeting summary"
-type = "ai"
-inputs = [
-  { role = "system", content = "Summarize the transcript into decisions, action items, and open questions. Use concise bullets." },
-  { role = "user", source = "transcription" },
-]
-```
-
-Run it on an audio file:
-
-```bash
-ostt transcribe meeting.mp3 -p summary -o meeting-summary.md
-```
-
-## Example: Generate a CLI Command
-
-```toml
-[process.actions.cmd]
-name = "Generate CLI command"
-type = "ai"
-inputs = [
-  { role = "system", content = "The user described a task via voice. Generate the exact CLI command to accomplish it. Output only the command, no markdown and no explanation." },
-  { role = "user", source = "transcription" },
-]
-```
-
-Run it:
-
-```bash
-ostt -p cmd
-```
-
-Review generated commands before executing them. OSTT returns text; it does not run generated commands unless your configured action explicitly does so.
-
-## Custom Tool Binary and Arguments
-
-For AI actions, you can override the binary or append extra CLI arguments.
+For AI actions, you can override the binary or append extra CLI arguments:
 
 ```toml
 [process.actions.clean_local]
@@ -258,9 +198,69 @@ inputs = [
 
 Extra arguments are appended after OSTT's required arguments for the selected tool.
 
-If you need this action to use a different model or tool than the `[process]` defaults, add `tool = "..."` and/or `model = "..."` to the action.
+## Example: Clean Up Text
 
-## Troubleshooting Processing
+Removes filler words, fixes grammar, and improves phrasing while preserving meaning and tone.
+
+```toml
+[process.actions.clean]
+name = "Clean up text"
+type = "ai"
+inputs = [
+  { role = "system", content = "Clean up the following transcribed text. Remove filler words (uh, um, like), fix grammar, improve phrasing, and remove false starts or repetitions. Keep the original meaning and tone. Output only the cleaned text, nothing else." },
+  { role = "user", source = "transcription" },
+]
+```
+
+Run it from a popup hotkey:
+
+```bash
+ostt launch -c -p clean
+```
+
+## Example: Translate to Japanese
+
+Translates transcription to natural Japanese, preserving technical terms and formatting.
+
+```toml
+[process.actions.japanese]
+name = "Translate to Japanese"
+type = "ai"
+inputs = [
+  { role = "system", content = "Translate the user's text into natural Japanese. Preserve meaning, tone, names, technical terms, URLs, code, numbers, and formatting. If the input is already Japanese, lightly clean it without changing meaning. Output only the Japanese text, nothing else." },
+  { role = "user", source = "transcription" },
+]
+```
+
+Run it on a transcription from history:
+
+```bash
+ostt process japanese
+```
+
+## Example: Generate a CLI Command
+
+Converts a spoken description into executable shell command(s).
+
+```toml
+[process.actions.cmd]
+name = "Generate CLI command"
+type = "ai"
+inputs = [
+  { role = "system", content = "You are an Arch Linux zsh command generator, not an autonomous coding agent. Convert the user's spoken request into shell command(s) only. Do not inspect the repository. Do not claim you are locating, reading, patching, or changing files. Do not explain. Do not write prose. Do not output a plan. Do not invent filenames or paths unless the user explicitly named them. Use GNU coreutils conventions. If a requested tool is not installed by default, output a pacman install command followed by the command. Output only executable command text, one command per line. If the request is not a CLI command request, output: NO_COMMAND" },
+  { role = "user", source = "transcription" },
+]
+```
+
+Run it:
+
+```bash
+ostt -p cmd
+```
+
+Review generated commands before executing them. OSTT returns text; it does not run generated commands unless your configured action explicitly does so.
+
+## Troubleshooting
 
 If no actions appear, check the config:
 

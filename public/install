@@ -9,6 +9,7 @@ INSTALL_DIR="${OSTT_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 VERSION="latest"
 ASSUME_YES=0
 INSTALL_DEPS=1
+GPU_MODE="auto"
 
 usage() {
   cat <<'EOF'
@@ -21,6 +22,7 @@ Usage:
 Options:
   -y, --yes             Skip confirmation prompts
       --no-deps         Do not install system dependencies
+      --no-gpu          Install the CPU build even if GPU support is detected
       --version VERSION Install a specific version, for example v0.0.8
       --install-dir DIR Install ostt to DIR (default: ~/.local/bin)
   -h, --help            Show this help
@@ -35,6 +37,10 @@ while [ "$#" -gt 0 ]; do
       ;;
     --no-deps)
       INSTALL_DEPS=0
+      shift
+      ;;
+    --no-gpu)
+      GPU_MODE="cpu"
       shift
       ;;
     --version)
@@ -176,6 +182,61 @@ target_triple() {
   esac
 }
 
+has_ld_library() {
+  local lib="$1"
+
+  if has ldconfig && ldconfig -p 2>/dev/null | grep -q "$lib"; then
+    return 0
+  fi
+
+  for dir in /usr/lib /usr/lib64 /usr/local/lib /usr/local/cuda/lib64; do
+    if compgen -G "${dir}/${lib}*" >/dev/null; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+detect_gpu_variant() {
+  local os="$1"
+  local arch="$2"
+  local pci=""
+
+  if [ "$GPU_MODE" = "cpu" ]; then
+    echo "cpu"
+    return
+  fi
+
+  case "$os:$arch" in
+    macos:*) echo "metal"; return ;;
+    linux:x86_64) ;;
+    *) echo "cpu"; return ;;
+  esac
+
+  if has lspci; then
+    pci="$(lspci 2>/dev/null || true)"
+  fi
+
+  if has nvidia-smi || { printf '%s\n' "$pci" | grep -Eiq 'VGA|3D|Display' && printf '%s\n' "$pci" | grep -iq 'NVIDIA'; }; then
+    if has_ld_library 'libcuda.so.1' && has_ld_library 'libcublas.so'; then
+      echo "cuda"
+      return
+    fi
+    warn "NVIDIA GPU detected, but CUDA runtime libraries were not found; installing CPU build"
+  fi
+
+  if printf '%s\n' "$pci" | grep -Eiq 'VGA|3D|Display' && printf '%s\n' "$pci" | grep -Eiq 'AMD|Advanced Micro Devices|Intel'; then
+    if has_ld_library 'libvulkan.so.1'; then
+      echo "vulkan"
+      return
+    fi
+    warn "AMD/Intel GPU detected, but Vulkan runtime library was not found; installing CPU build"
+  fi
+
+  echo "cpu"
+}
+
 missing_deps() {
   local os="$1"
   local session="$2"
@@ -262,13 +323,18 @@ download_and_install_native_package() {
   local kind="$1"
   local pm="$2"
   local arch="$3"
+  local gpu_variant="$4"
   local base_url pkg checksum tmpdir url checksum_url
 
-  case "$kind:$arch" in
-    deb:x86_64) pkg="ostt_latest_amd64.deb" ;;
-    deb:aarch64) pkg="ostt_latest_arm64.deb" ;;
-    rpm:x86_64) pkg="ostt-latest.x86_64.rpm" ;;
-    rpm:aarch64) pkg="ostt-latest.aarch64.rpm" ;;
+  case "$kind:$arch:$gpu_variant" in
+    deb:x86_64:cuda) pkg="ostt-cuda_latest_amd64.deb" ;;
+    deb:x86_64:vulkan) pkg="ostt-vulkan_latest_amd64.deb" ;;
+    deb:x86_64:*) pkg="ostt_latest_amd64.deb" ;;
+    deb:aarch64:*) pkg="ostt_latest_arm64.deb" ;;
+    rpm:x86_64:cuda) pkg="ostt-cuda-latest.x86_64.rpm" ;;
+    rpm:x86_64:vulkan) pkg="ostt-vulkan-latest.x86_64.rpm" ;;
+    rpm:x86_64:*) pkg="ostt-latest.x86_64.rpm" ;;
+    rpm:aarch64:*) pkg="ostt-latest.aarch64.rpm" ;;
     *) return 1 ;;
   esac
 
@@ -359,6 +425,7 @@ EOF
 
 download_and_install() {
   local triple="$1"
+  local gpu_variant="$2"
   local archive="ostt-${triple}.tar.gz"
   local checksum="${archive}.sha256"
   local base_url
@@ -366,6 +433,10 @@ download_and_install() {
   local checksum_url
   local tmpdir
   local extracted_bin
+
+  case "$gpu_variant" in
+    cuda|vulkan) archive="ostt-${triple}-${gpu_variant}.tar.gz" ;;
+  esac
 
   base_url="$(release_base_url)"
   url="${base_url}/${archive}"
@@ -393,7 +464,7 @@ download_and_install() {
 }
 
 main() {
-  local os arch distro pm session triple package_kind install_mode installed_bin
+  local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant
   local deps=()
 
   os="$(detect_os)"
@@ -406,6 +477,7 @@ main() {
   fi
   pm="$(detect_package_manager "$os")"
   triple="$(target_triple "$os" "$arch")"
+  gpu_variant="$(detect_gpu_variant "$os" "$arch")"
   package_kind="$(native_package_kind "$os" "$arch" "$pm")"
   install_mode="archive"
   if [ -n "$package_kind" ] && [ "$INSTALL_DIR" = "$DEFAULT_INSTALL_DIR" ] && [ "$INSTALL_DEPS" -eq 1 ]; then
@@ -433,6 +505,7 @@ Detected:
   Distro: ${distro}
   Session: ${session}
   Package manager: ${pm}
+  GPU build: ${gpu_variant}
 
 Will install:
 EOF
@@ -461,9 +534,9 @@ EOF
   fi
 
   if [ "$install_mode" = "native-package" ]; then
-    if ! download_and_install_native_package "$package_kind" "$pm" "$arch"; then
+    if ! download_and_install_native_package "$package_kind" "$pm" "$arch" "$gpu_variant"; then
       warn "native package artifact was unavailable; falling back to release archive"
-      download_and_install "$triple"
+      download_and_install "$triple" "$gpu_variant"
       installed_bin="${INSTALL_DIR}/${BIN_NAME}"
       install_mode="archive"
     else
@@ -474,7 +547,7 @@ EOF
       fi
     fi
   else
-    download_and_install "$triple"
+    download_and_install "$triple" "$gpu_variant"
     installed_bin="${INSTALL_DIR}/${BIN_NAME}"
   fi
 
