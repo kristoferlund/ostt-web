@@ -437,6 +437,7 @@ download_and_install() {
   case "$gpu_variant" in
     cuda|vulkan) archive="ostt-${triple}-${gpu_variant}.tar.gz" ;;
   esac
+  checksum="${archive}.sha256"
 
   base_url="$(release_base_url)"
   url="${base_url}/${archive}"
