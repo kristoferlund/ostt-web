@@ -560,11 +560,18 @@ main() {
   shell_name="$(basename "${SHELL:-/bin/bash}")"
 
   case "$shell_name" in
-    bash|zsh|fish)
-      if "$installed_bin" completions "$shell_name" --install >/dev/null 2>&1; then
+    bash|zsh)
+      if sudo_cmd "$installed_bin" completions "$shell_name" --install >/dev/null 2>&1; then
         log "Shell completions installed for ${shell_name}."
       else
-        warn "could not install shell completions for ${shell_name}; run '${BIN_NAME} completions ${shell_name} --install' manually"
+        warn "could not install shell completions for ${shell_name}; run 'sudo ${BIN_NAME} completions ${shell_name} --install' manually"
+      fi
+      ;;
+    fish)
+      if "$installed_bin" completions fish --install >/dev/null 2>&1; then
+        log "Shell completions installed for fish."
+      else
+        warn "could not install shell completions for fish; run '${BIN_NAME} completions fish --install' manually"
       fi
       ;;
   esac
