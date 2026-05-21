@@ -556,6 +556,19 @@ main() {
     die "installed binary did not respond to '${BIN_NAME} --version'"
   fi
 
+  local shell_name
+  shell_name="$(basename "${SHELL:-/bin/bash}")"
+
+  case "$shell_name" in
+    bash|zsh|fish)
+      if "$installed_bin" completions "$shell_name" --install >/dev/null 2>&1; then
+        log "Shell completions installed for ${shell_name}."
+      else
+        warn "could not install shell completions for ${shell_name}; run '${BIN_NAME} completions ${shell_name} --install' manually"
+      fi
+      ;;
+  esac
+
   cat <<EOF
 
 ${APP_NAME} installed successfully.
