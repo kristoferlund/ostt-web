@@ -197,7 +197,6 @@ Install directly to the standard location for your shell:
 ostt completions bash --install          # requires sudo
 ostt completions zsh --install           # requires sudo
 ostt completions fish --install          # no sudo needed, uses ~/.config/fish
-ostt completions powershell --install    # current directory fallback
 ```
 
 Or generate and place the file manually:
@@ -206,7 +205,6 @@ Or generate and place the file manually:
 ostt completions bash > ostt.bash
 ostt completions zsh > _ostt
 ostt completions fish > ostt.fish
-ostt completions powershell > ostt.ps1
 ```
 
 ### Bash
@@ -226,12 +224,6 @@ sudo cp _ostt /usr/local/share/zsh/site-functions/
 
 ```bash
 cp ostt.fish ~/.config/fish/completions/
-```
-
-### PowerShell
-
-```powershell
-# Add to your PowerShell profile
 ```
 
 After installation, restart your shell or source the completion file to enable completions.
