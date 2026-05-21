@@ -495,21 +495,17 @@ main() {
     done < <(missing_deps "$os" "$session")
   fi
 
-  cat <<EOF
-
-Installing ${APP_NAME}
-
-Detected:
-  OS: ${os}
-  Architecture: ${arch}
-  Target: ${triple}
-  Distro: ${distro}
-  Session: ${session}
-  Package manager: ${pm}
-  GPU build: ${gpu_variant}
-
-Will install:
-EOF
+  printf '\nInstalling %s\n\nDetected:\n' "$APP_NAME"
+  printf '  OS: %s\n' "$os"
+  printf '  Architecture: %s\n' "$arch"
+  printf '  Target: %s\n' "$triple"
+  if [ "$os" = "linux" ]; then
+    printf '  Distro: %s\n' "$distro"
+    printf '  Session: %s\n' "$session"
+  fi
+  printf '  Package manager: %s\n' "$pm"
+  printf '  GPU build: %s\n' "$gpu_variant"
+  printf '\nWill install:\n'
 
   if [ "$install_mode" = "native-package" ]; then
     printf '  method: native %s package via %s\n' "$package_kind" "$pm"
