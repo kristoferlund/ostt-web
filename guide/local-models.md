@@ -4,7 +4,7 @@ OSTT can transcribe with local Whisper-compatible models. Local models run on yo
 
 Use local models when you want privacy, predictable cost, or offline transcription. Use cloud providers when you prefer hosted accuracy, lower local CPU load, or no large model downloads.
 
-Current local transcription is CPU-only. GPU acceleration through Vulkan, Metal, CUDA, or similar backends is not supported yet, but is planned for a future version. Local models are also loaded for each transcription today; a background daemon that keeps the model warm for faster startup is planned but not available yet.
+Local transcription supports GPU acceleration on all major platforms. See [GPU Acceleration](./gpu-acceleration) for setup details. To avoid model load time on repeated use, see [Daemon Mode](./daemon).
 
 ## Choose Local
 
@@ -22,7 +22,7 @@ Choose **Local provider**. The local model screen can:
 - inspect model metadata
 - add a custom Hugging Face or direct model URL
 
-The curated model list comes from the [OSTT models repository](https://github.com/ostt-ai/models). If you want a model to appear by default for all OSTT users, open a pull request there with the model metadata.
+The curated model list comes from the [OSTT models repository](https://github.com/kristoferlund/ostt-models). If you want a model to appear by default for all OSTT users, open a pull request there with the model metadata.
 
 The active model is saved in OSTT's selected-model state. After activation, normal commands use the local model:
 
@@ -32,28 +32,6 @@ ostt -c
 ostt transcribe recording.wav
 ostt retry 2
 ```
-
-## Local Model Screen
-
-Controls:
-
-| Key | Action |
-| --- | --- |
-| `↑`, `↓` | Move through models |
-| `Enter` | Activate a downloaded model, or start download for a missing model |
-| `d` | Delete a downloaded model |
-| `i` | Show model info |
-| `c` | Add a custom model URL |
-| `Esc`, `q` | Go back |
-
-Models show two markers:
-
-| Marker | Meaning |
-| --- | --- |
-| `◉` | Active model |
-| `✓` | Downloaded locally |
-
-Downloads show progress, speed, and ETA inside the TUI. Cancelling a download returns to the model list.
 
 ## Audio Format
 
@@ -92,14 +70,10 @@ Model downloads can be hundreds of megabytes or several gigabytes. Delete unused
 
 ## Curated Model List
 
-OSTT's built-in local model list is maintained outside the CLI in the [ostt-ai/models](https://github.com/ostt-ai/models) repository. This keeps the curated list updateable without changing the application code.
+OSTT's built-in local model list is maintained outside the CLI in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. This keeps the curated list updateable without changing the application code.
 
 To suggest a model for everyone, open a pull request in that repository. Include the model URL, display name, size, language coverage, and any useful hardware or accuracy notes.
 
 ## Current Limitations
 
 Local transcription currently expects already-compatible WAV/PCM input. For `ostt transcribe <FILE>`, use a compatible `.wav` file when the active model is local.
-
-GPU acceleration is not enabled yet. OSTT does not currently use Vulkan, Metal, CUDA, or other GPU backends for local transcription.
-
-Daemonized local models are not enabled yet. Each transcription loads the model before running inference, so larger models can have noticeable startup time. A daemon mode that keeps models warm between transcriptions is planned.

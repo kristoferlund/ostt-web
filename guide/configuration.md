@@ -163,9 +163,22 @@ fallback_language = "auto"
 | --- | --- | --- |
 | `language_code` | unset | Optional ISO-639-1 or ISO-639-3 language code (e.g. `"en"` or `"eng"`, `"swe"`). When set, can improve accuracy for known languages. Leave unset to auto-detect. |
 
+## Mistral
+
+Mistral works without provider-specific configuration. Add this section only when you want to pin transcription to a known language:
+
+```toml
+[providers.mistral]
+language = "en"
+```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `language` | unset | Optional two-letter language code (e.g. `"en"`, `"sv"`, `"fr"`). When set, can improve accuracy for known languages. Leave unset to auto-detect. |
+
 ## Local Transcription
 
-Local models are selected and managed with `ostt model`. The `[providers.local]` section controls local Whisper inference defaults and optional per-model overrides.
+Local models are selected and managed with `ostt model`. The `[providers.local]` section controls local Whisper inference defaults.
 
 ```toml
 [providers.local]
@@ -175,12 +188,6 @@ no_context = true
 temperature = 0.0
 entropy_thold = 2.4
 no_speech_thold = 0.6
-daemon = true
-daemon_idle_timeout_secs = 300
-# models_path = "/path/to/models"
-
-[providers.local.models.turbo]
-language = "en"
 ```
 
 | Option | Default | Description |
@@ -191,11 +198,6 @@ language = "en"
 | `temperature` | `0.0` | Sampling temperature. `0.0` uses greedy deterministic decoding. |
 | `entropy_thold` | `2.4` | Entropy threshold for fallback behavior. |
 | `no_speech_thold` | `0.6` | No-speech probability threshold. |
-| `models_path` | unset | Optional override for the local model storage directory. |
-| `daemon` | `true` | Reserved for planned local model daemon support. Daemonized local models are not enabled yet. |
-| `daemon_idle_timeout_secs` | `300` | Reserved idle timeout for planned daemon support. |
-
-Per-model overrides live under `[providers.local.models.<model-id>]` and can set `language`, `no_timestamps`, `no_context`, `temperature`, `entropy_thold`, `no_speech_thold`, `daemon`, or `daemon_idle_timeout_secs` for that model only.
 
 See [Local Models](./local-models.md) for setup, storage, and audio-format requirements.
 

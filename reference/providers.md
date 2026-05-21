@@ -12,9 +12,9 @@ ostt model
 
 Choose **Local provider** to download curated models, activate downloaded models, delete model files, inspect metadata, or add a custom Hugging Face/direct model URL.
 
-The curated model list is maintained in the [ostt-ai/models](https://github.com/ostt-ai/models) repository. Open a pull request there to suggest a model for inclusion in the default list shown to all users.
+The curated model list is maintained in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. Open a pull request there to suggest a model for inclusion in the default list shown to all users.
 
-Local transcription is CPU-only for now. GPU backends such as Vulkan, Metal, and CUDA, plus daemonized model loading for faster startup, are planned but not currently supported.
+Local transcription is CPU-only for now. GPU backends such as Vulkan, Metal, and CUDA are planned but not currently supported.
 
 Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
 
@@ -120,3 +120,18 @@ Optional configuration under `[providers.elevenlabs]`:
 | Option | Description |
 | --- | --- |
 | `language_code` | ISO-639-1 or ISO-639-3 code (e.g. `"eng"`, `"swe"`). Leave unset to auto-detect. |
+
+## Mistral
+
+| Model ID | Notes |
+| --- | --- |
+| `mistral-voxtral-mini` | Voxtral Mini Transcribe, fast and efficient with support for 13 languages |
+| `mistral-voxtral-mini-v2` | Voxtral Mini Transcribe 2, newer version with improved accuracy |
+
+Keywords are sent as Mistral `context_bias` terms to improve recognition of names, technical terms, and domain-specific vocabulary.
+
+Optional configuration under `[providers.mistral]`:
+
+| Option | Description |
+| --- | --- |
+| `language` | Optional two-letter language code (e.g. `"en"`, `"sv"`, `"fr"`). Leave unset to auto-detect. |

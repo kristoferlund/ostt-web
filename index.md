@@ -43,7 +43,15 @@ layout: false
     </article>
     <article>
       <h3>Cloud or local models</h3>
-      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, or local Whisper-compatible models. Switch when quality, latency, price, privacy, or offline access matters.</p>
+      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or local Whisper-compatible models. Switch when quality, latency, price, privacy, or offline access matters.</p>
+    </article>
+    <article>
+      <h3>GPU acceleration</h3>
+      <p>Local models run on your GPU. Metal on macOS, CUDA on NVIDIA, Vulkan on AMD and Intel. The install script detects your hardware and picks the right build automatically.</p>
+    </article>
+    <article>
+      <h3>Daemon mode</h3>
+      <p>Keep a local model loaded in the background between calls. After the first load, transcription starts instantly with no model loading overhead. Install as a login service and the model is always ready.</p>
     </article>
     <article>
       <h3>Process with AI or bash</h3>
