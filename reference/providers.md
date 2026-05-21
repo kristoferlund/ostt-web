@@ -126,7 +126,7 @@ Optional configuration under `[providers.elevenlabs]`:
 | Model ID | Notes |
 | --- | --- |
 | `mistral-voxtral-mini` | Voxtral Mini Transcribe, fast and efficient with support for 13 languages |
-| `mistral-voxtral-mini-v2` | Voxtral Mini Transcribe 2, newer version with improved accuracy |
+| `mistral-voxtral-mini-v2` | Voxtral Mini 2602, pinned version |
 
 Keywords are sent as Mistral `context_bias` terms to improve recognition of names, technical terms, and domain-specific vocabulary.
 
