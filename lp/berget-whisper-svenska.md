@@ -20,7 +20,8 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
 
   <section class="landing-hero">
     <h1>KB Whisper på kommandoraden.</h1>
-    <p class="lede">KB Whisper är Kungliga bibliotekets taligenkänningsmodell för svenska — tränad på över 50 000 timmars svenskt tal och optimerad specifikt för svenska dialekter, rikssvenska och parlamentsspråk. Den ger 47% lägre ordfelsnivå (WER) jämfört med OpenAIs whisper-large-v3 på svenska. OSTT kopplar modellen till ditt kortkommando och ditt skal på Linux och macOS, via Bergets svenska molninfrastruktur.</p>
+    <p class="lede">KB Whisper är Kungliga bibliotekets taligenkänningsmodell för svenska, tränad på över 50 000 timmars svenskt tal och optimerad för svenska dialekter, rikssvenska och parlamentsspråk. Den ger 47% lägre ordfelsnivå (WER) jämfört med OpenAIs whisper-large-v3 på svenska.</p>
+    <p class="lede">OSTT hjälper dig transkribera i alla appar, kopplat till en snabbtangent, eller direkt via terminalen. Linux och macOS, via <a href="https://berget.ai" target="_blank" rel="noopener">Berget AI</a> svenska molninfrastruktur eller 100% lokalt på din dator.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -56,7 +57,7 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
     </article>
     <article>
       <h3>Data stannar i Sverige</h3>
-      <p>Berget är en svensk molnleverantör. Alla transkriptioner behandlas på servrar i Sverige, vilket ger EU-lagstiftningsenlig datahantering utan att du behöver konfigurera något extra. Välj Berget när dataskydd och GDPR är krav.</p>
+      <p><a href="https://berget.ai" target="_blank" rel="noopener">Berget</a> är en svensk molnleverantör. Alla transkriptioner behandlas på servrar i Sverige, vilket ger EU-lagstiftningsenlig datahantering utan att du behöver konfigurera något extra. Välj Berget när dataskydd och GDPR är krav.</p>
     </article>
     <article>
       <h3>Globalt kortkommando</h3>
