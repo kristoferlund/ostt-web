@@ -15,6 +15,33 @@ function pageUrl(relativePath: string): string {
   return clean ? `${siteUrl}/${clean}` : siteUrl
 }
 
+function softwareApplicationSchema(): string {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'OSTT',
+    description: siteDescription,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Linux, macOS',
+    url: siteUrl,
+    downloadUrl: `${siteUrl}/install`,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    codeRepository: 'https://github.com/kristoferlund/ostt',
+    license: 'https://github.com/kristoferlund/ostt/blob/main/LICENSE'
+  })
+}
+
+function breadcrumbSchema(title: string, url: string): string {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'OSTT', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: title, item: url }
+    ]
+  })
+}
+
 export default defineConfig({
   title: 'OSTT',
   description: siteDescription,
@@ -40,8 +67,25 @@ export default defineConfig({
   transformHead({ pageData }) {
     const head: HeadConfig[] = []
     const url = pageUrl(pageData.relativePath)
+    const isHome = pageData.relativePath === 'index.md'
+
+    const ogTitle = isHome ? siteTitle : `${pageData.title} — OSTT`
+    const description =
+      (pageData.frontmatter?.description as string | undefined) || siteDescription
+
     head.push(['link', { rel: 'canonical', href: url }])
     head.push(['meta', { property: 'og:url', content: url }])
+    head.push(['meta', { property: 'og:title', content: ogTitle }])
+    head.push(['meta', { property: 'og:description', content: description }])
+    head.push(['meta', { name: 'twitter:title', content: ogTitle }])
+    head.push(['meta', { name: 'twitter:description', content: description }])
+
+    if (isHome) {
+      head.push(['script', { type: 'application/ld+json' }, softwareApplicationSchema()])
+    } else {
+      head.push(['script', { type: 'application/ld+json' }, breadcrumbSchema(pageData.title, url)])
+    }
+
     return head
   },
   async buildEnd(siteConfig) {
@@ -62,40 +106,15 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#0a0a0a' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'OSTT' }],
-    ['meta', { property: 'og:title', content: siteTitle }],
-    ['meta', { property: 'og:description', content: siteDescription }],
-    // og:url is intentionally omitted here — injected per-page via transformHead
+    // og:title, og:description, og:url injected per-page via transformHead
     ['meta', { property: 'og:image', content: shareImage }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:image:alt', content: siteTitle }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: siteTitle }],
-    ['meta', { name: 'twitter:description', content: siteDescription }],
+    // twitter:title, twitter:description injected per-page via transformHead
     ['meta', { name: 'twitter:image', content: shareImage }],
     ['meta', { name: 'twitter:image:alt', content: siteTitle }],
-    [
-      'link',
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.googleapis.com'
-      }
-    ],
-    [
-      'link',
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossorigin: ''
-      }
-    ],
-    [
-      'link',
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap'
-      }
-    ],
     [
       'script',
       {

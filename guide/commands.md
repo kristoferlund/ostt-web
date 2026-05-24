@@ -1,3 +1,7 @@
+---
+description: "Complete reference for all OSTT CLI commands: record, transcribe, retry, replay, process, auth, model, history, keywords, and shell completions."
+---
+
 # Commands
 
 If no command is specified, `record` is used by default. Global flags (`-c`, `-o`, `-p`) can be used without explicitly typing `record`.

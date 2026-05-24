@@ -1,3 +1,7 @@
+---
+description: Set up OSTT as a floating popup on Omarchy or Hyprland. Add a keybinding and window rules to launch voice-to-text from any Hyprland workspace.
+---
+
 # Omarchy / Hyprland Setup
 
 Omarchy is an Arch-based desktop built on Hyprland. OSTT works well as a floating voice-to-text popup triggered by a Hyprland keybinding.

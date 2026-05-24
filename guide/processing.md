@@ -1,3 +1,7 @@
+---
+description: Configure AI and bash processing actions to transform transcriptions. Run shell pipelines, invoke AI CLI tools, clean text, translate, or generate commands.
+---
+
 # Processing Actions
 
 Processing actions transform transcription text after it has been created. They can run shell commands or call an AI CLI tool such as OpenCode, Claude Code, Gemini CLI, or Codex CLI.

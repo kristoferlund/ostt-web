@@ -1,3 +1,7 @@
+---
+description: Install OSTT via the one-line shell script, Homebrew, AUR, .deb, .rpm, or from source. Covers runtime dependencies for macOS, Debian, Arch, and Fedora.
+---
+
 # Installation
 
 ## Recommended Installer

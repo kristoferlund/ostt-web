@@ -1,3 +1,7 @@
+---
+description: Enable GPU-accelerated local transcription with Metal on macOS, CUDA on NVIDIA Linux, and Vulkan on AMD and Intel Linux hardware.
+---
+
 # GPU Acceleration
 
 Local transcription with Whisper models can use your GPU to significantly reduce transcription time. OSTT supports Metal on macOS, CUDA on NVIDIA Linux hardware, and Vulkan on AMD and Intel Linux hardware.

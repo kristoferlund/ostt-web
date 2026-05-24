@@ -1,3 +1,7 @@
+---
+description: All supported transcription providers and models — OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, and local Whisper models.
+---
+
 # Providers and Models
 
 OSTT can use cloud providers or local Whisper-compatible models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.

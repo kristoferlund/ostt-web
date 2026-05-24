@@ -1,3 +1,7 @@
+---
+description: Bind OSTT to a global hotkey on macOS, Hyprland, GNOME, and KDE Plasma. Overview with quick setup snippets and links to per-platform guides.
+---
+
 # Platform Setup
 
 The recommended popup command requires the full path to the OSTT binary. Find yours with:
