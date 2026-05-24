@@ -46,7 +46,7 @@ export default defineConfig({
   title: 'OSTT',
   description: siteDescription,
   appearance: 'dark',
-  srcExclude: ['DESIGN.md', 'README.md', 'SEO_AUDIT.md'],
+  srcExclude: ['DESIGN.md', 'README.md', 'SEO_AUDIT.md', 'LANDING_PAGES.md'],
   cleanUrls: true,
   vite: {
     build: {
