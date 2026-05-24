@@ -47,6 +47,7 @@ export default defineConfig({
   description: siteDescription,
   appearance: 'dark',
   srcExclude: ['DESIGN.md', 'README.md', 'SEO_AUDIT.md'],
+  cleanUrls: true,
   vite: {
     build: {
       rollupOptions: {
@@ -88,6 +89,9 @@ export default defineConfig({
 
     return head
   },
+  transformHtml(code) {
+    return code.replace(/<meta name="generator"[^>]*>\s*/g, '')
+  },
   async buildEnd(siteConfig) {
     const urls = siteConfig.pages
       .map((p: string) => pageUrl(p))
@@ -112,6 +116,7 @@ export default defineConfig({
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:image:alt', content: siteTitle }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:site', content: '@kristoferlund' }],
     // twitter:title, twitter:description injected per-page via transformHead
     ['meta', { name: 'twitter:image', content: shareImage }],
     ['meta', { name: 'twitter:image:alt', content: siteTitle }],
@@ -125,7 +130,7 @@ export default defineConfig({
     ]
   ],
   themeConfig: {
-    logo: '/logo.svg',
+    logo: { src: '/logo.svg', alt: 'OSTT' },
     nav: [
       { text: 'Start', link: '/guide/getting-started' },
       { text: 'Why OSTT?', link: '/guide/why-ostt' },

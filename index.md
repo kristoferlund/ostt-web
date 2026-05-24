@@ -31,7 +31,7 @@ layout: false
   </section>
 
   <section class="landing-video">
-    <video src="/ostt-demo.mp4" controls playsinline poster="/ostt-demo-poster.png">
+    <video src="/ostt-demo.mp4" controls playsinline preload="none" poster="/ostt-demo-poster.png">
       Your browser does not support the video tag.
     </video>
   </section>
