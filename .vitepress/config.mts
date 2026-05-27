@@ -131,6 +131,9 @@ export default defineConfig({
   ],
   themeConfig: {
     logo: { src: '/logo.svg', alt: 'OSTT' },
+    search: {
+      provider: 'local'
+    },
     nav: [
       { text: 'Start', link: '/guide/getting-started' },
       { text: 'Why OSTT?', link: '/guide/why-ostt' },
