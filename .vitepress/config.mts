@@ -1,14 +1,42 @@
 import { defineConfig } from 'vitepress'
+import type { HeadConfig } from 'vitepress'
 
 const siteUrl = 'https://ostt.ai'
 const siteTitle = 'OSTT - Open source voice-to-text for Linux and macOS'
 const siteDescription = 'Terminal-native speech-to-text. Record from a hotkey, choose your provider, and route transcripts to your clipboard, files, AI prompts, or shell commands.'
 const shareImage = `${siteUrl}/og-image.png`
 
+function pageUrl(relativePath: string) {
+  const path = relativePath
+    .replace(/(^|\/)index\.md$/, '$1')
+    .replace(/\.md$/, '')
+
+  return path ? `${siteUrl}/${path}` : siteUrl
+}
+
+function pageTitle(title?: string) {
+  return title && title !== 'OSTT' ? `${title} - OSTT` : siteTitle
+}
+
 export default defineConfig({
   title: 'OSTT',
   description: siteDescription,
   appearance: 'dark',
+  cleanUrls: true,
+  transformHead({ pageData }) {
+    const url = pageUrl(pageData.relativePath)
+    const title = pageTitle(pageData.title)
+    const description = pageData.description || siteDescription
+
+    return [
+      ['link', { rel: 'canonical', href: url }],
+      ['meta', { property: 'og:url', content: url }],
+      ['meta', { property: 'og:title', content: title }],
+      ['meta', { property: 'og:description', content: description }],
+      ['meta', { name: 'twitter:title', content: title }],
+      ['meta', { name: 'twitter:description', content: description }]
+    ] satisfies HeadConfig[]
+  },
   vite: {
     build: {
       rollupOptions: {
@@ -32,16 +60,11 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#0a0a0a' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: 'OSTT' }],
-    ['meta', { property: 'og:title', content: siteTitle }],
-    ['meta', { property: 'og:description', content: siteDescription }],
-    ['meta', { property: 'og:url', content: siteUrl }],
     ['meta', { property: 'og:image', content: shareImage }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:image:alt', content: siteTitle }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: siteTitle }],
-    ['meta', { name: 'twitter:description', content: siteDescription }],
     ['meta', { name: 'twitter:image', content: shareImage }],
     ['meta', { name: 'twitter:image:alt', content: siteTitle }],
     [

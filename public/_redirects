@@ -1,0 +1,3 @@
+# Canonicalize VitePress clean URLs on Cloudflare Pages.
+/index.html / 301
+/*.html /:splat 301
