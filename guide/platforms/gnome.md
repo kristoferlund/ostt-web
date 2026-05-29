@@ -1,3 +1,7 @@
+---
+description: Set up OSTT as a global hotkey popup on GNOME using Settings > Keyboard > Custom Shortcuts. No third-party hotkey tools required.
+---
+
 # GNOME Setup
 
 GNOME can launch OSTT from a built-in custom keyboard shortcut. No third-party hotkey tool is required.

@@ -495,21 +495,17 @@ main() {
     done < <(missing_deps "$os" "$session")
   fi
 
-  cat <<EOF
-
-Installing ${APP_NAME}
-
-Detected:
-  OS: ${os}
-  Architecture: ${arch}
-  Target: ${triple}
-  Distro: ${distro}
-  Session: ${session}
-  Package manager: ${pm}
-  GPU build: ${gpu_variant}
-
-Will install:
-EOF
+  printf '\nInstalling %s\n\nDetected:\n' "$APP_NAME"
+  printf '  OS: %s\n' "$os"
+  printf '  Architecture: %s\n' "$arch"
+  printf '  Target: %s\n' "$triple"
+  if [ "$os" = "linux" ]; then
+    printf '  Distro: %s\n' "$distro"
+    printf '  Session: %s\n' "$session"
+  fi
+  printf '  Package manager: %s\n' "$pm"
+  printf '  GPU build: %s\n' "$gpu_variant"
+  printf '\nWill install:\n'
 
   if [ "$install_mode" = "native-package" ]; then
     printf '  method: native %s package via %s\n' "$package_kind" "$pm"
@@ -558,6 +554,61 @@ EOF
 
   if ! "$installed_bin" --version >/dev/null 2>&1; then
     die "installed binary did not respond to '${BIN_NAME} --version'"
+  fi
+
+  if [ "$install_mode" != "native-package" ]; then
+    local shell_name
+    shell_name="$(basename "${SHELL:-/bin/bash}")"
+
+    case "$shell_name" in
+      bash)
+        if "$installed_bin" completions bash 2>/dev/null \
+            | sudo_cmd tee /usr/share/bash-completion/completions/"$BIN_NAME" >/dev/null; then
+          log "Shell completions installed for bash."
+        else
+          warn "could not install shell completions for bash; run manually:"
+          warn "  ${BIN_NAME} completions bash | sudo tee /usr/share/bash-completion/completions/${BIN_NAME}"
+        fi
+        ;;
+      zsh)
+        local zsh_completion_dir
+        if [ "$os" = "macos" ]; then
+          zsh_completion_dir="/usr/local/share/zsh/site-functions"
+        else
+          zsh_completion_dir="/usr/share/zsh/site-functions"
+        fi
+        log ""
+        log "Install shell completions for zsh? (requires sudo to write to ${zsh_completion_dir})"
+        printf 'Install completions? [Y/n] '
+        read -r answer </dev/tty 2>/dev/null || answer="n"
+        case "$answer" in
+          ''|Y|y|YES|Yes|yes)
+            if "$installed_bin" completions zsh 2>/dev/null \
+                | sudo_cmd tee "${zsh_completion_dir}/_${BIN_NAME}" >/dev/null; then
+              log "Shell completions installed to ${zsh_completion_dir}/_${BIN_NAME}."
+            else
+              warn "could not install shell completions; run manually:"
+              warn "  ${BIN_NAME} completions zsh | sudo tee ${zsh_completion_dir}/_${BIN_NAME}"
+            fi
+            ;;
+          *)
+            log "Skipping completions. Run later:"
+            log "  ${BIN_NAME} completions zsh | sudo tee ${zsh_completion_dir}/_${BIN_NAME}"
+            ;;
+        esac
+        ;;
+      fish)
+        local fish_completion_dir="$HOME/.config/fish/completions"
+        mkdir -p "$fish_completion_dir"
+        if "$installed_bin" completions fish 2>/dev/null \
+            > "${fish_completion_dir}/${BIN_NAME}.fish"; then
+          log "Shell completions installed for fish."
+        else
+          warn "could not install shell completions for fish; run manually:"
+          warn "  ${BIN_NAME} completions fish > ${fish_completion_dir}/${BIN_NAME}.fish"
+        fi
+        ;;
+    esac
   fi
 
   cat <<EOF

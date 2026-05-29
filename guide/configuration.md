@@ -1,3 +1,7 @@
+---
+description: Full reference for ostt.toml — audio device, visualization, provider settings, popup window, processing defaults, and all configuration options with examples.
+---
+
 # Configuration
 
 OSTT stores its main configuration at `~/.config/ostt/ostt.toml`. The default config is generated on first run with inline documentation for every option.

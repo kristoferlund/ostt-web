@@ -1,3 +1,7 @@
+---
+description: Set up OSTT as a global hotkey popup on KDE Plasma using System Settings > Custom Shortcuts. Includes optional window rules for a borderless popup.
+---
+
 # KDE Plasma Setup
 
 KDE Plasma can launch OSTT from built-in Custom Shortcuts. No third-party hotkey tool is required.

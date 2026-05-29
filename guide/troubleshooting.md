@@ -1,3 +1,7 @@
+---
+description: Fix common OSTT issues — no audio input, transcription failures, clipboard problems, popup not appearing, binary not found, and unsupported architecture.
+---
+
 # Troubleshooting
 
 ## View Logs

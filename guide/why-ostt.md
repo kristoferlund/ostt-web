@@ -1,3 +1,7 @@
+---
+description: Why OSTT — a terminal-native, open source, provider-agnostic voice-to-text tool for Linux and developer workflows, compared to GUI dictation apps.
+---
+
 # Why OSTT?
 
 OSTT exists for developers and power users who want speech-to-text to behave like the rest of their toolchain: transparent, scriptable, provider-agnostic, and comfortable on Linux.

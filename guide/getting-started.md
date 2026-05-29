@@ -1,3 +1,7 @@
+---
+description: Install OSTT, choose a transcription model, record from the terminal, and set up a global hotkey. The quickest path from zero to working voice input.
+---
+
 # Getting Started
 
 **Open source speech-to-text for the terminal: Linux-first, provider-agnostic, and scriptable.**

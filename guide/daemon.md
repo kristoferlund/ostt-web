@@ -1,3 +1,7 @@
+---
+description: Keep a local Whisper model loaded in a background process to eliminate per-transcription load time. Install as a systemd or launchd login service.
+---
+
 # Daemon Mode
 
 When OSTT transcribes with a local model, it loads the model from disk on every call and releases it when done. For small models this adds half a second or so. For large models it can add 5–15 seconds — a noticeable pause before every transcription.

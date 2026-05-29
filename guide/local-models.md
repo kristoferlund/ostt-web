@@ -1,3 +1,7 @@
+---
+description: Run offline transcription with local Whisper-compatible models. No API key required. Download curated models or add custom Hugging Face model files.
+---
+
 # Local Models
 
 OSTT can transcribe with local Whisper-compatible models. Local models run on your machine, do not require an API key, and can work offline after the model file has been downloaded.

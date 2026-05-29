@@ -1,3 +1,7 @@
+---
+description: Set up OSTT as a global hotkey popup on macOS using Shortcuts.app. Install via the script or Homebrew, locate the binary, and bind a keyboard shortcut.
+---
+
 # macOS Setup
 
 The recommended macOS setup uses Shortcuts.app. It is built into macOS and does not require a third-party automation tool.

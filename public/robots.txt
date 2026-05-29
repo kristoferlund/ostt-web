@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ostt.ai/sitemap.xml
