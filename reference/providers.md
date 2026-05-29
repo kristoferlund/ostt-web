@@ -139,3 +139,17 @@ Optional configuration under `[providers.mistral]`:
 | Option | Description |
 | --- | --- |
 | `language` | Optional two-letter language code (e.g. `"en"`, `"sv"`, `"fr"`). Leave unset to auto-detect. |
+
+## Provider Guides
+
+These focused setup guides cover common provider and model choices:
+
+- [OpenAI Whisper CLI](/lp/openai-whisper-cli)
+- [GPT-4o Transcribe on Linux](/lp/gpt-4o-transcribe-linux)
+- [Deepgram Nova 3 CLI](/lp/deepgram-nova-3-cli)
+- [Groq Whisper CLI](/lp/groq-whisper-cli)
+- [AssemblyAI CLI on Linux](/lp/assemblyai-cli-linux)
+- [ElevenLabs Transcription CLI](/lp/elevenlabs-transcription-cli)
+- [Mistral Voxtral CLI](/lp/mistral-voxtral-cli)
+- [Berget Whisper for Swedish](/lp/berget-whisper-svenska)
+- [Berget Whisper for Norwegian](/lp/berget-whisper-norsk)
