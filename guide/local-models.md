@@ -37,6 +37,17 @@ ostt transcribe recording.wav
 ostt retry 2
 ```
 
+You can also manage curated local models from scripts:
+
+```bash
+ostt model list --provider local
+ostt model local download turbo
+ostt model select local/turbo
+ostt model local remove turbo
+```
+
+`ostt model local download` shows download progress in the terminal.
+
 ## Audio Format
 
 Local transcription requires WAV audio in signed 16-bit PCM, 16 kHz, mono. OSTT records mono automatically, but the local provider needs this audio config:
@@ -70,7 +81,7 @@ Local model files and custom model metadata are stored under:
 ~/.local/share/ostt/models/
 ```
 
-Model downloads can be hundreds of megabytes or several gigabytes. Delete unused models from `ostt model` to reclaim space.
+Model downloads can be hundreds of megabytes or several gigabytes. Delete unused models from `ostt model` or `ostt model local remove <MODEL_ID>` to reclaim space.
 
 ## Curated Model List
 

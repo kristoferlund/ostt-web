@@ -50,7 +50,7 @@ ostt -p clean -o clean.txt # Write processed output to file
 List configured actions:
 
 ```bash
-ostt process --list
+ostt process list
 ```
 
 Each action has an `id` (used on the CLI) and a display `name` (shown in the picker).
@@ -269,7 +269,7 @@ Review generated commands before executing them. OSTT returns text; it does not 
 If no actions appear, check the config:
 
 ```bash
-ostt process --list
+ostt process list
 ostt config
 ```
 

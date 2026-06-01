@@ -28,10 +28,10 @@ visualization = "spectrum"
 
 ### device
 
-Audio input device. Run `ostt list-devices` to see available options.
+Audio input device. Run `ostt config list-devices` to see available options.
 
 ```
-ostt list-devices
+ostt config list-devices
 
 Available audio input devices:
 
@@ -49,8 +49,8 @@ Available audio input devices:
 | Value | Example | Description |
 | --- | --- | --- |
 | `"default"` | `device = "default"` | System default input device |
-| Numeric index | `device = "0"` | Device by index from `list-devices` |
-| Device name | `device = "USB Microphone"` | Device by name from `list-devices` |
+| Numeric index | `device = "0"` | Device by index from `config list-devices` |
+| Device name | `device = "USB Microphone"` | Device by name from `config list-devices` |
 
 ### sample_rate
 

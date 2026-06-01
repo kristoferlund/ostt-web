@@ -26,7 +26,7 @@ Available log levels: `error`, `warn`, `info` (default), `debug`, `trace`.
 List devices:
 
 ```bash
-ostt list-devices
+ostt config list-devices
 ```
 
 Open config and set the audio device:
@@ -124,7 +124,7 @@ On macOS, Terminal.app does not support true color. Install a preferred terminal
 List configured actions:
 
 ```bash
-ostt process --list
+ostt process list
 ```
 
 For AI actions, check that the external tool is installed and authenticated:
