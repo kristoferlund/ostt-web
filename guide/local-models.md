@@ -50,11 +50,10 @@ ostt model local remove turbo
 
 ## Audio Format
 
-Local transcription requires WAV audio in signed 16-bit PCM, 16 kHz, mono. OSTT records mono automatically, but the local provider needs this audio config:
+Local transcription requires WAV audio in signed 16-bit PCM, 16 kHz, mono. OSTT records mono automatically, and ffmpeg handles resampling through this audio config:
 
 ```toml
 [audio]
-sample_rate = 16000
 output_format = "pcm_s16le -ar 16000"
 ```
 

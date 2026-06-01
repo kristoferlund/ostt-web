@@ -41,7 +41,7 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
         <p>KB Whisper är utvecklad av KBLab vid Kungliga biblioteket och tränad på ett unikt dataset: SVT-undertexter, riksdagsprotokoll, dialektinspelningar från Institutet för språk och folkminnen samt YouTube-kanaler med svenskt innehåll. Resultatet är en modell som förstår hela bredden av talad svenska — från formellt riksdagsspråk till regionala dialekter — och presterar långt bättre än generella Whisper-modeller på svenska. Modellen körs på Bergets infrastruktur i Sverige, vilket innebär att datan stannar i EU.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml — välj KB Whisper som standardmodell&#10;&#91;provider&#93;&#10;name = &quot;berget&quot;&#10;model = &quot;berget-whisper-kb-large&quot;&#10;&#10;# Välj interaktivt&#10;ostt model&#10;&#10;# Spela in med kortkommando, transkribera med KB Whisper, kopiera&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml — välj KB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;KBLab/kb-whisper-large&quot;&#10;&#10;&#91;model_options.&quot;berget/KBLab/kb-whisper-large&quot;&#93;&#10;language = &quot;sv&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;KBLab&quot;&#93;&#10;align = true&#10;&#10;# Välj interaktivt&#10;ostt model&#10;&#10;# Spela in med kortkommando, transkribera med KB Whisper, kopiera&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -60,8 +60,8 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
       <p><a href="https://berget.ai" target="_blank" rel="noopener">Berget</a> är en svensk molnleverantör. Alla transkriptioner behandlas på servrar i Sverige, vilket ger EU-lagstiftningsenlig datahantering utan att du behöver konfigurera något extra. Välj Berget när dataskydd och GDPR är krav.</p>
     </article>
     <article>
-      <h3>Globalt kortkommando</h3>
-      <p>Bind OSTT till ett systemövergripande kortkommando. Tryck för att öppna inspelaren, tala, tryck igen för att stoppa. KB Whisper transkriberar och resultatet hamnar i urklipp eller stdout — utan att du rör musen.</p>
+      <h3>Validerade Berget-optioner</h3>
+      <p>Lägg till namn och facktermer med <code>hotwords</code>, sätt <code>language=sv</code> och aktivera <code>align=true</code> eller <code>diarize=true</code> när du behöver Bergets ordtidsstämplar eller talaretiketter.</p>
     </article>
     <article>
       <h3>Pipa till AI-verktyg</h3>
@@ -110,7 +110,7 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
     </button>
     <div class="landing-actions">
       <a href="/guide/getting-started">Dokumentation</a>
-      <a href="/reference/providers#berget">Berget-leverantörens referens</a>
+      <a href="/reference/providers/berget">Berget-leverantörens referens</a>
     </div>
   </section>
 

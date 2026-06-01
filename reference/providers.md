@@ -1,10 +1,12 @@
 ---
-description: All supported transcription providers and models — OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, and local Whisper models.
+description: Supported OSTT transcription providers, cloud models, local models, and links to provider-specific configuration guides.
 ---
 
 # Providers and Models
 
 OSTT can use cloud providers or local Whisper-compatible models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
+
+Provider-specific request options are configured under `[model_options."provider/model"]` or passed per invocation with `--mo key=value`.
 
 ## Local
 
@@ -24,125 +26,27 @@ Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
 
 ```toml
 [audio]
-sample_rate = 16000
 output_format = "pcm_s16le -ar 16000"
 ```
 
 See [Local Models](../guide/local-models.md) for setup details.
 
-## OpenAI
+## Cloud Provider Guides
 
-| Model ID | Notes |
-| --- | --- |
-| `gpt-4o-transcribe` | Latest OpenAI transcription model |
-| `gpt-4o-mini-transcribe` | Faster, lighter OpenAI model |
-| `whisper-1` | Legacy Whisper model |
-
-No additional [providers.openai] configuration options are currently available.
-
-## Deepgram
-
-| Model ID | Notes |
-| --- | --- |
-| `nova-3` | Latest generation, fast processing |
-| `nova-2` | Previous generation |
-
-Deepgram has extensive configuration options under `[providers.deepgram]`:
-
-| Option | Default | Description |
+| Provider | Models | Guide |
 | --- | --- | --- |
-| `filler_words` | `false` | Include filler words (uh, um, mhmm) in transcript. Nova models only. |
-| `measurements` | `false` | Convert spoken measurements to abbreviations (mg, km, etc.). English only. |
-| `numerals` | `false` | Convert spoken numbers to numerical format (900). Multiple languages. |
-| `paragraphs` | `false` | Split transcript into paragraphs. Enables punctuation automatically. |
-| `profanity_filter` | `false` | Mask offensive language with asterisks. |
-| `punctuate` | `true` | Add punctuation and capitalization. All languages. |
-| `smart_format` | `false` | Comprehensive formatting: dates, times, currency, phone numbers, emails, URLs. |
-| `utterances` | `false` | Segment speech into semantic units. Pre-recorded, Nova models. |
-| `utt_split` | `0.8` | Silence (seconds) to trigger a new utterance (0.5--3.0). |
-| `mip_opt_out` | `false` | Opt out from Deepgram Model Improvement Program. |
-| `detect_language` | `true` | Automatically detect spoken language. |
-| `detect_language_codes` | `[]` | Restrict detection to specific languages, e.g. `["en", "es"]`. |
+| OpenAI | `openai/gpt-4o-transcribe`, `openai/gpt-4o-mini-transcribe`, `openai/gpt-4o-transcribe-diarize`, `openai/whisper-1` | [OpenAI](./providers/openai.md) |
+| Deepgram | `deepgram/nova-3`, `deepgram/nova-2` | [Deepgram](./providers/deepgram.md) |
+| Groq | `groq/whisper-large-v3`, `groq/whisper-large-v3-turbo` | [Groq](./providers/groq.md) |
+| DeepInfra | Whisper, Whisper Large V3 Turbo, and Voxtral speech-recognition models | [DeepInfra](./providers/deepinfra.md) |
+| AssemblyAI | `assemblyai/universal-3-pro` | [AssemblyAI](./providers/assemblyai.md) |
+| Berget | `berget/KBLab/kb-whisper-large`, `berget/NbAiLab/nb-whisper-large`, `berget/openai/whisper-large-v3` | [Berget](./providers/berget.md) |
+| ElevenLabs | `elevenlabs/scribe_v2`, `elevenlabs/scribe_v1` | [ElevenLabs](./providers/elevenlabs.md) |
+| Mistral | `mistral/voxtral-mini-latest`, `mistral/voxtral-mini-2602` | [Mistral](./providers/mistral.md) |
 
-## DeepInfra
+## Landing Pages
 
-| Model ID | Notes |
-| --- | --- |
-| `deepinfra-whisper-large-v3` | High-accuracy hosted Whisper model |
-| `deepinfra-whisper-base` | Lightweight hosted Whisper model |
-
-## Groq
-
-| Model ID | Notes |
-| --- | --- |
-| `groq-whisper-large-v3` | High-accuracy Whisper model |
-| `groq-whisper-large-v3-turbo` | Fast transcription model |
-
-## AssemblyAI
-
-| Model ID | Notes |
-| --- | --- |
-| `assemblyai-universal-3-pro` | Latest AssemblyAI Universal model |
-
-Configuration under `[providers.assemblyai]`:
-
-| Option | Default | Description |
-| --- | --- | --- |
-| `format_text` | `true` | Format text with punctuation, casing, numeral conversion. |
-| `punctuate` | `true` | Automatic punctuation. |
-| `disfluencies` | `false` | Include filler words (uh, um) and false starts. |
-| `filter_profanity` | `false` | Replace profane words with asterisks. |
-| `language_detection` | `true` | Automatic language detection (99+ languages). |
-
-Optional language detection fine-tuning:
-
-```toml
-[providers.assemblyai.language_detection_options]
-expected_languages = ["en", "es", "fr"]
-fallback_language = "auto"
-```
-
-## Berget
-
-Berget is a Swedish cloud provider. These models are hosted in Sweden.
-
-| Model ID | Notes |
-| --- | --- |
-| `berget-whisper-kb-large` | KB Whisper Large, optimized for Swedish. Trained on 50,000+ hours of Swedish speech. 47% lower WER than whisper-large-v3 on Swedish. |
-| `berget-whisper-nb-large` | NB Whisper Large, optimized for Norwegian. Trained on 66,000 hours of Norwegian speech. |
-| `berget-whisper-large-v3` | General-purpose Whisper Large V3 hosted on Berget infrastructure. |
-
-## ElevenLabs
-
-| Model ID | Notes |
-| --- | --- |
-| `elevenlabs-scribe-v2` | Highest accuracy, supports 99 languages |
-| `elevenlabs-scribe-v1` | Previous generation Scribe model |
-
-Optional configuration under `[providers.elevenlabs]`:
-
-| Option | Description |
-| --- | --- |
-| `language_code` | ISO-639-1 or ISO-639-3 code (e.g. `"eng"`, `"swe"`). Leave unset to auto-detect. |
-
-## Mistral
-
-| Model ID | Notes |
-| --- | --- |
-| `mistral-voxtral-mini` | Voxtral Mini Transcribe, fast and efficient with support for 13 languages |
-| `mistral-voxtral-mini-v2` | Voxtral Mini 2602, pinned version |
-
-Keywords are sent as Mistral `context_bias` terms to improve recognition of names, technical terms, and domain-specific vocabulary.
-
-Optional configuration under `[providers.mistral]`:
-
-| Option | Description |
-| --- | --- |
-| `language` | Optional two-letter language code (e.g. `"en"`, `"sv"`, `"fr"`). Leave unset to auto-detect. |
-
-## Provider Guides
-
-These focused setup guides cover common provider and model choices:
+These pages are broader introductions and workflow overviews:
 
 - [OpenAI Whisper CLI](/lp/openai-whisper-cli)
 - [GPT-4o Transcribe on Linux](/lp/gpt-4o-transcribe-linux)
