@@ -42,11 +42,12 @@ You can also manage curated local models from scripts:
 ```bash
 ostt model list --provider whisper
 ostt model local download turbo
+ostt model local download whisper/turbo
 ostt model select whisper/turbo
 ostt model local remove turbo
 ```
 
-`ostt model local download` shows download progress in the terminal.
+`ostt model local download` shows download progress in the terminal. Local download and remove commands accept either the short model ID (`turbo`) or full provider/model ID (`whisper/turbo`).
 
 ## Whisper Params
 

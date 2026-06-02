@@ -161,6 +161,7 @@ ostt model params                       # List params for active model
 ostt model params openai/gpt-4o-transcribe --format json
 ostt model select deepgram/nova-3       # Select active cloud model
 ostt model local download turbo         # Download local model
+ostt model local download whisper/turbo # Download local model by full ID
 ostt model local remove turbo           # Remove local model
 ```
 
