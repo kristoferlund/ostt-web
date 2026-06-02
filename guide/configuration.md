@@ -93,7 +93,7 @@ Display mode during recording.
 
 ## Model Options
 
-Provider request options are model-scoped. Put persistent options under `[model_options."provider/model"]`:
+Transcription request options are model-scoped. Put persistent options under `[model_options."provider/model"]`:
 
 ```toml
 [model_options."deepgram/nova-3"]
@@ -111,14 +111,33 @@ temperature = 0.0
 no_context = true
 ```
 
-For a single invocation, pass `--mo key=value`:
+For a single invocation, pass repeatable `--mo key=value` overrides:
 
 ```bash
 ostt record --mo smart_format=true --mo diarize=true
 ostt transcribe meeting.mp3 -m deepgram/nova-3 --mo keyterm=OSTT,VitePress
+ostt retry 2 -m local/turbo --mo language=en --mo temperature=0.0
 ```
 
-`--mo` values are validated against the selected model. Duplicate keys and unsupported options fail before the request is sent.
+`--mo` overrides apply only to the current command. They do not change `ostt.toml` and they take precedence over persistent options for the selected model.
+
+Validation happens before transcription starts:
+
+- keys must be supported by the selected provider/model
+- duplicate `--mo` keys fail
+- values must match the model option type
+- provider-specific ranges and conflicts are checked
+- unknown keys show the valid option names for that model
+
+CLI list values use commas, for example `--mo keyterm=OSTT,VitePress`. TOML list values must use TOML list syntax, for example `keyterm = ["OSTT", "VitePress"]`.
+
+To list supported options for a model, run:
+
+```bash
+ostt model options
+ostt model options openai/gpt-4o-transcribe
+ostt model options local/turbo --format json
+```
 
 See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific option tables.
 

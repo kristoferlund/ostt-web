@@ -29,6 +29,7 @@ keyterms_prompt = ["OSTT", "Whisper", "Rust"]
 
 ```bash
 ostt transcribe meeting.mp3 -m assemblyai/universal-3-pro --mo speaker_labels=true --mo keyterms_prompt=OSTT,Whisper
+ostt model options assemblyai/universal-3-pro --format json
 ```
 
 Do not set `prompt` and `keyterms_prompt` together. AssemblyAI documents them as alternatives: use `prompt` for transcription style and behavior, and `keyterms_prompt` when you know the specific terms that should be recognized. OSTT validates this before sending a request.

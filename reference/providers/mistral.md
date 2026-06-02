@@ -31,6 +31,7 @@ temperature = 0.2
 
 ```bash
 ostt transcribe lecture.mp3 -m mistral/voxtral-mini-latest --mo language=en --mo context_bias=OSTT,Voxtral
+ostt model options mistral/voxtral-mini-latest --format json
 ```
 
 | Option | Type | Description |

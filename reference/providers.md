@@ -6,7 +6,7 @@ description: Supported OSTT transcription providers, cloud models, local models,
 
 OSTT can use cloud providers or local Whisper-compatible models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
 
-Provider-specific request options are configured under `[model_options."provider/model"]` or passed per invocation with `--mo key=value`.
+Model-specific request options are configured under `[model_options."provider/model"]` or passed per invocation with `--mo key=value`. Use `ostt model options PROVIDER/MODEL` to list supported keys for a cloud or local model.
 
 ## Local
 
@@ -20,7 +20,7 @@ Choose **Local provider** to download curated models, activate downloaded models
 
 The curated model list is maintained in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. Open a pull request there to suggest a model for inclusion in the default list shown to all users.
 
-Local transcription is CPU-only for now. GPU backends such as Vulkan, Metal, and CUDA are planned but not currently supported.
+Local transcription supports GPU acceleration through Metal on macOS and CUDA or Vulkan builds on Linux.
 
 Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
 
@@ -29,7 +29,7 @@ Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
 output_format = "pcm_s16le -ar 16000"
 ```
 
-See [Local Models](../guide/local-models.md) for setup details.
+Local Whisper options use the same model-scoped format as cloud providers, for example `[model_options."local/turbo"]` or `--mo language=sv`. See [Local Models](../guide/local-models.md) for setup details and local option descriptions.
 
 ## Cloud Provider Guides
 

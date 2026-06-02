@@ -43,6 +43,7 @@ Per invocation:
 
 ```bash
 ostt transcribe meeting.mp3 -m deepgram/nova-3 --mo diarize=true --mo smart_format=true --mo detect_language=en,sv
+ostt model options deepgram/nova-3 --format json
 ```
 
 TOML lists must use TOML list syntax (`["en", "sv"]`). CLI `--mo` list values use commas (`--mo detect_language=en,sv`).

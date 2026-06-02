@@ -28,6 +28,7 @@ timestamps_granularity = "word"
 
 ```bash
 ostt transcribe interview.mp3 -m elevenlabs/scribe_v2 --mo diarize=true --mo keyterms=OSTT,Scribe
+ostt model options elevenlabs/scribe_v2 --format json
 ```
 
 | Option | Type | Description |
