@@ -151,12 +151,16 @@ ostt model list                         # List available models
 ostt model list --provider openai       # Filter by provider
 ostt model list --installed             # Show downloaded local models
 ostt model current                      # Show active model
+ostt model options                      # List options for active model
+ostt model options openai/gpt-4o-transcribe --format json
 ostt model select deepgram/nova-3       # Select active cloud model
 ostt model local download turbo         # Download local model
 ostt model local remove turbo           # Remove local model
 ```
 
 The model picker lets you choose between cloud and local providers. Cloud models are shown for providers with saved credentials. Local models can be downloaded, activated, deleted, inspected, or added from a custom Hugging Face/direct model URL.
+
+`ostt model options [PROVIDER/MODEL]` lists supported `--mo` keys for a model. It supports the same list formatting flag as other list commands: `--format table|json`.
 
 See [Local Models](./local-models.md) for offline model setup.
 

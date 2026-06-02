@@ -180,6 +180,14 @@ export default defineConfig({
         text: 'Reference',
         items: [
           { text: 'Providers and Models', link: '/reference/providers' },
+          { text: 'OpenAI', link: '/reference/providers/openai' },
+          { text: 'Deepgram', link: '/reference/providers/deepgram' },
+          { text: 'Groq', link: '/reference/providers/groq' },
+          { text: 'DeepInfra', link: '/reference/providers/deepinfra' },
+          { text: 'AssemblyAI', link: '/reference/providers/assemblyai' },
+          { text: 'Berget', link: '/reference/providers/berget' },
+          { text: 'ElevenLabs', link: '/reference/providers/elevenlabs' },
+          { text: 'Mistral', link: '/reference/providers/mistral' },
           { text: 'Troubleshooting', link: '/guide/troubleshooting' }
         ]
       }

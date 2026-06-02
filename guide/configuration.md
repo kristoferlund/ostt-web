@@ -1,5 +1,5 @@
 ---
-description: Full reference for ostt.toml — audio device, visualization, provider settings, popup window, processing defaults, and all configuration options with examples.
+description: Full reference for ostt.toml — audio device, visualization, model options, popup window, processing defaults, and all configuration options with examples.
 ---
 
 # Configuration
@@ -19,7 +19,6 @@ API keys are stored separately at `~/.local/share/ostt/credentials` with restric
 ```toml
 [audio]
 device = "default"
-sample_rate = 16000
 peak_volume_threshold = 90
 reference_level_db = -20
 output_format = "mp3 -ab 16k -ar 12000"
@@ -52,10 +51,6 @@ Available audio input devices:
 | Numeric index | `device = "0"` | Device by index from `config list-devices` |
 | Device name | `device = "USB Microphone"` | Device by name from `config list-devices` |
 
-### sample_rate
-
-Recording sample rate in Hz. 16000 Hz is recommended for speech recognition.
-
 ### peak_volume_threshold
 
 Peak volume threshold for the red clipping indicator (0--100, percentage of reference level). Default `90` means the indicator activates at 90% of `reference_level_db`, giving 10% headroom before clipping.
@@ -85,7 +80,7 @@ Output audio format for API calls. All audio is saved as mono with ffmpeg handli
 | `"flac -ar 16000"` | Lossless | ~20 MB/hour | Lossless, no quality loss |
 | `"pcm_s16le -ar 16000"` | Uncompressed | Largest | Required for local transcription |
 
-Local models require `sample_rate = 16000` and `output_format = "pcm_s16le -ar 16000"`. The local model activation flow can update these settings for you.
+Local models require `output_format = "pcm_s16le -ar 16000"`. The local model activation flow can update this setting for you.
 
 ### visualization
 
@@ -96,93 +91,40 @@ Display mode during recording.
 | `"spectrum"` | Frequency spectrum showing energy distribution across frequency bands, optimized for the human voice range (100--1500 Hz) |
 | `"waveform"` | Time-domain waveform showing amplitude over time, classic oscilloscope-style display |
 
-## Deepgram
+## Model Options
+
+Provider request options are model-scoped. Put persistent options under `[model_options."provider/model"]`:
 
 ```toml
-[providers.deepgram]
-filler_words = false
-measurements = false
-numerals = false
-paragraphs = false
-profanity_filter = false
-punctuate = true
-smart_format = false
-utterances = false
-utt_split = 0.8
-mip_opt_out = false
-detect_language = true
-# detect_language_codes = ["en", "es"]
-```
+[model_options."deepgram/nova-3"]
+smart_format = true
+diarize = true
+keyterm = ["OSTT", "VitePress"]
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `filler_words` | `false` | Include filler words (uh, um, mhmm, uh-huh, nuh-uh) in transcript. Only Nova, Nova-2, Nova-3 models. |
-| `measurements` | `false` | Convert spoken measurements to abbreviations (milligrams to mg, kilometers to km, etc.). English only. |
-| `numerals` | `false` | Convert spoken numbers to numerical format (nine hundred to 900). Supports DA, NL, EN, FR, DE, IT, NB, PL, PT, ES, SV. |
-| `paragraphs` | `false` | Split transcript into paragraphs based on punctuation and pauses. Enables punctuation automatically. |
-| `profanity_filter` | `false` | Mask offensive language with asterisks. EN, DE, DE-CH, PL, PT, ES, SV. |
-| `punctuate` | `true` | Add punctuation and capitalization. All languages. |
-| `smart_format` | `false` | Comprehensive formatting: punctuation, paragraphs, dates, times, currency, phone numbers, emails, URLs. Enables punctuation automatically. |
-| `utterances` | `false` | Segment speech into semantic units based on pauses, restarts, reformulations. Pre-recorded, Nova models. |
-| `utt_split` | `0.8` | Silence duration in seconds to trigger a new utterance (0.5--3.0). Only when `utterances` is enabled. |
-| `mip_opt_out` | `false` | Opt out from Deepgram Model Improvement Program. May impact pricing. |
-| `detect_language` | `true` | Automatically detect the spoken language. When false, assumes English (en). |
-| `detect_language_codes` | `[]` | Restrict detection to specific languages only, e.g. `["en", "es"]`. |
-
-## AssemblyAI
-
-```toml
-[providers.assemblyai]
-format_text = true
-punctuate = true
-disfluencies = false
-filter_profanity = false
-language_detection = true
-```
-
-| Option | Default | Description |
-| --- | --- | --- |
-| `format_text` | `true` | Format text with punctuation, casing, and numeral conversion (twenty-three to 23). |
-| `punctuate` | `true` | Automatic punctuation with periods, commas, question marks, exclamation points. |
-| `disfluencies` | `false` | Include filler words (uh, um, ah, er) and false starts. |
-| `filter_profanity` | `false` | Replace profane words with asterisks. |
-| `language_detection` | `true` | Automatic language detection for 99+ languages. May add slight latency. |
-
-Language detection can be fine-tuned with optional options:
-
-```toml
-[providers.assemblyai.language_detection_options]
-expected_languages = ["en", "es", "fr"]
-fallback_language = "auto"
-```
-
-## ElevenLabs
-
-```toml
-[providers.elevenlabs]
-# language_code = "eng"
-```
-
-| Option | Default | Description |
-| --- | --- | --- |
-| `language_code` | unset | Optional ISO-639-1 or ISO-639-3 language code (e.g. `"en"` or `"eng"`, `"swe"`). When set, can improve accuracy for known languages. Leave unset to auto-detect. |
-
-## Mistral
-
-Mistral works without provider-specific configuration. Add this section only when you want to pin transcription to a known language:
-
-```toml
-[providers.mistral]
+[model_options."openai/gpt-4o-transcribe"]
 language = "en"
+prompt = "Technical dictation with project names."
+
+[model_options."local/turbo"]
+language = "auto"
+temperature = 0.0
+no_context = true
 ```
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `language` | unset | Optional two-letter language code (e.g. `"en"`, `"sv"`, `"fr"`). When set, can improve accuracy for known languages. Leave unset to auto-detect. |
+For a single invocation, pass `--mo key=value`:
+
+```bash
+ostt record --mo smart_format=true --mo diarize=true
+ostt transcribe meeting.mp3 -m deepgram/nova-3 --mo keyterm=OSTT,VitePress
+```
+
+`--mo` values are validated against the selected model. Duplicate keys and unsupported options fail before the request is sent.
+
+See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific option tables.
 
 ## Local Transcription
 
-Local models are selected and managed with `ostt model`. The `[providers.local]` section controls local Whisper inference defaults.
+Local models are selected and managed with `ostt model`. The `[providers.local]` section controls global local Whisper inference defaults. Per-model overrides use the same `[model_options."provider/model"]` format as cloud models, for example `[model_options."local/turbo"]`. The option meanings are the same in both places.
 
 ```toml
 [providers.local]

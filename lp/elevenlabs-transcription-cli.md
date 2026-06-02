@@ -40,7 +40,7 @@ description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OS
         <p>On the Artificial Analysis AA-WER v2 benchmark — which weights real-world audio including diverse accents and domain-specific language — Scribe v2 scores 2.2%, outperforming every major provider. It handles long-form audio with consistent accuracy across speaker changes, accents, and recording conditions. It detects non-speech events (laughter, footsteps), identifies entities across 56 categories, and supports smart speaker diarization. OSTT brings all of this to your keyboard.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;provider&#93;&#10;name = &quot;elevenlabs&quot;&#10;model = &quot;elevenlabs-scribe-v2&quot;&#10;&#10;&#91;providers.elevenlabs&#93;&#10;# language_code = &quot;eng&quot;  # Optional: set to force language&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Scribe v2, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;elevenlabs&quot;&#10;model = &quot;scribe_v2&quot;&#10;&#10;&#91;model_options.&quot;elevenlabs/scribe_v2&quot;&#93;&#10;# language_code = &quot;eng&quot;  # Optional: set to force language&#10;# diarize = true&#10;# keyterms = &#91;&quot;OSTT&quot;, &quot;Scribe&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Scribe v2, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -109,7 +109,7 @@ description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OS
     </button>
     <div class="landing-actions">
       <a href="/guide/getting-started">Read the docs</a>
-      <a href="/reference/providers#elevenlabs">ElevenLabs provider reference</a>
+      <a href="/reference/providers/elevenlabs">ElevenLabs provider reference</a>
     </div>
   </section>
 

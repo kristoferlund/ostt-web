@@ -40,7 +40,7 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
         <p>Groq's LPU (Language Processing Unit) infrastructure runs Whisper Large v3 Turbo at 216x real-time speed — a 10-minute recording returns in roughly 4 seconds. Independent benchmarks put Groq at 4–5x lower latency than the OpenAI Whisper endpoint, at about 9x lower cost. Two models: whisper-large-v3-turbo for speed and cost, whisper-large-v3 for maximum accuracy and translation support.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;provider&#93;&#10;name = &quot;groq&quot;&#10;model = &quot;groq-whisper-large-v3-turbo&quot;&#10;&#10;# For maximum accuracy or audio translation&#10;# model = &quot;groq-whisper-large-v3&quot;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Groq, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;groq&quot;&#10;model = &quot;whisper-large-v3-turbo&quot;&#10;&#10;# For maximum accuracy or audio translation support&#10;# model = &quot;whisper-large-v3&quot;&#10;&#10;&#91;model_options.&quot;groq/whisper-large-v3-turbo&quot;&#93;&#10;language = &quot;en&quot;&#10;response_format = &quot;verbose_json&quot;&#10;timestamp_granularities = &#91;&quot;word&quot;, &quot;segment&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Groq, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -56,15 +56,15 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
     </article>
     <article>
       <h3>Two models, one decision</h3>
-      <p>Turbo: pruned from 32 to 4 decoder layers, ~1% lower WER than Distil-Whisper, full multilingual support. Large v3: the full model with audio translation to English, suited for error-sensitive work. Switch between them via <code>ostt model</code>.</p>
+      <p>Groq documents <code>whisper-large-v3-turbo</code> as the best price/performance choice for multilingual transcription and <code>whisper-large-v3</code> as the accuracy-sensitive model with translation support. Switch between them via <code>ostt model</code>.</p>
     </article>
     <article>
       <h3>99+ languages</h3>
       <p>Groq Whisper supports the same 99+ language breadth as the base Whisper model. Turbo handles multilingual audio; Large v3 adds translation to English for non-English source audio.</p>
     </article>
     <article>
-      <h3>Global hotkey</h3>
-      <p>Bind OSTT to a system-wide shortcut. Press to open the recorder, speak, press again. Groq returns the transcript in seconds — typically before you've moved focus to where you want to paste.</p>
+      <h3>Validated Groq options</h3>
+      <p>Use <code>--mo language=en</code>, <code>--mo prompt=...</code>, <code>--mo temperature=0</code>, or timestamp metadata through <code>response_format=verbose_json</code> and <code>timestamp_granularities=word,segment</code>.</p>
     </article>
     <article>
       <h3>Retry without re-recording</h3>
@@ -89,7 +89,7 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>The fastest path from voice to shell.</h2>
-      <p>Groq's throughput makes OSTT feel instant. Press your hotkey, speak, and the transcript is in your clipboard before you've switched windows. Pipe the output through <code>jq</code>, <code>sed</code>, or any CLI tool. Use <code>-p</code> to chain processing actions without waiting.</p>
+      <p>Groq's throughput makes OSTT feel instant. Press your hotkey, speak, and the transcript is in your clipboard before you've switched windows. Pipe the output through any CLI tool. Use <code>ostt model options groq/whisper-large-v3-turbo</code> to list supported Groq <code>--mo</code> keys.</p>
     </div>
     <div class="command-card">
       <pre><code># Transcribe a 10-minute recording — returns in ~4 seconds&#10;ostt transcribe meeting.mp3 -o notes.md&#10;&#10;# Record, process with AI action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Pipe directly to another command&#10;ostt | xargs -I{} notify-send &quot;Transcribed&quot; &quot;{}&quot;</code></pre>
@@ -109,7 +109,7 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
     </button>
     <div class="landing-actions">
       <a href="/guide/getting-started">Read the docs</a>
-      <a href="/reference/providers#groq">Groq provider reference</a>
+      <a href="/reference/providers/groq">Groq provider reference</a>
     </div>
   </section>
 

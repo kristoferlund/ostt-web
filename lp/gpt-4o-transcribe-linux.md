@@ -40,7 +40,7 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
         <p>gpt-4o-transcribe delivers a 4.1% WER — a meaningful improvement over whisper-1's 5.3%, especially on noisy audio, accented speech, and long recordings. Whisper's documented hallucination problem on silence is eliminated. At $0.006/min — identical to whisper-1 — there is no cost reason to stay on the legacy model for standard transcription work.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;provider&#93;&#10;name = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record, transcribe with gpt-4o-transcribe, copy result&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;&#91;model_options.&quot;openai/gpt-4o-transcribe&quot;&#93;&#10;language = &quot;en&quot;&#10;prompt = &quot;Technical dictation with project names.&quot;&#10;include = &#91;&quot;logprobs&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record, transcribe with gpt-4o-transcribe, copy result&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -59,8 +59,12 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
       <p>Pass a prompt to gpt-4o-transcribe to guide style, domain vocabulary, and formatting. Whisper's prompt support is limited to 224 tokens and ignores instructions; gpt-4o-transcribe follows them.</p>
     </article>
     <article>
-      <h3>Global hotkey</h3>
-      <p>Bind OSTT to a system-wide shortcut. Press to open the recorder, speak, press again to stop. gpt-4o-transcribe handles the audio and the result lands in your clipboard without touching the mouse.</p>
+      <h3>Logprobs when needed</h3>
+      <p>OpenAI can return token log probabilities for <code>gpt-4o-transcribe</code> and <code>gpt-4o-mini-transcribe</code> with <code>include=logprobs</code>. OSTT validates the option and still emits clean transcript text for shell workflows.</p>
+    </article>
+    <article>
+      <h3>Diarization model available</h3>
+      <p>Switch to <code>openai/gpt-4o-transcribe-diarize</code> when you need OpenAI's diarized JSON response. OSTT returns the combined transcript text while preserving the model-specific request options.</p>
     </article>
     <article>
       <h3>Any output target</h3>
@@ -89,7 +93,7 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>GPT-4o accuracy in your shell.</h2>
-      <p>OSTT routes gpt-4o-transcribe output to wherever your workflow needs it. Print to stdout, copy to clipboard, write to a file, or pipe through <code>jq</code>, <code>sed</code>, or any CLI. Use the <code>-p</code> flag to run AI processing actions on the transcript without leaving the terminal.</p>
+      <p>OSTT routes gpt-4o-transcribe output to wherever your workflow needs it. Print to stdout, copy to clipboard, write to a file, or pipe through any CLI. Use <code>--mo language=en</code>, <code>--mo prompt=...</code>, or <code>--mo include=logprobs</code> for per-run OpenAI options.</p>
     </div>
     <div class="command-card">
       <pre><code># Transcribe a recording, write to file&#10;ostt transcribe meeting.mp3 -o notes.md&#10;&#10;# Record, process with &quot;summary&quot; action, copy&#10;ostt -p summary -c&#10;&#10;# Transcribe and pipe to custom script&#10;ostt | ./process.sh</code></pre>
@@ -109,7 +113,7 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
     </button>
     <div class="landing-actions">
       <a href="/guide/getting-started">Read the docs</a>
-      <a href="/reference/providers#openai">OpenAI provider reference</a>
+      <a href="/reference/providers/openai">OpenAI provider reference</a>
     </div>
   </section>
 
