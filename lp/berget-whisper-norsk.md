@@ -40,7 +40,7 @@ description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsm
         <p>NB Whisper er utviklet av NB AI-Lab ved Nasjonalbiblioteket og trent på et unikt datasett: NRK-undertekster, Stortingskorpuset (over 5 200 timers transkribert parlamentstale), NST-databasen, og lydbøker fra Nasjonalbibliotekets digitale samling. Resultatet er en modell som forstår norsk som faktisk snakkes — med dialekter, nynorsk og bokmål. Modellen kjører på Bergets infrastruktur, noe som gir GDPR-kompatibel databehandling uten ekstra konfigurasjon.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml — velg NB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;NbAiLab/nb-whisper-large&quot;&#10;&#10;&#91;model_options.&quot;berget/NbAiLab/nb-whisper-large&quot;&#93;&#10;language = &quot;no&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;Språkbanken&quot;&#93;&#10;align = true&#10;&#10;# Velg interaktivt&#10;ostt model&#10;&#10;# Ta opp med hurtigtast, transkriber med NB Whisper, kopier&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml — velg NB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;NbAiLab/nb-whisper-large&quot;&#10;&#10;&#91;berget.&quot;NbAiLab/nb-whisper-large&quot;.params&#93;&#10;language = &quot;no&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;Språkbanken&quot;&#93;&#10;align = true&#10;&#10;# Velg interaktivt&#10;ostt model&#10;&#10;# Ta opp med hurtigtast, transkriber med NB Whisper, kopier&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>

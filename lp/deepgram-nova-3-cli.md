@@ -40,7 +40,7 @@ description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT co
         <p>Nova-3 is Deepgram's flagship general-purpose speech model. It delivers low latency and high accuracy across a wide range of accents and audio conditions — at a fraction of the cost of comparable cloud models. OSTT connects it directly to your keyboard and shell.</p>
       </div>
       <div class="command-card">
-        <pre><code># Set Nova-3 as your default in ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;deepgram&quot;&#10;model = &quot;nova-3&quot;&#10;&#10;&#91;model_options.&quot;deepgram/nova-3&quot;&#93;&#10;smart_format = true&#10;diarize = true&#10;&#10;# Or pick it interactively&#10;ostt model&#10;&#10;# Record with a hotkey, transcribe with Nova-3, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># Set Nova-3 as your default in ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;deepgram&quot;&#10;model = &quot;nova-3&quot;&#10;&#10;&#91;deepgram.nova-3.params&#93;&#10;smart_format = true&#10;diarize = true&#10;&#10;# Or pick it interactively&#10;ostt model&#10;&#10;# Record with a hotkey, transcribe with Nova-3, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>

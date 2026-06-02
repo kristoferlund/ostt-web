@@ -41,7 +41,7 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
         <p>KB Whisper är utvecklad av KBLab vid Kungliga biblioteket och tränad på ett unikt dataset: SVT-undertexter, riksdagsprotokoll, dialektinspelningar från Institutet för språk och folkminnen samt YouTube-kanaler med svenskt innehåll. Resultatet är en modell som förstår hela bredden av talad svenska — från formellt riksdagsspråk till regionala dialekter — och presterar långt bättre än generella Whisper-modeller på svenska. Modellen körs på Bergets infrastruktur i Sverige, vilket innebär att datan stannar i EU.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml — välj KB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;KBLab/kb-whisper-large&quot;&#10;&#10;&#91;model_options.&quot;berget/KBLab/kb-whisper-large&quot;&#93;&#10;language = &quot;sv&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;KBLab&quot;&#93;&#10;align = true&#10;&#10;# Välj interaktivt&#10;ostt model&#10;&#10;# Spela in med kortkommando, transkribera med KB Whisper, kopiera&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml — välj KB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;KBLab/kb-whisper-large&quot;&#10;&#10;&#91;berget.&quot;KBLab/kb-whisper-large&quot;.params&#93;&#10;language = &quot;sv&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;KBLab&quot;&#93;&#10;align = true&#10;&#10;# Välj interaktivt&#10;ostt model&#10;&#10;# Spela in med kortkommando, transkribera med KB Whisper, kopiera&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>

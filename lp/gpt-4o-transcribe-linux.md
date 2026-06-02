@@ -40,7 +40,7 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
         <p>gpt-4o-transcribe delivers a 4.1% WER — a meaningful improvement over whisper-1's 5.3%, especially on noisy audio, accented speech, and long recordings. Whisper's documented hallucination problem on silence is eliminated. At $0.006/min — identical to whisper-1 — there is no cost reason to stay on the legacy model for standard transcription work.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;&#91;model_options.&quot;openai/gpt-4o-transcribe&quot;&#93;&#10;language = &quot;en&quot;&#10;prompt = &quot;Technical dictation with project names.&quot;&#10;include = &#91;&quot;logprobs&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record, transcribe with gpt-4o-transcribe, copy result&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;&#91;openai.gpt-4o-transcribe.params&#93;&#10;language = &quot;en&quot;&#10;prompt = &quot;Technical dictation with project names.&quot;&#10;include = &#91;&quot;logprobs&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record, transcribe with gpt-4o-transcribe, copy result&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -93,7 +93,7 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>GPT-4o accuracy in your shell.</h2>
-      <p>OSTT routes gpt-4o-transcribe output to wherever your workflow needs it. Print to stdout, copy to clipboard, write to a file, or pipe through any CLI. Use <code>--mo language=en</code>, <code>--mo prompt=...</code>, or <code>--mo include=logprobs</code> for per-run OpenAI options.</p>
+      <p>OSTT routes gpt-4o-transcribe output to wherever your workflow needs it. Print to stdout, copy to clipboard, write to a file, or pipe through any CLI. Use <code>--param language=en</code>, <code>--param prompt=...</code>, or <code>--param include=logprobs</code> for per-run OpenAI params.</p>
     </div>
     <div class="command-card">
       <pre><code># Transcribe a recording, write to file&#10;ostt transcribe meeting.mp3 -o notes.md&#10;&#10;# Record, process with &quot;summary&quot; action, copy&#10;ostt -p summary -c&#10;&#10;# Transcribe and pipe to custom script&#10;ostt | ./process.sh</code></pre>

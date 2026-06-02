@@ -4,7 +4,7 @@ description: "Complete reference for all OSTT CLI commands: record, transcribe, 
 
 # Commands
 
-If no command is specified, `record` is used by default. Record flags (`-c`, `-o`, `-p`, `-m`, `--mo`) can be used without explicitly typing `record`.
+If no command is specified, `record` is used by default. Record flags (`-c`, `-o`, `-p`, `-m`, `--param`) can be used without explicitly typing `record`.
 
 ## Default: Record
 
@@ -16,7 +16,7 @@ ostt -o notes.txt       # Record and write to file
 ostt -p clean           # Record and process with "clean" action
 ostt -p clean -c        # Record, process, copy result
 ostt -m deepgram/nova-3 # Override model for this run
-ostt --mo language=sv   # Override a model option for this run
+ostt --param language=sv # Override a transcription param for this run
 ```
 
 Alias: `ostt r`.
@@ -29,15 +29,15 @@ Alias: `ostt r`.
 | `-o FILE` / `--output FILE` | Write transcription to file |
 | `-p [ACTION]` / `--process [ACTION]` | Enable processing. Optionally specify action ID to skip picker. |
 | `-m PROVIDER/MODEL` / `--model PROVIDER/MODEL` | Override transcription model for this run. |
-| `--mo KEY=VALUE` | Override one supported model option for this run. Repeat for multiple options. |
+| `--param KEY=VALUE` | Override one supported transcription param for this run. Repeat for multiple params. |
 
 ## Launch (Popup)
 
 ```bash
 ostt launch -c              # Open popup, record, copy to clipboard
 ostt launch -c -p clean     # Popup, record, process with "clean", copy
-ostt launch -m local/turbo -c # Popup, override model, copy
-ostt launch -m local/turbo --mo language=sv -c
+ostt launch -m whisper/turbo -c # Popup, override model, copy
+ostt launch -m whisper/turbo --param language=sv -c
 ostt launch -- -c -p cmd    # Pass flags through to the instance
 ```
 
@@ -57,13 +57,13 @@ ostt transcribe voice-memo.mp3 -c          # Transcribe and copy to clipboard
 ostt transcribe meeting.wav -o transcript.txt   # Transcribe to file
 ostt transcribe audio.ogg -p clean -c      # Transcribe, process, copy
 ostt transcribe audio.ogg -m openai/whisper-1 # Override model for this run
-ostt transcribe audio.ogg -m deepgram/nova-3 --mo diarize=true
+ostt transcribe audio.ogg -m deepgram/nova-3 --param diarize=true
 ostt transcribe audio.ogg | grep keyword   # Pipe to other commands
 ```
 
 ### Flags
 
-Same as record: `-c`, `-o`, `-p`, `-m`, `--mo`.
+Same as record: `-c`, `-o`, `-p`, `-m`, `--param`.
 
 Alias: `ostt t`.
 
@@ -77,7 +77,7 @@ ostt retry 3            # Re-transcribe recording #3
 ostt retry -c           # Re-transcribe and copy to clipboard
 ostt retry -p clean     # Re-transcribe and process
 ostt retry -m groq/whisper-large-v3 # Override model for this run
-ostt retry -m openai/gpt-4o-transcribe --mo prompt=ProjectName -c
+ostt retry -m openai/gpt-4o-transcribe --param prompt=ProjectName -c
 ```
 
 Recording indexes are 1-based, with `1` being the most recent.
@@ -91,7 +91,7 @@ Recording indexes are 1-based, with `1` being the most recent.
 | `-o FILE` / `--output FILE` | Write to file |
 | `-p [ACTION]` / `--process [ACTION]` | Enable processing |
 | `-m PROVIDER/MODEL` / `--model PROVIDER/MODEL` | Override transcription model for this run |
-| `--mo KEY=VALUE` | Override one supported model option for this run. Repeat for multiple options. |
+| `--param KEY=VALUE` | Override one supported transcription param for this run. Repeat for multiple params. |
 
 ## Replay
 
@@ -157,8 +157,8 @@ ostt model list                         # List available models
 ostt model list --provider openai       # Filter by provider
 ostt model list --installed             # Show downloaded local models
 ostt model current                      # Show active model
-ostt model options                      # List options for active model
-ostt model options openai/gpt-4o-transcribe --format json
+ostt model params                       # List params for active model
+ostt model params openai/gpt-4o-transcribe --format json
 ostt model select deepgram/nova-3       # Select active cloud model
 ostt model local download turbo         # Download local model
 ostt model local remove turbo           # Remove local model
@@ -166,28 +166,28 @@ ostt model local remove turbo           # Remove local model
 
 The model picker lets you choose between cloud and local providers. Cloud models are shown for providers with saved credentials. Local models can be downloaded, activated, deleted, inspected, or added from a custom Hugging Face/direct model URL.
 
-`ostt model options [PROVIDER/MODEL]` lists supported `--mo` keys for a model. If no model is passed, it uses the active model. It supports the same list formatting flag as other list commands: `--format table|json`.
+`ostt model params [PROVIDER/MODEL]` lists supported `--param` keys for a model. If no model is passed, it uses the active model. It supports the same list formatting flag as other list commands: `--format table|json`.
 
-## Model Option Overrides
+## Param Overrides
 
-`--mo KEY=VALUE` is a per-invocation transcription option override. It applies to the selected model for that command, whether the model comes from saved config or `-m PROVIDER/MODEL`.
+`--param KEY=VALUE` is a per-invocation transcription param override. It applies to the selected model for that command, whether the model comes from saved config or `-m PROVIDER/MODEL`.
 
 ```bash
-ostt -m openai/gpt-4o-transcribe --mo language=sv --mo prompt=OSTT -c
-ostt transcribe meeting.mp3 -m deepgram/nova-3 --mo diarize=true --mo keyterm=OSTT,VitePress
-ostt retry 2 -m local/turbo --mo language=en --mo temperature=0.0
+ostt -m openai/gpt-4o-transcribe --param language=sv --param prompt=OSTT -c
+ostt transcribe meeting.mp3 -m deepgram/nova-3 --param diarize=true --param keyterm=OSTT,VitePress
+ostt retry 2 -m whisper/turbo --param language=en --param temperature=0.0
 ```
 
 Rules:
 
-- `--mo` can be repeated.
+- `--param` can be repeated.
 - Each value must use `KEY=VALUE`.
 - Duplicate keys fail before transcription starts.
-- Unknown keys fail and show the valid options for the selected model.
+- Unknown keys fail and show the valid params for the selected model.
 - Values are validated against the selected provider/model, including type, ranges, and provider-specific conflicts.
-- For list options on the CLI, separate values with commas, for example `--mo keyterm=OSTT,VitePress`.
+- For list params on the CLI, separate values with commas, for example `--param keyterm=OSTT,VitePress`.
 
-Use `ostt model options PROVIDER/MODEL` to list supported keys, and use persistent `[model_options."provider/model"]` config for defaults that should apply every run.
+Use `ostt model params PROVIDER/MODEL` to list supported keys, and use persistent `[provider.params]` or `[provider."model".params]` config for defaults that should apply every run.
 
 See [Local Models](./local-models.md) for offline model setup.
 

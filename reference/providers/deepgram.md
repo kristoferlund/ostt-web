@@ -1,5 +1,5 @@
 ---
-description: Configure Deepgram Nova models in OSTT, including Nova-3, Nova-2, Deepgram model_options, diarization, language detection, formatting, topics, and keyword prompting.
+description: Configure Deepgram Nova models in OSTT, including Nova-3, Nova-2, Deepgram params, diarization, language detection, formatting, topics, and keyword prompting.
 ---
 
 # Deepgram
@@ -27,12 +27,12 @@ Per command:
 ostt transcribe meeting.mp3 -m deepgram/nova-3
 ```
 
-## Model Options
+## Params
 
 Persistent config:
 
 ```toml
-[model_options."deepgram/nova-3"]
+[deepgram.nova-3.params]
 detect_language = ["en", "sv"]
 diarize = true
 smart_format = true
@@ -42,15 +42,15 @@ keyterm = ["OSTT", "Whisper", "Deepgram"]
 Per invocation:
 
 ```bash
-ostt transcribe meeting.mp3 -m deepgram/nova-3 --mo diarize=true --mo smart_format=true --mo detect_language=en,sv
-ostt model options deepgram/nova-3 --format json
+ostt transcribe meeting.mp3 -m deepgram/nova-3 --param diarize=true --param smart_format=true --param detect_language=en,sv
+ostt model params deepgram/nova-3 --format json
 ```
 
-TOML lists must use TOML list syntax (`["en", "sv"]`). CLI `--mo` list values use commas (`--mo detect_language=en,sv`).
+TOML lists must use TOML list syntax (`["en", "sv"]`). CLI `--param` list values use commas (`--param detect_language=en,sv`).
 
-## Options
+## Params
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `detect_language` | boolean or string list | `true` detects the dominant language. A list restricts detection to given BCP-47 language codes, e.g. `["en", "sv"]`. |
 | `language` | string | Primary language hint. Use when the language is known instead of detection. |
