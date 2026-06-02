@@ -159,9 +159,6 @@ description: Release notes and notable changes for OSTT.
 - **Audio player priority on Linux** - Replay command now prefers mpv for better user experience (falls back to vlc, ffplay, paplay, xdg-open)
 - **Hyprland window rules syntax** - Updated to new Hyprland window rule syntax with dynamic expressions and `match:` patterns (BREAKING CHANGE)
 - **Float script defaults to clipboard** - `ostt-float.sh` now defaults to `-c` (clipboard) if no arguments provided; existing Hyprland configs continue to work
-- **BREAKING CHANGE for Hyprland/macOS popup users**: Default output changed to stdout. Update your integration scripts to add `-c` flag for clipboard output. See upgrade guides:
-  - [Hyprland Upgrade Guide](environments/hyprland/README.md#upgrading-from-005)
-  - [macOS Upgrade Guide](environments/macOS/README.md#upgrading-from-005)
 
 ### Fixed
 
