@@ -147,7 +147,8 @@ export default defineConfig({
         items: [
           { text: 'Getting Started', link: '/guide/getting-started' },
           { text: 'Why OSTT?', link: '/guide/why-ostt' },
-          { text: 'Installation', link: '/guide/installation' }
+          { text: 'Installation', link: '/guide/installation' },
+          { text: 'Changelog', link: '/guide/changelog' }
         ]
       },
       {
