@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "Deepgram Nova-3 on the Command Line — OSTT"
+title: "Deepgram Nova-3 on the Command Line"
 description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT connects Nova-3 to a global hotkey, clipboard, and shell pipeline on Linux and macOS."
 ---
 

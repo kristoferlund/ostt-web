@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "AssemblyAI from the Command Line — OSTT"
+title: "AssemblyAI from the Command Line"
 description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and macOS. OSTT connects the world's first promptable speech model to your hotkey, clipboard, and shell pipeline."
 ---
 

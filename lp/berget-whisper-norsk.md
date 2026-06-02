@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "NB Whisper på kommandolinjen — OSTT"
+title: "NB Whisper på kommandolinjen"
 description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsmodell — direkte fra terminalen. OSTT kobler modellen til et globalt hurtigtast, utklippstavlen og skallkommandoer på Linux og macOS."
 ---
 

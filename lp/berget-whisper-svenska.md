@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "KB Whisper på kommandoraden — OSTT"
+title: "KB Whisper på kommandoraden"
 description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänningsmodell — direkt från terminalen. OSTT kopplar modellen till ett globalt kortkommando, urklipp och skalkommandon på Linux och macOS."
 ---
 

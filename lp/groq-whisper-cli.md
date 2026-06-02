@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "Groq Whisper from the Command Line — OSTT"
+title: "Groq Whisper from the Command Line"
 description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and macOS. OSTT connects Groq's LPU-powered speech recognition to your hotkey, clipboard, and shell pipeline."
 ---
 

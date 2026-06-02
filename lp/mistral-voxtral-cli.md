@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "Mistral Voxtral from the Command Line — OSTT"
+title: "Mistral Voxtral from the Command Line"
 description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux and macOS. OSTT connects Mistral's open-weight speech model to your hotkey, clipboard, and shell pipeline."
 ---
 

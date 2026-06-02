@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "GPT-4o Transcribe on Linux — OSTT"
+title: "GPT-4o Transcribe on Linux"
 description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects OpenAI's most accurate transcription model to a global hotkey, clipboard, and shell pipeline."
 ---
 

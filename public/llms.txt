@@ -11,6 +11,7 @@
 - [Getting Started](https://ostt.ai/guide/getting-started): Install OSTT, choose a transcription model, record from the terminal, and set up a global hotkey.
 - [Why OSTT?](https://ostt.ai/guide/why-ostt): Why OSTT exists and how it compares to GUI dictation apps.
 - [Installation](https://ostt.ai/guide/installation): Install via shell script, Homebrew, AUR, .deb, .rpm, or from source. Runtime dependency setup for each platform.
+- [Changelog](https://ostt.ai/guide/changelog): Release notes and notable changes for OSTT.
 - [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, auth, model, history, keywords, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions.
 - [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, providers, popup, processing defaults.
@@ -32,4 +33,24 @@
 ## Reference
 
 - [Providers and Models](https://ostt.ai/reference/providers): All supported cloud providers (OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral) and local Whisper models. Configuration options per provider.
+- [OpenAI](https://ostt.ai/reference/providers/openai): OpenAI transcription models and configuration options for OSTT.
+- [Deepgram](https://ostt.ai/reference/providers/deepgram): Deepgram Nova transcription models and configuration options for OSTT.
+- [Groq](https://ostt.ai/reference/providers/groq): Groq Whisper transcription models and configuration options for OSTT.
+- [DeepInfra](https://ostt.ai/reference/providers/deepinfra): DeepInfra speech-recognition models and configuration options for OSTT.
+- [AssemblyAI](https://ostt.ai/reference/providers/assemblyai): AssemblyAI Universal transcription models and configuration options for OSTT.
+- [Berget](https://ostt.ai/reference/providers/berget): Berget-hosted Whisper transcription models and configuration options for OSTT.
+- [ElevenLabs](https://ostt.ai/reference/providers/elevenlabs): ElevenLabs Scribe transcription models and configuration options for OSTT.
+- [Mistral](https://ostt.ai/reference/providers/mistral): Mistral Voxtral transcription models and configuration options for OSTT.
 - [Troubleshooting](https://ostt.ai/guide/troubleshooting): Solutions for common issues — audio input, transcription failures, clipboard, popup, PATH, and architecture.
+
+## Provider Landing Pages
+
+- [OpenAI Whisper CLI](https://ostt.ai/lp/openai-whisper-cli): Use OpenAI Whisper transcription from the terminal with OSTT.
+- [GPT-4o Transcribe Linux](https://ostt.ai/lp/gpt-4o-transcribe-linux): Use OpenAI GPT-4o transcription models from a Linux terminal workflow.
+- [Deepgram Nova 3 CLI](https://ostt.ai/lp/deepgram-nova-3-cli): Use Deepgram Nova 3 transcription from the terminal with OSTT.
+- [Groq Whisper CLI](https://ostt.ai/lp/groq-whisper-cli): Use Groq Whisper transcription from the terminal with OSTT.
+- [AssemblyAI CLI Linux](https://ostt.ai/lp/assemblyai-cli-linux): Use AssemblyAI transcription from a Linux terminal workflow.
+- [Berget Whisper Svenska](https://ostt.ai/lp/berget-whisper-svenska): Swedish Whisper transcription with Berget-hosted models and OSTT.
+- [Berget Whisper Norsk](https://ostt.ai/lp/berget-whisper-norsk): Norwegian Whisper transcription with Berget-hosted models and OSTT.
+- [ElevenLabs Transcription CLI](https://ostt.ai/lp/elevenlabs-transcription-cli): Use ElevenLabs Scribe transcription from the terminal with OSTT.
+- [Mistral Voxtral CLI](https://ostt.ai/lp/mistral-voxtral-cli): Use Mistral Voxtral transcription from the terminal with OSTT.

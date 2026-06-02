@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "OpenAI Whisper from the Command Line — OSTT"
+title: "OpenAI Whisper from the Command Line"
 description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT connects all three OpenAI speech models to a global hotkey, clipboard, and shell pipeline on Linux and macOS."
 ---
 

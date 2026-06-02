@@ -1,6 +1,6 @@
 ---
 layout: false
-title: "ElevenLabs Scribe v2 from the Command Line — OSTT"
+title: "ElevenLabs Scribe v2 from the Command Line"
 description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OSTT connects the most accurate speech-to-text model available to your hotkey, clipboard, and shell pipeline."
 ---
 
