@@ -1,5 +1,5 @@
 ---
-description: Configure Mistral Voxtral transcription models in OSTT, including language, diarization, timestamp_granularities, context_bias, temperature, and model_options.
+description: Configure Mistral Voxtral transcription models in OSTT, including language, diarization, timestamp_granularities, context_bias, temperature, and params.
 ---
 
 # Mistral
@@ -19,10 +19,10 @@ API documentation:
 | `mistral/voxtral-mini-latest` | Latest Voxtral Mini transcription model. |
 | `mistral/voxtral-mini-2602` | Pinned Voxtral Mini 2602 model. |
 
-## Model Options
+## Params
 
 ```toml
-[model_options."mistral/voxtral-mini-latest"]
+[mistral.voxtral-mini-latest.params]
 language = "en"
 diarize = true
 context_bias = ["OSTT", "Voxtral", "Rust"]
@@ -30,11 +30,11 @@ temperature = 0.2
 ```
 
 ```bash
-ostt transcribe lecture.mp3 -m mistral/voxtral-mini-latest --mo language=en --mo context_bias=OSTT,Voxtral
-ostt model options mistral/voxtral-mini-latest --format json
+ostt transcribe lecture.mp3 -m mistral/voxtral-mini-latest --param language=en --param context_bias=OSTT,Voxtral
+ostt model params mistral/voxtral-mini-latest --format json
 ```
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language` | string | Language code, for example `en`. Providing the language can improve accuracy. Cannot be combined with `timestamp_granularities`. |
 | `diarize` | boolean | Enable speaker diarization. |

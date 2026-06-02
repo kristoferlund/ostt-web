@@ -6,7 +6,7 @@ description: Supported OSTT transcription providers, cloud models, local models,
 
 OSTT can use cloud providers or local Whisper-compatible models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
 
-Model-specific request options are configured under `[model_options."provider/model"]` or passed per invocation with `--mo key=value`. Use `ostt model options PROVIDER/MODEL` to list supported keys for a cloud or local model.
+Transcription request params are configured under `[provider.params]` or `[provider."model".params]`, or passed per invocation with `--param key=value`. Use `ostt model params PROVIDER/MODEL` to list supported params for a cloud or local model.
 
 ## Local
 
@@ -16,7 +16,7 @@ Local models run on your machine and do not require an API key. Open the local m
 ostt model
 ```
 
-Choose **Local provider** to download curated models, activate downloaded models, delete model files, inspect metadata, or add a custom Hugging Face/direct model URL.
+Choose **Local models** to download curated models, activate downloaded models, delete model files, inspect metadata, or add a custom Hugging Face/direct model URL.
 
 The curated model list is maintained in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. Open a pull request there to suggest a model for inclusion in the default list shown to all users.
 
@@ -29,7 +29,7 @@ Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
 output_format = "pcm_s16le -ar 16000"
 ```
 
-Local Whisper options use the same model-scoped format as cloud providers, for example `[model_options."local/turbo"]` or `--mo language=sv`. See [Local Models](../guide/local-models.md) for setup details and local option descriptions.
+Local Whisper params use the same provider/model format as cloud providers, for example `[whisper.params]`, `[whisper.turbo.params]`, or `--param language=sv`. Use model IDs such as `whisper/turbo`. See [Local Models](../guide/local-models.md) for setup details and local param descriptions.
 
 ## Cloud Provider Guides
 

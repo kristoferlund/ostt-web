@@ -1,5 +1,5 @@
 ---
-description: Configure Groq Whisper models in OSTT, including whisper-large-v3, whisper-large-v3-turbo, and OpenAI-compatible model_options.
+description: Configure Groq Whisper models in OSTT, including whisper-large-v3, whisper-large-v3-turbo, and OpenAI-compatible params.
 ---
 
 # Groq
@@ -17,10 +17,10 @@ API documentation: [Groq audio transcriptions](https://console.groq.com/docs/spe
 
 Groq documents `whisper-large-v3` at 189x real-time speed with 10.3% WER, and `whisper-large-v3-turbo` at 216x real-time speed with 12% WER. Turbo does not support translation; OSTT currently uses Groq’s transcription endpoint.
 
-## Model Options
+## Params
 
 ```toml
-[model_options."groq/whisper-large-v3-turbo"]
+[groq.whisper-large-v3-turbo.params]
 language = "en"
 prompt = "Meeting about Rust, OSTT, and terminal transcription."
 temperature = 0.0
@@ -29,13 +29,13 @@ timestamp_granularities = ["word", "segment"]
 ```
 
 ```bash
-ostt transcribe meeting.mp3 -m groq/whisper-large-v3-turbo --mo language=en --mo response_format=verbose_json --mo timestamp_granularities=word,segment
-ostt model options groq/whisper-large-v3-turbo --format json
+ostt transcribe meeting.mp3 -m groq/whisper-large-v3-turbo --param language=en --param response_format=verbose_json --param timestamp_granularities=word,segment
+ostt model params groq/whisper-large-v3-turbo --format json
 ```
 
-OSTT always returns plain transcript text. `verbose_json` and timestamp options are supported because the response still contains a top-level `text` field; timestamp metadata is not emitted in command output.
+OSTT always returns plain transcript text. `verbose_json` and timestamp params are supported because the response still contains a top-level `text` field; timestamp metadata is not emitted in command output.
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language` | string | Optional ISO-639-1 language hint such as `en`. Groq documents this as improving accuracy and latency when the source language is known. |
 | `prompt` | string | Context prompt for terminology, spelling, or output style. Groq documents a 224-token prompt limit. Saved `ostt keyword` terms are used as fallback only when `prompt` is not set. |

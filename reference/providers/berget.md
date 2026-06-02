@@ -1,5 +1,5 @@
 ---
-description: Configure Berget-hosted Whisper models in OSTT, including KB Whisper Large, NB Whisper Large, Whisper Large V3, hotwords, diarization, alignment, and model_options.
+description: Configure Berget-hosted Whisper models in OSTT, including KB Whisper Large, NB Whisper Large, Whisper Large V3, hotwords, diarization, alignment, and params.
 ---
 
 # Berget
@@ -21,10 +21,10 @@ Berget documentation:
 
 Berget lists all three speech-to-text models at `€3.00 / 1,000 min`.
 
-## Model Options
+## Params
 
 ```toml
-[model_options."berget/KBLab/kb-whisper-large"]
+[berget."KBLab/kb-whisper-large".params]
 language = "sv"
 hotwords = ["OSTT", "KBLab", "Berget"]
 prompt = "Swedish technical dictation."
@@ -35,13 +35,13 @@ diarize = true
 ```
 
 ```bash
-ostt transcribe meeting.mp3 -m berget/KBLab/kb-whisper-large --mo language=sv --mo hotwords=OSTT,KBLab --mo align=true
-ostt model options berget/KBLab/kb-whisper-large --format json
+ostt transcribe meeting.mp3 -m berget/KBLab/kb-whisper-large --param language=sv --param hotwords=OSTT,KBLab --param align=true
+ostt model params berget/KBLab/kb-whisper-large --format json
 ```
 
-OSTT always returns plain transcript text. `verbose_json`, word alignment, and diarization options are supported because Berget responses still include a top-level `text` field; metadata is not emitted in command output.
+OSTT always returns plain transcript text. `verbose_json`, word alignment, and diarization params are supported because Berget responses still include a top-level `text` field; metadata is not emitted in command output.
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language` | string | Optional language hint, such as `sv` or `no`. |
 | `hotwords` | string list | Berget keyword boosting terms. Saved `ostt keyword` terms are used as fallback only when `hotwords` is not set. |

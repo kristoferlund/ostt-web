@@ -40,7 +40,7 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
         <p>Voxtral Mini Transcribe V2 delivers ~4% WER at $0.003/min — outperforming GPT-4o-mini-transcribe, Gemini 2.5 Flash, AssemblyAI Universal, and Deepgram Nova on accuracy, while processing audio roughly 3x faster than ElevenLabs Scribe v2. It's open-weight (Apache 2.0), supports 13 languages, speaker diarization, context biasing for technical vocabulary, and processes recordings up to 3 hours in a single request.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;mistral&quot;&#10;model = &quot;voxtral-mini-latest&quot;&#10;&#10;&#91;model_options.&quot;mistral/voxtral-mini-latest&quot;&#93;&#10;# language = &quot;en&quot;  # Optional: improves accuracy when known&#10;# context_bias = &#91;&quot;OSTT&quot;, &quot;Voxtral&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Voxtral, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;mistral&quot;&#10;model = &quot;voxtral-mini-latest&quot;&#10;&#10;&#91;mistral.voxtral-mini-latest.params&#93;&#10;# language = &quot;en&quot;  # Optional: improves accuracy when known&#10;# context_bias = &#91;&quot;OSTT&quot;, &quot;Voxtral&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Voxtral, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>

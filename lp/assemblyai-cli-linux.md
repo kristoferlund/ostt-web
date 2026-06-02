@@ -40,7 +40,7 @@ description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and mac
         <p>Universal-3 Pro accepts a natural language prompt parameter that shapes transcription during inference — not after. Tell it the domain, formatting style, or vocabulary before it listens. It delivers 5.6% WER on English benchmarks, 30% fewer hallucinations than Whisper, and language detection across 99 languages. OSTT surfaces all of this through your terminal with zero extra tooling.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;assemblyai&quot;&#10;model = &quot;universal-3-pro&quot;&#10;&#10;&#91;model_options.&quot;assemblyai/universal-3-pro&quot;&#93;&#10;punctuate = true&#10;format_text = true&#10;language_detection = true&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;assemblyai&quot;&#10;model = &quot;universal-3-pro&quot;&#10;&#10;&#91;assemblyai.universal-3-pro.params&#93;&#10;punctuate = true&#10;format_text = true&#10;language_detection = true&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>

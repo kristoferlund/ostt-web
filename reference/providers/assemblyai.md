@@ -1,5 +1,5 @@
 ---
-description: Configure AssemblyAI Universal-3 Pro in OSTT, including promptable transcription, keyterms_prompt, diarization, language detection, and model_options.
+description: Configure AssemblyAI Universal-3 Pro in OSTT, including promptable transcription, keyterms_prompt, diarization, language detection, and params.
 ---
 
 # AssemblyAI
@@ -17,10 +17,10 @@ AssemblyAI documentation:
 | --- | --- |
 | `assemblyai/universal-3-pro` | Universal-3 Pro cloud transcription model. OSTT sends this as `speech_models = ["universal-3-pro"]`. |
 
-## Model Options
+## Params
 
 ```toml
-[model_options."assemblyai/universal-3-pro"]
+[assemblyai.universal-3-pro.params]
 language_detection = true
 format_text = true
 speaker_labels = true
@@ -28,13 +28,13 @@ keyterms_prompt = ["OSTT", "Whisper", "Rust"]
 ```
 
 ```bash
-ostt transcribe meeting.mp3 -m assemblyai/universal-3-pro --mo speaker_labels=true --mo keyterms_prompt=OSTT,Whisper
-ostt model options assemblyai/universal-3-pro --format json
+ostt transcribe meeting.mp3 -m assemblyai/universal-3-pro --param speaker_labels=true --param keyterms_prompt=OSTT,Whisper
+ostt model params assemblyai/universal-3-pro --format json
 ```
 
 Do not set `prompt` and `keyterms_prompt` together. AssemblyAI documents them as alternatives: use `prompt` for transcription style and behavior, and `keyterms_prompt` when you know the specific terms that should be recognized. OSTT validates this before sending a request.
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `prompt` | string | Natural-language instruction for transcription style, vocabulary, speaker roles, or domain context. AssemblyAI supports up to 1,500 words for Universal-3 Pro. |
 | `keyterms_prompt` | string list | Terms to bias recognition. AssemblyAI supports up to 1,000 words or phrases for Universal-3 Pro, with a maximum of 6 words per phrase. Saved `ostt keyword` terms are used as fallback only when `keyterms_prompt` and `prompt` are not set. |

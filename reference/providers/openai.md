@@ -1,5 +1,5 @@
 ---
-description: Configure OpenAI transcription models in OSTT, including gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize, whisper-1, and model_options.
+description: Configure OpenAI transcription models in OSTT, including gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize, whisper-1, and params.
 ---
 
 # OpenAI
@@ -29,56 +29,56 @@ Per command:
 ostt transcribe meeting.mp3 -m openai/gpt-4o-transcribe
 ```
 
-## Model Options
+## Params
 
-Configure persistent options in `~/.config/ostt/ostt.toml`:
+Configure persistent params in `~/.config/ostt/ostt.toml`:
 
 ```toml
-[model_options."openai/gpt-4o-transcribe"]
+[openai.gpt-4o-transcribe.params]
 language = "sv"
 prompt = "Technical meeting about OSTT, Whisper, and Rust."
 temperature = 0.0
 include = ["logprobs"]
 
-[model_options."openai/whisper-1"]
+[openai.whisper-1.params]
 response_format = "verbose_json"
 timestamp_granularities = ["word"]
 
-[model_options."openai/gpt-4o-transcribe-diarize"]
+[openai.gpt-4o-transcribe-diarize.params]
 response_format = "diarized_json"
 chunking_strategy = "auto"
 known_speaker_names = ["agent"]
 ```
 
-Override for one invocation with `--mo key=value`:
+Override for one invocation with `--param key=value`:
 
 ```bash
-ostt transcribe meeting.mp3 -m openai/gpt-4o-transcribe --mo language=sv --mo temperature=0
-ostt transcribe meeting.wav -m openai/gpt-4o-transcribe-diarize --mo chunking_strategy=auto
+ostt transcribe meeting.mp3 -m openai/gpt-4o-transcribe --param language=sv --param temperature=0
+ostt transcribe meeting.wav -m openai/gpt-4o-transcribe-diarize --param chunking_strategy=auto
 ```
 
-List supported options for any model:
+List supported params for any model:
 
 ```bash
-ostt model options openai/gpt-4o-transcribe --format json
+ostt model params openai/gpt-4o-transcribe --format json
 ```
 
-OSTT always returns plain transcript text. Options that require a JSON response are supported only when the response still contains a top-level `text` field.
+OSTT always returns plain transcript text. Params that require a JSON response are supported only when the response still contains a top-level `text` field.
 
-## GPT-4o Options
+## GPT-4o Params
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language` | string | Optional language hint, such as `en` or `sv`. Use when you know the source language. |
 | `prompt` | string | Context text that guides spelling, terminology, names, and writing style. Saved `ostt keyword` terms are used as fallback only when `prompt` is not set. |
 | `temperature` | number | Sampling temperature, `0.0` to `1.0`. Lower values are more deterministic. |
 | `include` | string list | `logprobs` returns token log probabilities from `gpt-4o-transcribe` and `gpt-4o-mini-transcribe`. OSTT still outputs only transcript text. |
 
-## Diarization Options
+## Diarization Params
 
 Use `openai/gpt-4o-transcribe-diarize` for diarization. OSTT sends `response_format = "diarized_json"` by default for this model and returns the combined `text` field.
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language` | string | Optional language hint. |
 | `prompt` | string | Context text that guides vocabulary and style. |
@@ -88,11 +88,11 @@ Use `openai/gpt-4o-transcribe-diarize` for diarization. OSTT sends `response_for
 | `known_speaker_names` | string list | Optional known speaker labels, sent as repeated `known_speaker_names[]` form fields. |
 | `known_speaker_references` | string list | Optional data URL audio references, sent as repeated `known_speaker_references[]` form fields. |
 
-## Whisper Options
+## Whisper Params
 
 `whisper-1` supports timestamp metadata through `verbose_json`. OSTT parses the `text` field and does not expose word or segment metadata in command output.
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language` | string | Optional language hint. |
 | `prompt` | string | Context text for names and vocabulary. Saved `ostt keyword` terms are used as fallback only when `prompt` is not set. |

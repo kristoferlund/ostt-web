@@ -40,7 +40,7 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
         <p>OpenAI's transcription API covers the spectrum from faster GPT-4o Mini to higher-accuracy GPT-4o transcription, diarized GPT-4o output, and legacy whisper-1 timestamp metadata. OSTT lets you switch between them through <code>ostt model</code> without touching your workflow.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;# Or use Whisper timestamps / GPT-4o diarization&#10;# model = &quot;whisper-1&quot;&#10;# model = &quot;gpt-4o-transcribe-diarize&quot;&#10;&#10;&#91;model_options.&quot;openai/gpt-4o-transcribe&quot;&#93;&#10;language = &quot;en&quot;&#10;include = &#91;&quot;logprobs&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with OpenAI, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;# Or use Whisper timestamps / GPT-4o diarization&#10;# model = &quot;whisper-1&quot;&#10;# model = &quot;gpt-4o-transcribe-diarize&quot;&#10;&#10;&#91;openai.gpt-4o-transcribe.params&#93;&#10;language = &quot;en&quot;&#10;include = &#91;&quot;logprobs&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with OpenAI, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -60,11 +60,11 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
     </article>
     <article>
       <h3>gpt-4o-transcribe-diarize</h3>
-      <p>Use OpenAI's diarized JSON response for speaker-segment annotations. OSTT returns the combined transcript text and keeps the provider configuration under <code>model_options.&quot;openai/gpt-4o-transcribe-diarize&quot;</code>.</p>
+      <p>Use OpenAI's diarized JSON response for speaker-segment annotations. OSTT returns the combined transcript text and keeps model-specific params under <code>openai.gpt-4o-transcribe-diarize.params</code>.</p>
     </article>
     <article>
       <h3>Validated request options</h3>
-      <p>Set OpenAI parameters per model with <code>--mo</code> or persistent <code>model_options</code>: <code>language</code>, <code>prompt</code>, <code>temperature</code>, GPT-4o <code>include=logprobs</code>, Whisper timestamp granularities, and diarization fields.</p>
+      <p>Set OpenAI params per model with <code>--param</code> or persistent <code>openai.&lt;model&gt;.params</code>: <code>language</code>, <code>prompt</code>, <code>temperature</code>, GPT-4o <code>include=logprobs</code>, Whisper timestamp granularities, and diarization fields.</p>
     </article>
     <article>
       <h3>Pipe to AI tools</h3>

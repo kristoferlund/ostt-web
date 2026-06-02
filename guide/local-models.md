@@ -40,20 +40,24 @@ ostt retry 2
 You can also manage curated local models from scripts:
 
 ```bash
-ostt model list --provider local
+ostt model list --provider whisper
 ostt model local download turbo
-ostt model select local/turbo
+ostt model local download whisper/turbo
+ostt model select whisper/turbo
 ostt model local remove turbo
 ```
 
-`ostt model local download` shows download progress in the terminal.
+`ostt model local download` shows download progress in the terminal. Local download and remove commands accept either the short model ID (`turbo`) or full provider/model ID (`whisper/turbo`).
 
-## Model Options
+## Whisper Params
 
-All local models use the same Whisper inference options. Set global local defaults under `[providers.local]`, or override them for a specific model under `[model_options."local/<model-id>"]`:
+All local models use the same Whisper inference params. Set global local defaults under `[whisper.params]`, or override them for a specific model under `[whisper.<model-id>.params]`:
 
 ```toml
-[providers.local]
+[whisper]
+output_format = "pcm_s16le -ar 16000"
+
+[whisper.params]
 language = "auto"
 no_timestamps = true
 no_context = true
@@ -61,25 +65,25 @@ temperature = 0.0
 entropy_thold = 2.4
 no_speech_thold = 0.6
 
-[model_options."local/turbo"]
+[whisper.turbo.params]
 language = "en"
 temperature = 0.2
 
-[model_options."local/tiny"]
+[whisper.tiny.params]
 language = "sv"
 temperature = 0.0
 ```
 
-Per-run overrides use the same `--mo key=value` flag as cloud models:
+Per-run overrides use the same `--param key=value` flag as cloud models:
 
 ```bash
-ostt transcribe recording.wav -m local/turbo --mo language=sv --mo temperature=0.0
-ostt model options local/turbo
+ostt transcribe recording.wav -m whisper/turbo --param language=sv --param temperature=0.0
+ostt model params whisper/turbo
 ```
 
-The same option meanings apply whether the option is set globally in `[providers.local]`, per model in `[model_options."local/<model-id>"]`, or for one run with `--mo`.
+The same param meanings apply whether the param is set globally in `[whisper.params]`, per model in `[whisper.<model-id>.params]`, or for one run with `--param`.
 
-| Option | Type | Default | Description |
+| Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | `language` | string | `"auto"` | Language hint for Whisper. Use `"auto"` for language detection or an ISO language code such as `"en"`, `"sv"`, or `"no"` when the language is known. |
 | `no_timestamps` | boolean | `true` | Suppress timestamp output from Whisper. OSTT returns plain transcript text, so this is normally left enabled. |
@@ -97,7 +101,7 @@ Local transcription requires WAV audio in signed 16-bit PCM, 16 kHz, mono. OSTT 
 output_format = "pcm_s16le -ar 16000"
 ```
 
-If your current config is not compatible, the local model flow prompts to update it when you activate a local model.
+For recordings, OSTT uses the `[whisper].output_format` default when the active model provider is `whisper`, so cloud-friendly global `[audio].output_format` can remain unchanged.
 
 The default cloud-friendly MP3 setting still works for cloud providers. Switch to the WAV/PCM setting when using local models.
 

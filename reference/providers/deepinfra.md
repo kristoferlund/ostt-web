@@ -1,5 +1,5 @@
 ---
-description: Configure DeepInfra-hosted speech recognition models in OSTT, including Whisper, Whisper Large V3 Turbo, Voxtral, and model_options.
+description: Configure DeepInfra-hosted speech recognition models in OSTT, including Whisper, Whisper Large V3 Turbo, Voxtral, and params.
 ---
 
 # DeepInfra
@@ -25,10 +25,10 @@ DeepInfra documentation:
 | `deepinfra/mistralai/Voxtral-Mini-3B-2507` | Voxtral Mini speech-recognition model for transcription, translation, and audio understanding. |
 | `deepinfra/mistralai/Voxtral-Small-24B-2507` | Larger Voxtral speech-recognition model. |
 
-## Model Options
+## Params
 
 ```toml
-[model_options."deepinfra/openai/whisper-large-v3"]
+[deepinfra."openai/whisper-large-v3".params]
 language = "sv"
 initial_prompt = "Names: OSTT, DeepInfra, Whisper."
 temperature = 0.0
@@ -38,11 +38,11 @@ chunk_length_s = 30
 ```
 
 ```bash
-ostt transcribe meeting.mp3 -m deepinfra/openai/whisper-large-v3 --mo language=sv --mo initial_prompt=OSTT
-ostt model options deepinfra/openai/whisper-large-v3-turbo --format json
+ostt transcribe meeting.mp3 -m deepinfra/openai/whisper-large-v3 --param language=sv --param initial_prompt=OSTT
+ostt model params deepinfra/openai/whisper-large-v3-turbo --format json
 ```
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language` | string | Optional language hint. |
 | `initial_prompt` | string | Optional text prompt for the first transcription window. Saved `ostt keyword` terms are used as fallback only when `initial_prompt` is not set. |

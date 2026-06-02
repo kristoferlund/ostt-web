@@ -1,5 +1,5 @@
 ---
-description: Configure ElevenLabs Scribe models in OSTT, including Scribe v2, Scribe v1, keyterms, diarization, language code, entity detection, and model_options.
+description: Configure ElevenLabs Scribe models in OSTT, including Scribe v2, Scribe v1, keyterms, diarization, language code, entity detection, and params.
 ---
 
 # ElevenLabs
@@ -15,10 +15,10 @@ API documentation: [ElevenLabs speech-to-text](https://elevenlabs.io/docs/api-re
 | `elevenlabs/scribe_v2` | Latest Scribe model. Supports v2-only options such as `no_verbatim`, entity options, and speaker role detection. |
 | `elevenlabs/scribe_v1` | Previous Scribe model. |
 
-## Model Options
+## Params
 
 ```toml
-[model_options."elevenlabs/scribe_v2"]
+[elevenlabs.scribe_v2.params]
 language_code = "sv"
 diarize = true
 keyterms = ["OSTT", "Scribe", "Whisper"]
@@ -27,11 +27,11 @@ timestamps_granularity = "word"
 ```
 
 ```bash
-ostt transcribe interview.mp3 -m elevenlabs/scribe_v2 --mo diarize=true --mo keyterms=OSTT,Scribe
-ostt model options elevenlabs/scribe_v2 --format json
+ostt transcribe interview.mp3 -m elevenlabs/scribe_v2 --param diarize=true --param keyterms=OSTT,Scribe
+ostt model params elevenlabs/scribe_v2 --format json
 ```
 
-| Option | Type | Description |
+| Param | Type | Description |
 | --- | --- | --- |
 | `language_code` | string | Optional language code. Set when known to improve accuracy. |
 | `keyterms` | string list | Domain vocabulary. Saved `ostt keyword` terms are used as fallback only when `keyterms` is not set. |

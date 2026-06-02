@@ -1,5 +1,5 @@
 ---
-description: Full reference for ostt.toml — audio device, visualization, model options, popup window, processing defaults, and all configuration options with examples.
+description: Full reference for ostt.toml — audio device, visualization, transcription params, popup window, processing defaults, and all configuration options with examples.
 ---
 
 # Configuration
@@ -80,7 +80,7 @@ Output audio format for API calls. All audio is saved as mono with ffmpeg handli
 | `"flac -ar 16000"` | Lossless | ~20 MB/hour | Lossless, no quality loss |
 | `"pcm_s16le -ar 16000"` | Uncompressed | Largest | Required for local transcription |
 
-Local models require `output_format = "pcm_s16le -ar 16000"`. The local model activation flow can update this setting for you.
+Local models use `output_format = "pcm_s16le -ar 16000"`. Configure it under `[whisper]` or `[whisper."model"]` when you want only local Whisper recordings to use that format.
 
 ### visualization
 
@@ -91,62 +91,68 @@ Display mode during recording.
 | `"spectrum"` | Frequency spectrum showing energy distribution across frequency bands, optimized for the human voice range (100--1500 Hz) |
 | `"waveform"` | Time-domain waveform showing amplitude over time, classic oscilloscope-style display |
 
-## Model Options
+## Transcription Params
 
-Transcription request options are model-scoped. Put persistent options under `[model_options."provider/model"]`:
+Transcription request params are configured under provider tables. Provider params apply to every model for that provider; model params override provider params:
 
 ```toml
-[model_options."deepgram/nova-3"]
+[deepgram.params]
+smart_format = true
+
+[deepgram.nova-3.params]
 smart_format = true
 diarize = true
 keyterm = ["OSTT", "VitePress"]
 
-[model_options."openai/gpt-4o-transcribe"]
+[openai.gpt-4o-transcribe.params]
 language = "en"
 prompt = "Technical dictation with project names."
 
-[model_options."local/turbo"]
+[whisper.turbo.params]
 language = "auto"
 temperature = 0.0
 no_context = true
 ```
 
-For a single invocation, pass repeatable `--mo key=value` overrides:
+For a single invocation, pass repeatable `--param key=value` overrides:
 
 ```bash
-ostt record --mo smart_format=true --mo diarize=true
-ostt transcribe meeting.mp3 -m deepgram/nova-3 --mo keyterm=OSTT,VitePress
-ostt retry 2 -m local/turbo --mo language=en --mo temperature=0.0
+ostt record --param smart_format=true --param diarize=true
+ostt transcribe meeting.mp3 -m deepgram/nova-3 --param keyterm=OSTT,VitePress
+ostt retry 2 -m whisper/turbo --param language=en --param temperature=0.0
 ```
 
-`--mo` overrides apply only to the current command. They do not change `ostt.toml` and they take precedence over persistent options for the selected model.
+`--param` overrides apply only to the current command. They do not change `ostt.toml` and they take precedence over persistent params for the selected model.
 
 Validation happens before transcription starts:
 
 - keys must be supported by the selected provider/model
-- duplicate `--mo` keys fail
-- values must match the model option type
+- duplicate `--param` keys fail
+- values must match the param type
 - provider-specific ranges and conflicts are checked
-- unknown keys show the valid option names for that model
+- unknown keys show the valid param names for that model
 
-CLI list values use commas, for example `--mo keyterm=OSTT,VitePress`. TOML list values must use TOML list syntax, for example `keyterm = ["OSTT", "VitePress"]`.
+CLI list values use commas, for example `--param keyterm=OSTT,VitePress`. TOML list values must use TOML list syntax, for example `keyterm = ["OSTT", "VitePress"]`.
 
-To list supported options for a model, run:
+To list supported params for a model, run:
 
 ```bash
-ostt model options
-ostt model options openai/gpt-4o-transcribe
-ostt model options local/turbo --format json
+ostt model params
+ostt model params openai/gpt-4o-transcribe
+ostt model params whisper/turbo --format json
 ```
 
-See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific option tables.
+See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific param tables.
 
 ## Local Transcription
 
-Local models are selected and managed with `ostt model`. The `[providers.local]` section controls global local Whisper inference defaults. Per-model overrides use the same `[model_options."provider/model"]` format as cloud models, for example `[model_options."local/turbo"]`. The option meanings are the same in both places.
+Local models are selected and managed with `ostt model`. Built-in local Whisper uses the `whisper` provider. `[whisper.params]` controls global Whisper inference defaults; `[whisper."model".params]` overrides them for a specific model. The param meanings are the same in both places.
 
 ```toml
-[providers.local]
+[whisper]
+output_format = "pcm_s16le -ar 16000"
+
+[whisper.params]
 language = "auto"
 no_timestamps = true
 no_context = true
@@ -155,7 +161,7 @@ entropy_thold = 2.4
 no_speech_thold = 0.6
 ```
 
-| Option | Default | Description |
+| Param | Default | Description |
 | --- | --- | --- |
 | `language` | `"auto"` | Language hint for local inference. Use `"auto"` or an ISO code such as `"en"` or `"sv"`. |
 | `no_timestamps` | `true` | Suppress timestamp output. |
