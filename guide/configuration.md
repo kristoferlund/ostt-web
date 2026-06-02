@@ -104,6 +104,11 @@ keyterm = ["OSTT", "VitePress"]
 [model_options."openai/gpt-4o-transcribe"]
 language = "en"
 prompt = "Technical dictation with project names."
+
+[model_options."local/turbo"]
+language = "auto"
+temperature = 0.0
+no_context = true
 ```
 
 For a single invocation, pass `--mo key=value`:
@@ -119,7 +124,7 @@ See [Providers and Models](../reference/providers.md) for supported model IDs an
 
 ## Local Transcription
 
-Local models are selected and managed with `ostt model`. The `[providers.local]` section controls local Whisper inference defaults.
+Local models are selected and managed with `ostt model`. The `[providers.local]` section controls global local Whisper inference defaults. Per-model overrides use the same `[model_options."provider/model"]` format as cloud models, for example `[model_options."local/turbo"]`. The option meanings are the same in both places.
 
 ```toml
 [providers.local]

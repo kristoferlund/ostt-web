@@ -48,6 +48,46 @@ ostt model local remove turbo
 
 `ostt model local download` shows download progress in the terminal.
 
+## Model Options
+
+All local models use the same Whisper inference options. Set global local defaults under `[providers.local]`, or override them for a specific model under `[model_options."local/<model-id>"]`:
+
+```toml
+[providers.local]
+language = "auto"
+no_timestamps = true
+no_context = true
+temperature = 0.0
+entropy_thold = 2.4
+no_speech_thold = 0.6
+
+[model_options."local/turbo"]
+language = "en"
+temperature = 0.2
+
+[model_options."local/tiny"]
+language = "sv"
+temperature = 0.0
+```
+
+Per-run overrides use the same `--mo key=value` flag as cloud models:
+
+```bash
+ostt transcribe recording.wav -m local/turbo --mo language=sv --mo temperature=0.0
+ostt model options local/turbo
+```
+
+The same option meanings apply whether the option is set globally in `[providers.local]`, per model in `[model_options."local/<model-id>"]`, or for one run with `--mo`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `language` | string | `"auto"` | Language hint for Whisper. Use `"auto"` for language detection or an ISO language code such as `"en"`, `"sv"`, or `"no"` when the language is known. |
+| `no_timestamps` | boolean | `true` | Suppress timestamp output from Whisper. OSTT returns plain transcript text, so this is normally left enabled. |
+| `no_context` | boolean | `true` | Prevent Whisper from conditioning each segment on previously decoded text. This can reduce repetition and hallucinated carry-over between segments. |
+| `temperature` | number | `0.0` | Sampling temperature. `0.0` uses deterministic greedy decoding; higher values make decoding less deterministic. Valid range: `0.0` to `1.0`. |
+| `entropy_thold` | number | `2.4` | Entropy threshold used by Whisper fallback behavior. Higher entropy indicates uncertain decoding. Must be `>= 0.0`. |
+| `no_speech_thold` | number | `0.6` | No-speech probability threshold. Higher values make Whisper less likely to treat audio as silence. Valid range: `0.0` to `1.0`. |
+
 ## Audio Format
 
 Local transcription requires WAV audio in signed 16-bit PCM, 16 kHz, mono. OSTT records mono automatically, and ffmpeg handles resampling through this audio config:
