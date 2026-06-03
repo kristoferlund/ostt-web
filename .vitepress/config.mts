@@ -137,6 +137,7 @@ export default defineConfig({
     nav: [
       { text: 'Start', link: '/guide/getting-started' },
       { text: 'Why OSTT?', link: '/guide/why-ostt' },
+      { text: 'Models', link: '/guide/choosing-a-model' },
       { text: 'Processing', link: '/guide/processing' },
       { text: 'Platforms', link: '/guide/platforms' },
       { text: 'Reference', link: '/reference/providers' }
@@ -162,7 +163,9 @@ export default defineConfig({
       {
         text: 'Local Models',
         items: [
+          { text: 'Choosing a Model', link: '/guide/choosing-a-model' },
           { text: 'Overview', link: '/guide/local-models' },
+          { text: 'External Engines', link: '/guide/external-engines' },
           { text: 'GPU Acceleration', link: '/guide/gpu-acceleration' },
           { text: 'Daemon Mode', link: '/guide/daemon' }
         ]

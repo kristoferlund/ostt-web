@@ -1,10 +1,10 @@
 ---
-description: "Complete reference for all OSTT CLI commands: record, transcribe, retry, replay, process, auth, model, history, keyword, config, logs, and shell completions."
+description: "Complete reference for all OSTT CLI commands and output modes: record, transcribe, retry, replay, process, paste, auth, model, history, keyword, replace, config, logs, and shell completions."
 ---
 
 # Commands
 
-If no command is specified, `record` is used by default. Record flags (`-c`, `-o`, `-p`, `-m`, `--param`) can be used without explicitly typing `record`.
+If no command is specified, `record` is used by default. Record flags (`-c`, `--paste`, `-o`, `-p`, `-m`, `--param`) can be used without explicitly typing `record`.
 
 ## Default: Record
 
@@ -12,6 +12,7 @@ If no command is specified, `record` is used by default. Record flags (`-c`, `-o
 ostt                    # Record with real-time visualization, print to stdout
 ostt record             # Explicit record command
 ostt -c                 # Record and copy to clipboard
+ostt --paste            # Record and paste into the focused app
 ostt -o notes.txt       # Record and write to file
 ostt -p clean           # Record and process with "clean" action
 ostt -p clean -c        # Record, process, copy result
@@ -26,6 +27,7 @@ Alias: `ostt r`.
 | Flag | Description |
 | --- | --- |
 | `-c` / `--clipboard` | Copy transcription to clipboard |
+| `--paste` | Paste transcription into the focused app using `[output.paste]` settings |
 | `-o FILE` / `--output FILE` | Write transcription to file |
 | `-p [ACTION]` / `--process [ACTION]` | Enable processing. Optionally specify action ID to skip picker. |
 | `-m PROVIDER/MODEL` / `--model PROVIDER/MODEL` | Override transcription model for this run. |
@@ -35,6 +37,8 @@ Alias: `ostt r`.
 
 ```bash
 ostt launch -c              # Open popup, record, copy to clipboard
+ostt launch --paste         # Open popup, record, paste into focused app
+ostt launch --paste -p clean # Popup, process with "clean", paste
 ostt launch -c -p clean     # Popup, record, process with "clean", copy
 ostt launch -m whisper/turbo -c # Popup, override model, copy
 ostt launch -m whisper/turbo --param language=sv -c
@@ -42,6 +46,8 @@ ostt launch -- -c -p cmd    # Pass flags through to the instance
 ```
 
 `launch` spawns a popup terminal with `ostt` running inside. If a recording process is already running, pressing the hotkey again sends `SIGUSR1`, which stops recording and triggers transcription.
+
+With `--paste`, the popup closes before OSTT sends the configured paste shortcut. This lets the desktop return focus to the previous app first.
 
 Configure popup window settings in `~/.config/ostt/ostt.toml` under `[popup]`.
 
@@ -54,6 +60,7 @@ Transcribe pre-recorded audio files using the configured provider/model.
 ```bash
 ostt transcribe recording.ogg              # Transcribe to stdout
 ostt transcribe voice-memo.mp3 -c          # Transcribe and copy to clipboard
+ostt transcribe voice-memo.mp3 --paste     # Transcribe and paste into focused app
 ostt transcribe meeting.wav -o transcript.txt   # Transcribe to file
 ostt transcribe audio.ogg -p clean -c      # Transcribe, process, copy
 ostt transcribe audio.ogg -m openai/whisper-1 # Override model for this run
@@ -63,7 +70,7 @@ ostt transcribe audio.ogg | grep keyword   # Pipe to other commands
 
 ### Flags
 
-Same as record: `-c`, `-o`, `-p`, `-m`, `--param`.
+Same as record: `-c`, `--paste`, `-o`, `-p`, `-m`, `--param`.
 
 Alias: `ostt t`.
 
@@ -75,6 +82,7 @@ Re-transcribe a previous recording using the current model/provider settings. Us
 ostt retry              # Re-transcribe most recent recording
 ostt retry 3            # Re-transcribe recording #3
 ostt retry -c           # Re-transcribe and copy to clipboard
+ostt retry --paste      # Re-transcribe and paste into focused app
 ostt retry -p clean     # Re-transcribe and process
 ostt retry -m groq/whisper-large-v3 # Override model for this run
 ostt retry -m openai/gpt-4o-transcribe --param prompt=ProjectName -c
@@ -88,6 +96,7 @@ Recording indexes are 1-based, with `1` being the most recent.
 | --- | --- |
 | `N` | Recording index (1 = most recent) |
 | `-c` / `--clipboard` | Copy to clipboard |
+| `--paste` | Paste into the focused app |
 | `-o FILE` / `--output FILE` | Write to file |
 | `-p [ACTION]` / `--process [ACTION]` | Enable processing |
 | `-m PROVIDER/MODEL` / `--model PROVIDER/MODEL` | Override transcription model for this run |
@@ -115,6 +124,7 @@ ostt process                    # Process most recent, show action picker
 ostt process clean              # Process most recent with "clean" action
 ostt process 3                  # Process #3, show picker
 ostt process 3 clean -c         # Process #3 with "clean", copy to clipboard
+ostt process 3 clean --paste    # Process #3 with "clean", paste into focused app
 ostt process list               # List configured actions
 ostt process list --format json # List configured actions as JSON
 ```
@@ -129,6 +139,7 @@ Alias: `ostt p`.
 | `ACTION` | Action ID to run directly, skip picker |
 | `list` | List all configured actions |
 | `-c` / `--clipboard` | Copy result to clipboard |
+| `--paste` | Paste result into the focused app |
 | `-o FILE` / `--output FILE` | Write result to file |
 | `--format table\|json` | Output format for `ostt process list` |
 
@@ -160,12 +171,13 @@ ostt model current                      # Show active model
 ostt model params                       # List params for active model
 ostt model params openai/gpt-4o-transcribe --format json
 ostt model select deepgram/nova-3       # Select active cloud model
+ostt model select http/cohere-transcribe # Select configured HTTP engine
 ostt model local download turbo         # Download local model
 ostt model local download whisper/turbo # Download local model by full ID
 ostt model local remove turbo           # Remove local model
 ```
 
-The model picker lets you choose between cloud and local providers. Cloud models are shown for providers with saved credentials. Local models can be downloaded, activated, deleted, inspected, or added from a custom Hugging Face/direct model URL.
+The model picker lets you choose between cloud, built-in local, and configured external providers. Cloud models are shown for providers with saved credentials. Local models can be downloaded, activated, deleted, inspected, or added from a custom Hugging Face/direct model URL. Configured `command/*` and `http/*` external profiles are selectable too.
 
 `ostt model params [PROVIDER/MODEL]` lists supported `--param` keys for a model. If no model is passed, it uses the active model. It supports the same list formatting flag as other list commands: `--format table|json`.
 
@@ -218,6 +230,73 @@ ostt keyword remove Kubernetes # Remove a keyword
 ```
 
 Alias: `ostt k`.
+
+## Replace
+
+Manage deterministic, non-AI text replace rules for final transcript cleanup. Use replace for casing, acronyms, product names, and common misrecognitions after the model has already transcribed the audio.
+
+```bash
+ostt replace # Interactive replace manager
+```
+
+Replace rules are configured under `[text.replace]` in `~/.config/ostt/ostt.toml`:
+
+```toml
+[text.replace]
+"ostt" = "OSTT"
+"api" = "API"
+"typescript" = "TypeScript"
+"open ai" = "OpenAI"
+```
+
+Rules are literal, case-insensitive, word-boundary aware, provider-neutral, and applied before processing actions, output, and history saves.
+
+Keywords and replace rules solve different problems:
+
+- `ostt keyword` helps providers recognize terms during transcription.
+- `ostt replace` fixes final text after transcription, provider-independently.
+
+## Paste Output
+
+Paste mode is an explicit output mode for sending the final transcript directly into the currently focused app:
+
+```bash
+ostt --paste
+ostt launch --paste
+ostt launch --paste -p clean
+ostt transcribe voice.ogg --paste
+ostt retry 2 --paste
+ostt process clean --paste
+```
+
+It is mutually exclusive with clipboard and file output:
+
+```bash
+ostt --paste -c           # error: choose one output mode
+ostt --paste -o notes.txt # error: choose one output mode
+```
+
+Paste uses the clipboard as transport: OSTT saves the current clipboard when possible, copies the final text, sends the configured paste shortcut, then restores the previous clipboard when enabled.
+
+Defaults:
+
+- macOS: `cmd+v`
+- Omarchy: `shift+insert`
+- other Linux desktops: `ctrl+v`
+
+Configure paste under `[output.paste]`:
+
+```toml
+[output.paste]
+paste_key = "ctrl+v"
+restore_clipboard = true
+restore_delay_ms = 750
+post_popup_delay_ms = 1000
+```
+
+Linux does not have one universal paste shortcut. GUI apps usually accept `ctrl+v`; terminals often use `ctrl+shift+v`; Omarchy's `SUPER+v` binding sends `shift+insert` to the focused app. If paste works in one app class but not another, set `paste_key` for the workflow you bind to that hotkey.
+
+On macOS, paste mode sends `cmd+v` with system automation. macOS may ask for Accessibility permission for the terminal app running OSTT, such as Ghostty. Approve it in System Settings > Privacy & Security > Accessibility.
 
 ## Config
 

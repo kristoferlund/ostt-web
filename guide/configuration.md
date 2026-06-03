@@ -1,5 +1,5 @@
 ---
-description: Full reference for ostt.toml — audio device, visualization, transcription params, popup window, processing defaults, and all configuration options with examples.
+description: Full reference for ostt.toml — audio device, visualization, transcription params, paste output, text replace rules, popup window, processing defaults, and all configuration options with examples.
 ---
 
 # Configuration
@@ -144,6 +144,77 @@ ostt model params whisper/turbo --format json
 
 See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific param tables.
 
+## Text Replace
+
+Text replace rules are deterministic, provider-neutral post-transcription find-and-replace rules. They fix final text casing, acronyms, project names, and common misrecognitions without using AI.
+
+```toml
+[text.replace]
+"ostt" = "OSTT"
+"api" = "API"
+"typescript" = "TypeScript"
+"github" = "GitHub"
+"open ai" = "OpenAI"
+```
+
+You can also manage rules interactively:
+
+```bash
+ostt replace
+```
+
+Replace rules are applied after transcription and before processing actions, output, and history saves. This means a processing action receives already-fixed text such as `OSTT API` when those rules are configured.
+
+Matching behavior:
+
+- keys are literal text, not regex patterns
+- matching is case-insensitive
+- word boundaries prevent replacing inside larger words, so `api` does not change `capital`
+- phrase boundaries apply at phrase edges, so `open ai.` can become `OpenAI.`
+- target values are preserved exactly as configured
+- replace output is not recursively processed by later rules
+
+Keywords and replace rules have different jobs. Use `ostt keyword` when the model mishears a term. Use `[text.replace]` when the model hears the term but formats it wrong.
+
+## Paste Output
+
+Paste output sends the final transcript into the currently focused application. It is opt-in with `--paste`; stdout remains the default output mode.
+
+```bash
+ostt --paste
+ostt launch --paste
+ostt launch --paste -p clean
+ostt transcribe voice.ogg --paste
+ostt retry 2 --paste
+ostt process clean --paste
+```
+
+Configure paste behavior under `[output.paste]`:
+
+```toml
+[output.paste]
+paste_key = "ctrl+v"
+restore_clipboard = true
+restore_delay_ms = 750
+post_popup_delay_ms = 1000
+```
+
+Default `paste_key` values:
+
+- macOS: `cmd+v`
+- Omarchy: `shift+insert`
+- other Linux desktops: `ctrl+v`
+
+`restore_clipboard` controls whether OSTT restores the previous clipboard contents after pasting. Paste mode uses the clipboard as transport, so disabling restore leaves the transcript on the clipboard.
+
+`restore_delay_ms` gives the focused app time to read the clipboard before OSTT restores the previous contents. Increase it if paste works intermittently or the old clipboard appears instead of the transcript.
+
+`post_popup_delay_ms` is used by `ostt launch --paste`. The popup closes first, then a detached helper waits for focus to return before sending the paste shortcut.
+
+Linux paste shortcuts differ by app and desktop. GUI apps commonly use `ctrl+v`; terminals often use `ctrl+shift+v`; Omarchy maps `SUPER+v` to `shift+insert`. OSTT cannot reliably detect whether a paste succeeded, so it does not try multiple shortcuts automatically.
+
+On macOS, paste mode uses `osascript`/System Events to send `cmd+v`. macOS may prompt for Accessibility permission for the terminal app running OSTT, such as Ghostty. If paste does not work, open System Settings > Privacy & Security > Accessibility and enable the app shown in the permission prompt.
+
 ## Local Transcription
 
 Local models are selected and managed with `ostt model`. Built-in local Whisper uses the `whisper` provider. `[whisper.params]` controls global Whisper inference defaults; `[whisper."model".params]` overrides them for a specific model. The param meanings are the same in both places.
@@ -171,6 +242,27 @@ no_speech_thold = 0.6
 | `no_speech_thold` | `0.6` | No-speech probability threshold. |
 
 See [Local Models](./local-models.md) for setup, storage, and audio-format requirements.
+
+## External Engines
+
+External command and HTTP engines are configured as provider/model profiles. Use `command/<profile>` for shell-command wrappers and `http/<profile>` for OpenAI-compatible `/v1/audio/transcriptions` endpoints:
+
+```toml
+[command.parakeet-fast]
+command = "~/.config/ostt/backends/parakeet-wrapper {audio_path}"
+output_format = "pcm_s16le -ar 16000"
+
+[http.cohere-transcribe]
+endpoint = "http://localhost:8080/v1/audio/transcriptions"
+output_format = "pcm_s16le -ar 16000"
+
+[http.cohere-transcribe.params]
+model = "cohere-transcribe"
+language = "en"
+response_format = "json"
+```
+
+See [External Engines](./external-engines.md) for full setup examples and rationale.
 
 ## Processing Actions
 

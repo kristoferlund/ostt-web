@@ -58,7 +58,7 @@ terminal = "ghostty"
 4. Replace the default script with the full path to OSTT:
 
 ```bash
-/opt/homebrew/bin/ostt launch -c
+/opt/homebrew/bin/ostt launch --paste
 ```
 
 Use the path from `which ostt` if yours differs.
@@ -76,7 +76,7 @@ The suggested hotkey differs from the one used on Linux platforms because macOS 
 1. Press your hotkey to open the popup and start recording.
 2. Speak.
 3. Press the same hotkey again to stop recording and transcribe.
-4. Paste with `Cmd+V`.
+4. With `--paste`, OSTT inserts the text into the app that regains focus after the popup closes.
 
 The second hotkey press runs `ostt launch` again. OSTT detects the existing recording process and sends it a signal to finish recording.
 
@@ -86,16 +86,17 @@ Create additional Shortcuts.app shortcuts for different workflows:
 
 | Shortcut | Shell command | Result |
 | --- | --- | --- |
-| OSTT | `/path/to/ostt launch -c` | Record, transcribe, copy |
-| OSTT Clean | `/path/to/ostt launch -c -p clean` | Record, clean up text, copy |
-| OSTT Translate | `/path/to/ostt launch -c -p translate-en` | Record, translate, copy |
+| OSTT | `/path/to/ostt launch --paste` | Record, transcribe, paste |
+| OSTT Clean | `/path/to/ostt launch --paste -p clean` | Record, clean up text, paste |
+| OSTT Copy | `/path/to/ostt launch -c` | Record, transcribe, copy |
 
 ## Output Options
 
 ```bash
 ostt launch -c              # Copy to clipboard
+ostt launch --paste         # Paste into focused app
 ostt launch -o file.txt     # Write to file
-ostt launch -c -p clean     # Process and copy
+ostt launch --paste -p clean # Process and paste
 ```
 
 ## Troubleshooting
@@ -113,6 +114,16 @@ Test launch directly:
 ostt launch -c
 ```
 
+Test paste output directly:
+
+```bash
+ostt launch --paste
+```
+
 If clipboard output is missing, make sure `-c` is in the shell command. Without `-c`, output goes to stdout inside the popup.
+
+Paste output uses `cmd+v` by default on macOS. It may require Accessibility permission for the terminal or automation process that sends the paste shortcut.
+
+When macOS shows an Accessibility Access prompt such as `"Ghostty" would like to control this computer using accessibility features`, choose Open System Settings and enable the app under Privacy & Security > Accessibility. If you use kitty or Alacritty instead of Ghostty, approve that terminal app.
 
 macOS full-screen apps run in their own Space. Other windows cannot appear on top of a full-screen Space, so switch out of full-screen mode if the popup is hidden.

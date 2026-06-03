@@ -1,6 +1,6 @@
 ---
 layout: false
-description: Open source, terminal-native speech-to-text for Linux and macOS. Record from a hotkey, transcribe with cloud or local models, and route output to your clipboard, files, AI prompts, or shell commands.
+description: Open source, terminal-native speech-to-text for Linux and macOS. Record from a hotkey, transcribe with cloud or local models, and paste text into the focused app or route it to your clipboard, files, AI prompts, and shell commands.
 ---
 
 <header class="site-header">
@@ -19,7 +19,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
   <section class="landing-hero">
     <span class="logo hero-logo" aria-label="OSTT"></span>
     <h1>Open source voice-to-text for Linux. And macOS.</h1>
-    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe with your chosen cloud or local model, then send the result to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
+    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe with your chosen cloud or local model, then paste the result into the focused app or route it to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -43,6 +43,10 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
       <p>Global hotkey setup for Omarchy/Hyprland, GNOME, KDE, and other Linux desktops, with macOS support too.</p>
     </article>
     <article>
+      <h3>Paste into any focused app</h3>
+      <p>Use <code>ostt launch --paste</code> to dictate into editors, browsers, chats, issue trackers, AI apps, and terminals. OSTT closes the popup, waits for focus to return, then sends the configured paste shortcut.</p>
+    </article>
+    <article>
       <h3>Cloud or local models</h3>
       <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or local Whisper-compatible models. Switch when quality, latency, price, privacy, or offline access matters.</p>
     </article>
@@ -64,7 +68,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
     </article>
     <article>
       <h3>Bind it to a hotkey</h3>
-      <p>Launch OSTT from anywhere. Press your global hotkey to open the recorder, speak in any application, then stop and copy the transcription to your clipboard.</p>
+      <p>Launch OSTT from anywhere. Press your global hotkey to open the recorder, speak in any application, then stop and paste the transcription back into the app that regains focus.</p>
     </article>
     <article>
       <h3>Open source, no subscription</h3>
@@ -80,7 +84,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
         <div><strong>1. Record</strong><span>Use the terminal or a global hotkey popup.</span></div>
         <div><strong>2. Transcribe</strong><span>Choose the provider and model that fit the job.</span></div>
         <div><strong>3. Process</strong><span>Optionally run AI prompts or shell commands.</span></div>
-        <div><strong>4. Send</strong><span>Print, copy, write to a file, or pipe onward.</span></div>
+        <div><strong>4. Send</strong><span>Paste into the focused app, print, copy, write to a file, or pipe onward.</span></div>
       </div>
     </section>
   </div>
@@ -89,10 +93,10 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>Transcribe once. Route anywhere.</h2>
-      <p>OSTT's pipeline plugs transcription into anything you already run. Process audio files from scripts and CI jobs. Wire the output to OpenCode, Claude Code, or any AI tool. Pipe through custom bash commands. The <code>-p</code> flag puts it all one flag away.</p>
+      <p>OSTT's pipeline plugs transcription into anything you already run. Dictate directly into the focused app with <code>--paste</code>. Process audio files from scripts and CI jobs. Wire the output to OpenCode, Claude Code, or any AI tool. Pipe through custom bash commands. The <code>-p</code> flag puts it all one flag away.</p>
     </div>
     <div class="command-card">
-      <pre><code># Record and transcribe, run &quot;clean&quot; action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Transcribe mp3, run &quot;summary&quot; action, write to file&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Process second latest recording, run &quot;cmd&quot; action, print to stdout&#10;ostt process 2 cmd</code></pre>
+      <pre><code># Open popup, record, clean up, paste into focused app&#10;ostt launch --paste -p clean&#10;&#10;# Record and transcribe, run &quot;clean&quot; action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Transcribe mp3, run &quot;summary&quot; action, write to file&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Process second latest recording, run &quot;cmd&quot; action, print to stdout&#10;ostt process 2 cmd</code></pre>
     </div>
   </section>
 

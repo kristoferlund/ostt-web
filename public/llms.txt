@@ -1,6 +1,6 @@
 # OSTT
 
-> Open source, terminal-native speech-to-text for Linux and macOS. Provider-agnostic, scriptable, and bring-your-own-key. Record from a hotkey, transcribe with the model you choose, and route output to the clipboard, files, AI prompts, or shell commands.
+> Open source, terminal-native speech-to-text for Linux and macOS. Provider-agnostic, scriptable, and bring-your-own-key. Record from a hotkey, transcribe with the model you choose, paste into the focused app, or route output to the clipboard, files, AI prompts, and shell commands.
 
 - Source: https://github.com/kristoferlund/ostt
 - License: MIT
@@ -8,27 +8,29 @@
 
 ## Documentation
 
-- [Getting Started](https://ostt.ai/guide/getting-started): Install OSTT, choose a transcription model, record from the terminal, and set up a global hotkey.
+- [Getting Started](https://ostt.ai/guide/getting-started): Install OSTT, choose a transcription model, record from the terminal, set up a global hotkey, use paste output, and configure text replace rules.
 - [Why OSTT?](https://ostt.ai/guide/why-ostt): Why OSTT exists and how it compares to GUI dictation apps.
 - [Installation](https://ostt.ai/guide/installation): Install via shell script, Homebrew, AUR, .deb, .rpm, or from source. Runtime dependency setup for each platform.
 - [Changelog](https://ostt.ai/guide/changelog): Release notes and notable changes for OSTT.
-- [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, auth, model, history, keywords, shell completions.
+- [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, paste output, auth, model, history, keyword, replace, config, logs, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions.
-- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, providers, popup, processing defaults.
+- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, transcription params, paste output, text replace rules, popup, processing defaults.
+- [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Practical recommendations for choosing cloud providers, built-in local Whisper, external command/HTTP engines, Swedish/EU models, offline privacy, and retry strategies.
 
 ## Local Models
 
 - [Local Models](https://ostt.ai/guide/local-models): Run offline Whisper-compatible transcription. No API key required.
+- [External Engines](https://ostt.ai/guide/external-engines): Connect command-based ASR tools and OpenAI-compatible HTTP transcription endpoints, including local or remote custom engines.
 - [GPU Acceleration](https://ostt.ai/guide/gpu-acceleration): Metal (macOS), CUDA (NVIDIA Linux), and Vulkan (AMD/Intel Linux) GPU backends.
 - [Daemon Mode](https://ostt.ai/guide/daemon): Keep a local model loaded in a background process. Install as systemd or launchd service.
 
 ## Platform Setup
 
-- [Platform Setup Overview](https://ostt.ai/guide/platforms): Global hotkey setup overview for all supported platforms.
-- [macOS Setup](https://ostt.ai/guide/platforms/macos): Shortcuts.app hotkey setup on macOS.
-- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): Keybinding and window rules on Hyprland.
-- [GNOME Setup](https://ostt.ai/guide/platforms/gnome): Custom Shortcuts setup on GNOME.
-- [KDE Plasma Setup](https://ostt.ai/guide/platforms/kde): Custom Shortcuts setup on KDE Plasma.
+- [Platform Setup Overview](https://ostt.ai/guide/platforms): Global hotkey setup overview and paste output defaults for all supported platforms.
+- [macOS Setup](https://ostt.ai/guide/platforms/macos): Shortcuts.app hotkey setup on macOS, with `cmd+v` paste output.
+- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): Keybinding, window rules, and `shift+insert` paste output on Omarchy/Hyprland.
+- [GNOME Setup](https://ostt.ai/guide/platforms/gnome): Custom Shortcuts setup on GNOME, with `ctrl+v` paste output notes.
+- [KDE Plasma Setup](https://ostt.ai/guide/platforms/kde): Custom Shortcuts setup on KDE Plasma, with `ctrl+v` paste output notes.
 
 ## Reference
 
@@ -43,8 +45,10 @@
 - [Mistral](https://ostt.ai/reference/providers/mistral): Mistral Voxtral transcription models and configuration options for OSTT.
 - [Troubleshooting](https://ostt.ai/guide/troubleshooting): Solutions for common issues — audio input, transcription failures, clipboard, popup, PATH, and architecture.
 
-## Provider Landing Pages
+## Landing Pages
 
+- [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, paste output, local engines, cloud providers, retry, and developer workflows.
+- [OSTT vs Hyprwhspr](https://ostt.ai/lp/ostt-vs-hyprwhspr): Compare OSTT and Hyprwhspr for Linux dictation, system-wide paste, local and cloud models, external engines, retry, and terminal-native speech-to-text.
 - [OpenAI Whisper CLI](https://ostt.ai/lp/openai-whisper-cli): Use OpenAI Whisper transcription from the terminal with OSTT.
 - [GPT-4o Transcribe Linux](https://ostt.ai/lp/gpt-4o-transcribe-linux): Use OpenAI GPT-4o transcription models from a Linux terminal workflow.
 - [Deepgram Nova 3 CLI](https://ostt.ai/lp/deepgram-nova-3-cli): Use Deepgram Nova 3 transcription from the terminal with OSTT.

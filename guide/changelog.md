@@ -4,6 +4,20 @@ description: Release notes and notable changes for OSTT.
 
 # Changelog
 
+## 0.0.19 - 2026-06-03
+
+### Added
+
+- Added `--paste` output mode for record, transcribe, retry, process, and launch flows, using configurable `[output.paste]` clipboard-backed paste settings.
+- Added deterministic text replace rules configured under `[text.replace]`, applied before processing/output/history, with an `ostt replace` TUI for managing rules.
+- Added external `command/<profile>` transcription providers that run configured shell commands with `{audio_path}` and read transcript text from stdout.
+- Added external `http/<profile>` transcription providers for OpenAI-compatible `/v1/audio/transcriptions` endpoints with validated request params.
+
+### Changed
+
+- `ostt model` now uses a unified picker with custom, cloud, and local models in one list.
+- `ostt model list` and `ostt model select` now support configured `command/*` and `http/*` profiles.
+
 ## 0.0.18 - 2026-06-02
 
 ### Changed

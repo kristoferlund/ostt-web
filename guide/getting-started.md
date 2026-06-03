@@ -1,5 +1,5 @@
 ---
-description: Install OSTT, choose a transcription model, record from the terminal, and set up a global hotkey. The quickest path from zero to working voice input.
+description: Install OSTT, choose a transcription model, record from the terminal, set up paste output, and bind a global hotkey. The quickest path from zero to working voice input.
 ---
 
 # Getting Started
@@ -15,11 +15,11 @@ OSTT is built for people who treat the terminal as a normal place for voice inpu
 - **Linux-first voice input** - Global hotkey setup for Omarchy/Hyprland, GNOME, KDE, and other Linux desktops, with macOS support too.
 - **Provider choice** - Bring your own API key and switch between OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, and local models.
 - **Local transcription** - Download curated local models or add custom Hugging Face/direct model files for offline transcription.
-- **Terminal-native workflow** - Use stdout, clipboard, files, aliases, shell completions, logs, and pipes.
+- **Terminal-native workflow** - Use stdout, clipboard, paste output, files, aliases, shell completions, logs, and pipes.
 - **Scriptable post-processing** - Transform transcripts with AI prompts or bash commands using `ostt -p` and `ostt process`.
 - **Retry without re-recording** - Save recordings locally, then re-transcribe them with a different provider or model.
 - **File transcription and replay** - Transcribe existing audio files and replay saved recordings from history.
-- **Keywords and custom vocabulary** - Improve recognition for names, technical terms, and project-specific language.
+- **Keywords and text replace** - Improve recognition with keywords, then fix final casing, acronyms, and product names with deterministic replace rules.
 - **Open source, no subscription** - Public code, local configuration, and no vendor lock-in beyond the providers you choose.
 
 ## Install
@@ -40,7 +40,7 @@ Run the model picker to choose the transcription model OSTT should use:
 ostt model
 ```
 
-Choose **Cloud provider** for hosted models or **Local provider** for offline models. Local models can be downloaded and activated from the same screen.
+Choose **Cloud provider** for hosted models or **Local provider** for offline models. Local models can be downloaded and activated from the same screen. If you are unsure which path fits your use case, see [Choosing a Transcription Model or Provider](/guide/choosing-a-model).
 
 Cloud providers require credentials first:
 
@@ -77,6 +77,7 @@ By default, the transcription is printed to stdout.
 
 ```bash
 ostt -c              # Copy to clipboard
+ostt --paste         # Paste into the focused app
 ostt -o notes.txt    # Write to file
 ```
 
@@ -85,10 +86,14 @@ ostt -o notes.txt    # Write to file
 Bind this command in your desktop environment or macOS Shortcuts.app:
 
 ```bash
-ostt launch -c
+ostt launch --paste
 ```
 
 The first hotkey press opens a popup terminal and starts recording. Pressing the same hotkey again sends a signal (`SIGUSR1`) to the running OSTT process, which stops recording and transcribes.
+
+Use `ostt launch -c` if you prefer to copy the result and paste manually. Use `ostt launch --paste` when you want the transcript inserted into the app that regains focus after the popup closes.
+
+On Linux, paste shortcuts differ between apps. OSTT defaults to `shift+insert` on Omarchy, `ctrl+v` on other Linux desktops, and `cmd+v` on macOS. If your target app needs a different shortcut, set `[output.paste].paste_key` in `~/.config/ostt/ostt.toml`.
 
 See [Platform Setup](./platforms.md) for macOS, Omarchy/Hyprland, GNOME, and KDE setup notes.
 
@@ -101,3 +106,22 @@ ostt -p clean -c
 ```
 
 See [Processing Actions](./processing.md) for action configuration and examples.
+
+## Fix Casing and Product Names
+
+Use `ostt replace` when the model hears a term correctly but formats it wrong:
+
+```bash
+ostt replace
+```
+
+Rules are saved in `~/.config/ostt/ostt.toml` under `[text.replace]`:
+
+```toml
+[text.replace]
+"ostt" = "OSTT"
+"api" = "API"
+"github" = "GitHub"
+```
+
+Replace runs before processing actions, output, and history saves, so downstream commands receive the fixed text.
