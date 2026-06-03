@@ -8,6 +8,8 @@ OSTT can use cloud providers or local Whisper-compatible models. Run `ostt model
 
 Transcription request params are configured under `[provider.params]` or `[provider."model".params]`, or passed per invocation with `--param key=value`. Use `ostt model params PROVIDER/MODEL` to list supported params for a cloud or local model.
 
+For practical recommendations by use case, see [Choosing a Transcription Model or Provider](/guide/choosing-a-model).
+
 ## Local
 
 Local models run on your machine and do not require an API key. Open the local model manager with:

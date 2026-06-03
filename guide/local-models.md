@@ -6,7 +6,7 @@ description: Run offline transcription with local Whisper-compatible models. No 
 
 OSTT can transcribe with local Whisper-compatible models. Local models run on your machine, do not require an API key, and can work offline after the model file has been downloaded.
 
-Use local models when you want privacy, predictable cost, or offline transcription. Use cloud providers when you prefer hosted accuracy, lower local CPU load, or no large model downloads.
+Use local models when you want privacy, predictable cost, or offline transcription. Use cloud providers when you prefer hosted accuracy, lower local CPU load, or no large model downloads. See [Choosing a Transcription Model or Provider](/guide/choosing-a-model) for practical recommendations across cloud, local, and external engines.
 
 Local transcription supports GPU acceleration on all major platforms. See [GPU Acceleration](./gpu-acceleration) for setup details. To avoid model load time on repeated use, see [Daemon Mode](./daemon).
 

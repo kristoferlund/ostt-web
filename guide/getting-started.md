@@ -40,7 +40,7 @@ Run the model picker to choose the transcription model OSTT should use:
 ostt model
 ```
 
-Choose **Cloud provider** for hosted models or **Local provider** for offline models. Local models can be downloaded and activated from the same screen.
+Choose **Cloud provider** for hosted models or **Local provider** for offline models. Local models can be downloaded and activated from the same screen. If you are unsure which path fits your use case, see [Choosing a Transcription Model or Provider](/guide/choosing-a-model).
 
 Cloud providers require credentials first:
 

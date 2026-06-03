@@ -78,3 +78,12 @@ This table is a high-level comparison against common voice-to-text tools. Capabi
 OSTT is not trying to be a mobile dictation app, a real-time streaming transcription overlay, or a screen-aware assistant that reads every app you use. Those are valid tools, but they pull in a different direction from a terminal-native, scriptable tool.
 
 OSTT optimizes for control, composability, provider choice, and developer workflows. If you want voice input that behaves like a command-line tool, OSTT is built for that niche.
+
+## Compared With Other Open Source Dictation Tools
+
+OSTT overlaps with Linux dictation tools such as Voxtype and Hyprwhspr, but the focus is different. Those projects are strongest when you want a dedicated system-wide dictation app. OSTT is strongest when you want speech-to-text to work as part of a developer workflow: provider switching, file transcription, retry, stdout, paste output, text replace rules, and AI or shell processing.
+
+For a more detailed comparison, see:
+
+- [OSTT vs Voxtype](/lp/ostt-vs-voxtype)
+- [OSTT vs Hyprwhspr](/lp/ostt-vs-hyprwhspr)
