@@ -19,6 +19,7 @@
 ## Local Models
 
 - [Local Models](https://ostt.ai/guide/local-models): Run offline Whisper-compatible transcription. No API key required.
+- [External Engines](https://ostt.ai/guide/external-engines): Connect command-based ASR tools and OpenAI-compatible HTTP transcription endpoints, including local or remote custom engines.
 - [GPU Acceleration](https://ostt.ai/guide/gpu-acceleration): Metal (macOS), CUDA (NVIDIA Linux), and Vulkan (AMD/Intel Linux) GPU backends.
 - [Daemon Mode](https://ostt.ai/guide/daemon): Keep a local model loaded in a background process. Install as systemd or launchd service.
 

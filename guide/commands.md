@@ -160,12 +160,13 @@ ostt model current                      # Show active model
 ostt model params                       # List params for active model
 ostt model params openai/gpt-4o-transcribe --format json
 ostt model select deepgram/nova-3       # Select active cloud model
+ostt model select http/cohere-transcribe # Select configured HTTP engine
 ostt model local download turbo         # Download local model
 ostt model local download whisper/turbo # Download local model by full ID
 ostt model local remove turbo           # Remove local model
 ```
 
-The model picker lets you choose between cloud and local providers. Cloud models are shown for providers with saved credentials. Local models can be downloaded, activated, deleted, inspected, or added from a custom Hugging Face/direct model URL.
+The model picker lets you choose between cloud, built-in local, and configured external providers. Cloud models are shown for providers with saved credentials. Local models can be downloaded, activated, deleted, inspected, or added from a custom Hugging Face/direct model URL. Configured `command/*` and `http/*` external profiles are selectable too.
 
 `ostt model params [PROVIDER/MODEL]` lists supported `--param` keys for a model. If no model is passed, it uses the active model. It supports the same list formatting flag as other list commands: `--format table|json`.
 

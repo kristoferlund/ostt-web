@@ -163,6 +163,7 @@ export default defineConfig({
         text: 'Local Models',
         items: [
           { text: 'Overview', link: '/guide/local-models' },
+          { text: 'External Engines', link: '/guide/external-engines' },
           { text: 'GPU Acceleration', link: '/guide/gpu-acceleration' },
           { text: 'Daemon Mode', link: '/guide/daemon' }
         ]
