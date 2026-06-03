@@ -10,6 +10,8 @@ Use local models when you want privacy, predictable cost, or offline transcripti
 
 Local transcription supports GPU acceleration on all major platforms. See [GPU Acceleration](./gpu-acceleration) for setup details. To avoid model load time on repeated use, see [Daemon Mode](./daemon).
 
+If you already run another local ASR engine or OpenAI-compatible transcription server, see [External Engines](./external-engines) for command and HTTP profiles.
+
 ## Choose Local
 
 Open the model picker:

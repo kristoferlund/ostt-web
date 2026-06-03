@@ -172,6 +172,27 @@ no_speech_thold = 0.6
 
 See [Local Models](./local-models.md) for setup, storage, and audio-format requirements.
 
+## External Engines
+
+External command and HTTP engines are configured as provider/model profiles. Use `command/<profile>` for shell-command wrappers and `http/<profile>` for OpenAI-compatible `/v1/audio/transcriptions` endpoints:
+
+```toml
+[command.parakeet-fast]
+command = "~/.config/ostt/backends/parakeet-wrapper {audio_path}"
+output_format = "pcm_s16le -ar 16000"
+
+[http.cohere-transcribe]
+endpoint = "http://localhost:8080/v1/audio/transcriptions"
+output_format = "pcm_s16le -ar 16000"
+
+[http.cohere-transcribe.params]
+model = "cohere-transcribe"
+language = "en"
+response_format = "json"
+```
+
+See [External Engines](./external-engines.md) for full setup examples and rationale.
+
 ## Processing Actions
 
 Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id` on the CLI. Each action has a `type` of either `"ai"` (runs an AI CLI tool) or `"bash"` (runs a shell command).
