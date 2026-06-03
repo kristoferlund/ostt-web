@@ -1,5 +1,5 @@
 ---
-description: Full reference for ostt.toml — audio device, visualization, transcription params, text replace rules, popup window, processing defaults, and all configuration options with examples.
+description: Full reference for ostt.toml — audio device, visualization, transcription params, paste output, text replace rules, popup window, processing defaults, and all configuration options with examples.
 ---
 
 # Configuration
@@ -175,6 +175,45 @@ Matching behavior:
 - replace output is not recursively processed by later rules
 
 Keywords and replace rules have different jobs. Use `ostt keyword` when the model mishears a term. Use `[text.replace]` when the model hears the term but formats it wrong.
+
+## Paste Output
+
+Paste output sends the final transcript into the currently focused application. It is opt-in with `--paste`; stdout remains the default output mode.
+
+```bash
+ostt --paste
+ostt launch --paste
+ostt launch --paste -p clean
+ostt transcribe voice.ogg --paste
+ostt retry 2 --paste
+ostt process clean --paste
+```
+
+Configure paste behavior under `[output.paste]`:
+
+```toml
+[output.paste]
+paste_key = "ctrl+v"
+restore_clipboard = true
+restore_delay_ms = 750
+post_popup_delay_ms = 1000
+```
+
+Default `paste_key` values:
+
+- macOS: `cmd+v`
+- Omarchy: `shift+insert`
+- other Linux desktops: `ctrl+v`
+
+`restore_clipboard` controls whether OSTT restores the previous clipboard contents after pasting. Paste mode uses the clipboard as transport, so disabling restore leaves the transcript on the clipboard.
+
+`restore_delay_ms` gives the focused app time to read the clipboard before OSTT restores the previous contents. Increase it if paste works intermittently or the old clipboard appears instead of the transcript.
+
+`post_popup_delay_ms` is used by `ostt launch --paste`. The popup closes first, then a detached helper waits for focus to return before sending the paste shortcut.
+
+Linux paste shortcuts differ by app and desktop. GUI apps commonly use `ctrl+v`; terminals often use `ctrl+shift+v`; Omarchy maps `SUPER+v` to `shift+insert`. OSTT cannot reliably detect whether a paste succeeded, so it does not try multiple shortcuts automatically.
+
+On macOS, paste mode uses `osascript`/System Events to send `cmd+v`. macOS may prompt for Accessibility permission for the terminal app running OSTT, such as Ghostty. If paste does not work, open System Settings > Privacy & Security > Accessibility and enable the app shown in the permission prompt.
 
 ## Local Transcription
 

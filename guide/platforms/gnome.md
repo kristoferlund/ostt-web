@@ -21,13 +21,13 @@ Prefer a native `.deb` or `.rpm` package? See [Installation](../installation.md)
 2. Scroll to the bottom and open Custom Shortcuts.
 3. Click `+`.
 4. Use name `OSTT`.
-5. Use the full path to the OSTT binary. First find it with `which ostt`, then enter the path followed by `launch -c`:
+5. Use the full path to the OSTT binary. First find it with `which ostt`, then enter the path followed by `launch --paste`:
 
 ```bash
 # Example -- run this in a terminal to get your path:
 which ostt
 # Then enter the full path in the command field, for example:
-/home/you/.local/bin/ostt launch -c
+/home/you/.local/bin/ostt launch --paste
 ```
 
 Desktop environments do not always include `~/.local/bin` in the PATH used for hotkey commands, so the full path is required for reliable operation.
@@ -40,7 +40,7 @@ Desktop environments do not always include `~/.local/bin` in the PATH used for h
 1. Press your hotkey to open the popup and start recording.
 2. Speak.
 3. Press the same hotkey again to stop recording and transcribe.
-4. Paste with `Ctrl+V`.
+4. With `--paste`, OSTT inserts the text into the app that regains focus after the popup closes.
 
 ## Multiple Hotkeys
 
@@ -48,9 +48,9 @@ Create multiple GNOME custom shortcuts for common workflows:
 
 | Name | Command | Example hotkey |
 | --- | --- | --- |
-| OSTT | `/path/to/ostt launch -c` | `Alt+Space` |
-| OSTT Process | `/path/to/ostt launch -c -p` | `Alt+Ctrl+Space` |
-| OSTT Translate | `/path/to/ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
+| OSTT | `/path/to/ostt launch --paste` | `Alt+Space` |
+| OSTT Process | `/path/to/ostt launch --paste -p` | `Alt+Ctrl+Space` |
+| OSTT Copy | `/path/to/ostt launch -c` | `Ctrl+Alt+T` |
 
 Replace `/path/to/ostt` with the output of `which ostt`.
 
@@ -91,6 +91,14 @@ Test the launch command directly:
 ```bash
 ostt launch -c
 ```
+
+Test paste output directly:
+
+```bash
+ostt launch --paste
+```
+
+On GNOME, OSTT defaults to `ctrl+v` for paste. If your target app is a terminal that requires another shortcut, set `[output.paste].paste_key` in `~/.config/ostt/ostt.toml`.
 
 If clipboard output does not work, install the right clipboard tool:
 
