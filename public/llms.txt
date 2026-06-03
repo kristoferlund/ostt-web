@@ -8,13 +8,13 @@
 
 ## Documentation
 
-- [Getting Started](https://ostt.ai/guide/getting-started): Install OSTT, choose a transcription model, record from the terminal, and set up a global hotkey.
+- [Getting Started](https://ostt.ai/guide/getting-started): Install OSTT, choose a transcription model, record from the terminal, set up a global hotkey, and configure text replace rules.
 - [Why OSTT?](https://ostt.ai/guide/why-ostt): Why OSTT exists and how it compares to GUI dictation apps.
 - [Installation](https://ostt.ai/guide/installation): Install via shell script, Homebrew, AUR, .deb, .rpm, or from source. Runtime dependency setup for each platform.
 - [Changelog](https://ostt.ai/guide/changelog): Release notes and notable changes for OSTT.
-- [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, auth, model, history, keywords, shell completions.
+- [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, auth, model, history, keyword, replace, config, logs, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions.
-- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, providers, popup, processing defaults.
+- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, transcription params, text replace rules, popup, processing defaults.
 
 ## Local Models
 

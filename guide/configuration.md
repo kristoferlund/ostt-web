@@ -1,5 +1,5 @@
 ---
-description: Full reference for ostt.toml — audio device, visualization, transcription params, popup window, processing defaults, and all configuration options with examples.
+description: Full reference for ostt.toml — audio device, visualization, transcription params, text replace rules, popup window, processing defaults, and all configuration options with examples.
 ---
 
 # Configuration
@@ -143,6 +143,38 @@ ostt model params whisper/turbo --format json
 ```
 
 See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific param tables.
+
+## Text Replace
+
+Text replace rules are deterministic, provider-neutral post-transcription find-and-replace rules. They fix final text casing, acronyms, project names, and common misrecognitions without using AI.
+
+```toml
+[text.replace]
+"ostt" = "OSTT"
+"api" = "API"
+"typescript" = "TypeScript"
+"github" = "GitHub"
+"open ai" = "OpenAI"
+```
+
+You can also manage rules interactively:
+
+```bash
+ostt replace
+```
+
+Replace rules are applied after transcription and before processing actions, output, and history saves. This means a processing action receives already-fixed text such as `OSTT API` when those rules are configured.
+
+Matching behavior:
+
+- keys are literal text, not regex patterns
+- matching is case-insensitive
+- word boundaries prevent replacing inside larger words, so `api` does not change `capital`
+- phrase boundaries apply at phrase edges, so `open ai.` can become `OpenAI.`
+- target values are preserved exactly as configured
+- replace output is not recursively processed by later rules
+
+Keywords and replace rules have different jobs. Use `ostt keyword` when the model mishears a term. Use `[text.replace]` when the model hears the term but formats it wrong.
 
 ## Local Transcription
 

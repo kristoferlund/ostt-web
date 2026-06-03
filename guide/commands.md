@@ -1,5 +1,5 @@
 ---
-description: "Complete reference for all OSTT CLI commands: record, transcribe, retry, replay, process, auth, model, history, keyword, config, logs, and shell completions."
+description: "Complete reference for all OSTT CLI commands: record, transcribe, retry, replay, process, auth, model, history, keyword, replace, config, logs, and shell completions."
 ---
 
 # Commands
@@ -219,6 +219,31 @@ ostt keyword remove Kubernetes # Remove a keyword
 ```
 
 Alias: `ostt k`.
+
+## Replace
+
+Manage deterministic, non-AI text replace rules for final transcript cleanup. Use replace for casing, acronyms, product names, and common misrecognitions after the model has already transcribed the audio.
+
+```bash
+ostt replace # Interactive replace manager
+```
+
+Replace rules are configured under `[text.replace]` in `~/.config/ostt/ostt.toml`:
+
+```toml
+[text.replace]
+"ostt" = "OSTT"
+"api" = "API"
+"typescript" = "TypeScript"
+"open ai" = "OpenAI"
+```
+
+Rules are literal, case-insensitive, word-boundary aware, provider-neutral, and applied before processing actions, output, and history saves.
+
+Keywords and replace rules solve different problems:
+
+- `ostt keyword` helps providers recognize terms during transcription.
+- `ostt replace` fixes final text after transcription, provider-independently.
 
 ## Config
 
