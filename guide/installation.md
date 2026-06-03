@@ -12,6 +12,8 @@ curl -fsSL https://ostt.ai/install | bash
 
 Use this unless you specifically prefer a platform package manager. It detects your platform, installs missing runtime dependencies (ffmpeg, clipboard tools) where supported, selects the right CPU/GPU build, downloads the latest release, verifies its checksum, and installs the `ostt` CLI. In most cases you do not need to install dependencies manually -- the installer handles them for you.
 
+The installer uses native `.deb` or `.rpm` packages on supported Linux distributions when possible. Otherwise, including macOS, it installs the binary to `~/.local/bin` by default. If that directory is not already on your `PATH`, the installer prints the exact shell command to add it and shows the full path you can use immediately.
+
 On macOS, the installer uses the Metal-enabled build. On Linux x86_64, it installs the CUDA build when a usable NVIDIA CUDA runtime is detected, the Vulkan build when AMD/Intel Vulkan support is detected, and the CPU build otherwise. To force the CPU build:
 
 ```bash

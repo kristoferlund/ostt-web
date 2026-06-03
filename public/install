@@ -31,48 +31,57 @@ EOF
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    -y|--yes)
-      ASSUME_YES=1
-      shift
-      ;;
-    --no-deps)
-      INSTALL_DEPS=0
-      shift
-      ;;
-    --no-gpu)
-      GPU_MODE="cpu"
-      shift
-      ;;
-    --version)
-      VERSION="${2:-}"
-      if [ -z "$VERSION" ]; then
-        echo "error: --version requires a value" >&2
-        exit 1
-      fi
-      shift 2
-      ;;
-    --install-dir)
-      INSTALL_DIR="${2:-}"
-      if [ -z "$INSTALL_DIR" ]; then
-        echo "error: --install-dir requires a value" >&2
-        exit 1
-      fi
-      shift 2
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      echo "error: unknown option: $1" >&2
-      usage >&2
+  -y | --yes)
+    ASSUME_YES=1
+    shift
+    ;;
+  --no-deps)
+    INSTALL_DEPS=0
+    shift
+    ;;
+  --no-gpu)
+    GPU_MODE="cpu"
+    shift
+    ;;
+  --version)
+    VERSION="${2:-}"
+    if [ -z "$VERSION" ]; then
+      echo "error: --version requires a value" >&2
       exit 1
-      ;;
+    fi
+    shift 2
+    ;;
+  --install-dir)
+    INSTALL_DIR="${2:-}"
+    if [ -z "$INSTALL_DIR" ]; then
+      echo "error: --install-dir requires a value" >&2
+      exit 1
+    fi
+    shift 2
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  *)
+    echo "error: unknown option: $1" >&2
+    usage >&2
+    exit 1
+    ;;
   esac
 done
 
 log() {
   printf '%s\n' "$*"
+}
+
+print_header() {
+  printf '\n'
+  printf '┏┓┏╋╋\n'
+  printf '┗┛┛┗┗\n'
+  printf '\n'
+  printf '\033[42;30m Install \033[0m\n'
+  printf '\n'
 }
 
 warn() {
@@ -95,9 +104,10 @@ confirm() {
 
   printf 'Continue? [Y/n] '
   read -r answer </dev/tty 2>/dev/null || return 0
+  printf '\n'
   case "$answer" in
-    ''|Y|y|YES|Yes|yes) return 0 ;;
-    *) die "installation cancelled" ;;
+  '' | Y | y | YES | Yes | yes) return 0 ;;
+  *) die "installation cancelled" ;;
   esac
 }
 
@@ -114,17 +124,17 @@ sudo_cmd() {
 
 detect_os() {
   case "$(uname -s)" in
-    Darwin) echo "macos" ;;
-    Linux) echo "linux" ;;
-    *) die "unsupported operating system: $(uname -s)" ;;
+  Darwin) echo "macos" ;;
+  Linux) echo "linux" ;;
+  *) die "unsupported operating system: $(uname -s)" ;;
   esac
 }
 
 detect_arch() {
   case "$(uname -m)" in
-    x86_64|amd64) echo "x86_64" ;;
-    arm64|aarch64) echo "aarch64" ;;
-    *) die "unsupported CPU architecture: $(uname -m)" ;;
+  x86_64 | amd64) echo "x86_64" ;;
+  arm64 | aarch64) echo "aarch64" ;;
+  *) die "unsupported CPU architecture: $(uname -m)" ;;
   esac
 }
 
@@ -142,12 +152,27 @@ detect_package_manager() {
   local os="$1"
 
   if [ "$os" = "macos" ]; then
-    if has brew; then echo "brew"; return; fi
+    if has brew; then
+      echo "brew"
+      return
+    fi
   else
-    if has apt-get; then echo "apt"; return; fi
-    if has dnf; then echo "dnf"; return; fi
-    if has zypper; then echo "zypper"; return; fi
-    if has pacman; then echo "pacman"; return; fi
+    if has apt-get; then
+      echo "apt"
+      return
+    fi
+    if has dnf; then
+      echo "dnf"
+      return
+    fi
+    if has zypper; then
+      echo "zypper"
+      return
+    fi
+    if has pacman; then
+      echo "pacman"
+      return
+    fi
   fi
 
   echo "unknown"
@@ -155,17 +180,17 @@ detect_package_manager() {
 
 detect_session() {
   case "${XDG_SESSION_TYPE:-}" in
-    wayland) echo "wayland" ;;
-    x11) echo "x11" ;;
-    *)
-      if [ -n "${WAYLAND_DISPLAY:-}" ]; then
-        echo "wayland"
-      elif [ -n "${DISPLAY:-}" ]; then
-        echo "x11"
-      else
-        echo "unknown"
-      fi
-      ;;
+  wayland) echo "wayland" ;;
+  x11) echo "x11" ;;
+  *)
+    if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+      echo "wayland"
+    elif [ -n "${DISPLAY:-}" ]; then
+      echo "x11"
+    else
+      echo "unknown"
+    fi
+    ;;
   esac
 }
 
@@ -174,12 +199,49 @@ target_triple() {
   local arch="$2"
 
   case "$os:$arch" in
-    macos:x86_64) echo "x86_64-apple-darwin" ;;
-    macos:aarch64) echo "aarch64-apple-darwin" ;;
-    linux:x86_64) echo "x86_64-unknown-linux-gnu" ;;
-    linux:aarch64) echo "aarch64-unknown-linux-gnu" ;;
-    *) die "unsupported platform: $os $arch" ;;
+  macos:x86_64) echo "x86_64-apple-darwin" ;;
+  macos:aarch64) echo "aarch64-apple-darwin" ;;
+  linux:x86_64) echo "x86_64-unknown-linux-gnu" ;;
+  linux:aarch64) echo "aarch64-unknown-linux-gnu" ;;
+  *) die "unsupported platform: $os $arch" ;;
   esac
+}
+
+installed_ostt_path() {
+  if [ -x "${INSTALL_DIR}/${BIN_NAME}" ]; then
+    printf '%s\n' "${INSTALL_DIR}/${BIN_NAME}"
+    return 0
+  fi
+
+  command -v "$BIN_NAME" 2>/dev/null || true
+}
+
+installed_ostt_version() {
+  local path="$1"
+  local raw
+
+  if [ -z "$path" ] || [ ! -x "$path" ]; then
+    return 0
+  fi
+
+  raw="$($path --version 2>/dev/null || true)"
+  printf '%s\n' "$raw" | sed -n 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/v\1/p' | head -n 1
+}
+
+target_version() {
+  local effective_url
+
+  if [ "$VERSION" != "latest" ]; then
+    printf '%s\n' "$VERSION"
+    return 0
+  fi
+
+  effective_url="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest" 2>/dev/null || true)"
+  if [ -n "$effective_url" ]; then
+    printf '%s\n' "${effective_url##*/}"
+  else
+    printf '%s\n' "latest"
+  fi
 }
 
 has_ld_library() {
@@ -209,9 +271,15 @@ detect_gpu_variant() {
   fi
 
   case "$os:$arch" in
-    macos:*) echo "metal"; return ;;
-    linux:x86_64) ;;
-    *) echo "cpu"; return ;;
+  macos:*)
+    echo "metal"
+    return
+    ;;
+  linux:x86_64) ;;
+  *)
+    echo "cpu"
+    return
+    ;;
   esac
 
   if has lspci; then
@@ -248,16 +316,16 @@ missing_deps() {
 
   if [ "$os" = "linux" ]; then
     case "$session" in
-      wayland)
-        if ! has wl-copy; then deps+=("wl-clipboard"); fi
-        ;;
-      x11)
-        if ! has xclip; then deps+=("xclip"); fi
-        ;;
-      *)
-        if ! has wl-copy; then deps+=("wl-clipboard"); fi
-        if ! has xclip; then deps+=("xclip"); fi
-        ;;
+    wayland)
+      if ! has wl-copy; then deps+=("wl-clipboard"); fi
+      ;;
+    x11)
+      if ! has xclip; then deps+=("xclip"); fi
+      ;;
+    *)
+      if ! has wl-copy; then deps+=("wl-clipboard"); fi
+      if ! has xclip; then deps+=("xclip"); fi
+      ;;
     esac
   fi
 
@@ -274,26 +342,70 @@ install_dependencies() {
   fi
 
   case "$pm" in
-    brew)
-      brew install "${deps[@]}"
-      ;;
-    apt)
-      sudo_cmd apt-get update
-      sudo_cmd apt-get install -y "${deps[@]}"
-      ;;
-    dnf)
-      sudo_cmd dnf install -y "${deps[@]}"
-      ;;
-    zypper)
-      sudo_cmd zypper --non-interactive install "${deps[@]}"
-      ;;
-    pacman)
-      sudo_cmd pacman -S --needed --noconfirm "${deps[@]}"
-      ;;
-    *)
-      warn "could not detect a supported package manager"
-      warn "please install manually: ${deps[*]}"
-      ;;
+  brew)
+    brew install "${deps[@]}"
+    ;;
+  apt)
+    sudo_cmd apt-get update
+    sudo_cmd apt-get install -y "${deps[@]}"
+    ;;
+  dnf)
+    sudo_cmd dnf install -y "${deps[@]}"
+    ;;
+  zypper)
+    sudo_cmd zypper --non-interactive install "${deps[@]}"
+    ;;
+  pacman)
+    sudo_cmd pacman -S --needed --noconfirm "${deps[@]}"
+    ;;
+  *)
+    warn "could not detect a supported package manager"
+    warn "please install manually: ${deps[*]}"
+    ;;
+  esac
+}
+
+print_dependency_warning() {
+  local os="$1"
+  local pm="$2"
+  shift 2
+  local deps=("$@")
+
+  if [ "${#deps[@]}" -eq 0 ]; then
+    return 0
+  fi
+
+  if [ "$INSTALL_DEPS" -eq 1 ] && [ "$pm" != "unknown" ]; then
+    return 0
+  fi
+
+  printf '\n\033[31m▲ Dependency action required\033[0m\n'
+
+  if [ "$INSTALL_DEPS" -eq 0 ]; then
+    printf 'Dependency installation was skipped, and these dependencies are missing:\n'
+  else
+    printf 'No supported package manager was found, so the installer cannot install these dependencies:\n'
+  fi
+
+  printf '  %s\n' "${deps[*]}"
+  printf '\n'
+  printf 'OSTT requires these dependencies for the detected platform/session.\n'
+  printf 'Install them before using OSTT, or rerun this installer after installing a supported package manager.\n'
+  printf '\n'
+
+  case "$os" in
+  macos)
+    if [ "$pm" = "unknown" ]; then
+      printf 'Recommended fix: install Homebrew, then rerun this installer:\n'
+      printf '  https://brew.sh\n'
+      printf 'Or install the missing dependencies manually.\n'
+    else
+      printf 'Install the missing dependencies manually.\n'
+    fi
+    ;;
+  linux)
+    printf 'Install the missing dependencies with your system package manager.\n'
+    ;;
   esac
 }
 
@@ -311,11 +423,11 @@ native_package_kind() {
   local pm="$3"
 
   case "$os:$arch:$pm" in
-    linux:x86_64:apt) echo "deb" ;;
-    linux:aarch64:apt) echo "deb" ;;
-    linux:x86_64:dnf|linux:x86_64:zypper) echo "rpm" ;;
-    linux:aarch64:dnf|linux:aarch64:zypper) echo "rpm" ;;
-    *) echo "" ;;
+  linux:x86_64:apt) echo "deb" ;;
+  linux:aarch64:apt) echo "deb" ;;
+  linux:x86_64:dnf | linux:x86_64:zypper) echo "rpm" ;;
+  linux:aarch64:dnf | linux:aarch64:zypper) echo "rpm" ;;
+  *) echo "" ;;
   esac
 }
 
@@ -327,15 +439,15 @@ download_and_install_native_package() {
   local base_url pkg checksum tmpdir url checksum_url
 
   case "$kind:$arch:$gpu_variant" in
-    deb:x86_64:cuda) pkg="ostt-cuda_latest_amd64.deb" ;;
-    deb:x86_64:vulkan) pkg="ostt-vulkan_latest_amd64.deb" ;;
-    deb:x86_64:*) pkg="ostt_latest_amd64.deb" ;;
-    deb:aarch64:*) pkg="ostt_latest_arm64.deb" ;;
-    rpm:x86_64:cuda) pkg="ostt-cuda-latest.x86_64.rpm" ;;
-    rpm:x86_64:vulkan) pkg="ostt-vulkan-latest.x86_64.rpm" ;;
-    rpm:x86_64:*) pkg="ostt-latest.x86_64.rpm" ;;
-    rpm:aarch64:*) pkg="ostt-latest.aarch64.rpm" ;;
-    *) return 1 ;;
+  deb:x86_64:cuda) pkg="ostt-cuda_latest_amd64.deb" ;;
+  deb:x86_64:vulkan) pkg="ostt-vulkan_latest_amd64.deb" ;;
+  deb:x86_64:*) pkg="ostt_latest_amd64.deb" ;;
+  deb:aarch64:*) pkg="ostt_latest_arm64.deb" ;;
+  rpm:x86_64:cuda) pkg="ostt-cuda-latest.x86_64.rpm" ;;
+  rpm:x86_64:vulkan) pkg="ostt-vulkan-latest.x86_64.rpm" ;;
+  rpm:x86_64:*) pkg="ostt-latest.x86_64.rpm" ;;
+  rpm:aarch64:*) pkg="ostt-latest.aarch64.rpm" ;;
+  *) return 1 ;;
   esac
 
   checksum="${pkg}.sha256"
@@ -357,22 +469,21 @@ download_and_install_native_package() {
   chmod 755 "$tmpdir"
   chmod 644 "${tmpdir}/${pkg}" "${tmpdir}/${checksum}"
 
-  log "Verifying checksum"
   verify_checksum "${tmpdir}/${pkg}" "${tmpdir}/${checksum}"
 
   case "$pm" in
-    apt)
-      sudo_cmd apt-get install -y --reinstall "${tmpdir}/${pkg}"
-      ;;
-    dnf)
-      sudo_cmd dnf install -y "${tmpdir}/${pkg}"
-      ;;
-    zypper)
-      sudo_cmd zypper --non-interactive install "${tmpdir}/${pkg}"
-      ;;
-    *)
-      return 1
-      ;;
+  apt)
+    sudo_cmd apt-get install -y --reinstall "${tmpdir}/${pkg}"
+    ;;
+  dnf)
+    sudo_cmd dnf install -y "${tmpdir}/${pkg}"
+    ;;
+  zypper)
+    sudo_cmd zypper --non-interactive install "${tmpdir}/${pkg}"
+    ;;
+  *)
+    return 1
+    ;;
   esac
 }
 
@@ -382,6 +493,7 @@ verify_checksum() {
   local expected
   local actual
 
+  printf '\nVerifying checksum: '
   expected="$(awk '{print $1}' "$checksum_path")"
   if [ -z "$expected" ]; then
     die "checksum file was empty or invalid"
@@ -398,6 +510,8 @@ verify_checksum() {
   if [ "$actual" != "$expected" ]; then
     die "checksum verification failed for $(basename "$archive_path")"
   fi
+
+  printf 'ok'
 }
 
 check_macos_terminal() {
@@ -435,7 +549,7 @@ download_and_install() {
   local extracted_bin
 
   case "$gpu_variant" in
-    cuda|vulkan) archive="ostt-${triple}-${gpu_variant}.tar.gz" ;;
+  cuda | vulkan) archive="ostt-${triple}-${gpu_variant}.tar.gz" ;;
   esac
   checksum="${archive}.sha256"
 
@@ -451,7 +565,6 @@ download_and_install() {
   log "Downloading ${checksum_url}"
   curl -fsSL "$checksum_url" -o "${tmpdir}/${checksum}"
 
-  log "Verifying checksum"
   verify_checksum "${tmpdir}/${archive}" "${tmpdir}/${checksum}"
 
   tar -xzf "${tmpdir}/${archive}" -C "$tmpdir"
@@ -466,7 +579,14 @@ download_and_install() {
 
 main() {
   local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant
+  local current_bin current_version target_release pm_label
   local deps=()
+
+  print_header
+
+  current_bin="$(installed_ostt_path)"
+  current_version="$(installed_ostt_version "$current_bin")"
+  target_release="$(target_version)"
 
   os="$(detect_os)"
   arch="$(detect_arch)"
@@ -477,6 +597,10 @@ main() {
     session="$(detect_session)"
   fi
   pm="$(detect_package_manager "$os")"
+  pm_label="$pm"
+  if [ "$pm" = "unknown" ]; then
+    pm_label="not found"
+  fi
   triple="$(target_triple "$os" "$arch")"
   gpu_variant="$(detect_gpu_variant "$os" "$arch")"
   package_kind="$(native_package_kind "$os" "$arch" "$pm")"
@@ -495,7 +619,7 @@ main() {
     done < <(missing_deps "$os" "$session")
   fi
 
-  printf '\nInstalling %s\n\nDetected:\n' "$APP_NAME"
+  printf 'Detected:\n'
   printf '  OS: %s\n' "$os"
   printf '  Architecture: %s\n' "$arch"
   printf '  Target: %s\n' "$triple"
@@ -503,8 +627,18 @@ main() {
     printf '  Distro: %s\n' "$distro"
     printf '  Session: %s\n' "$session"
   fi
-  printf '  Package manager: %s\n' "$pm"
+  printf '  Package manager: %s\n' "$pm_label"
   printf '  GPU build: %s\n' "$gpu_variant"
+  if [ -n "$current_bin" ]; then
+    if [ -n "$current_version" ]; then
+      printf '  Current OSTT: %s (%s)\n' "$current_version" "$current_bin"
+    else
+      printf '  Current OSTT: installed, version unknown (%s)\n' "$current_bin"
+    fi
+  else
+    printf '  Current OSTT: not found\n'
+  fi
+  printf '  Target OSTT: %s\n' "$target_release"
   printf '\nWill install:\n'
 
   if [ "$install_mode" = "native-package" ]; then
@@ -523,6 +657,8 @@ main() {
     printf '  dependencies: already satisfied\n'
   fi
   printf '\n'
+
+  print_dependency_warning "$os" "$pm" "${deps[@]}"
 
   confirm
 
@@ -560,58 +696,95 @@ main() {
     local shell_name
     shell_name="$(basename "${SHELL:-/bin/bash}")"
 
+    printf '\n'
+
     case "$shell_name" in
-      bash)
-        if "$installed_bin" completions bash 2>/dev/null \
-            | sudo_cmd tee /usr/share/bash-completion/completions/"$BIN_NAME" >/dev/null; then
-          log "Shell completions installed for bash."
+    bash)
+      if "$installed_bin" completions bash 2>/dev/null |
+        sudo_cmd tee /usr/share/bash-completion/completions/"$BIN_NAME" >/dev/null; then
+        log "Shell completions installed for bash."
+      else
+        warn "could not install shell completions for bash; run manually:"
+        warn "  ${BIN_NAME} completions bash | sudo tee /usr/share/bash-completion/completions/${BIN_NAME}"
+      fi
+      ;;
+    zsh)
+      local zsh_completion_dir
+      if [ "$os" = "macos" ]; then
+        zsh_completion_dir="/usr/local/share/zsh/site-functions"
+      else
+        zsh_completion_dir="/usr/share/zsh/site-functions"
+      fi
+      log ""
+      log "Install shell completions for zsh? (requires sudo to write to ${zsh_completion_dir})"
+      printf 'Install completions? [Y/n] '
+      read -r answer </dev/tty 2>/dev/null || answer="n"
+      case "$answer" in
+      '' | Y | y | YES | Yes | yes)
+        if "$installed_bin" completions zsh 2>/dev/null |
+          sudo_cmd tee "${zsh_completion_dir}/_${BIN_NAME}" >/dev/null; then
+          log "Shell completions installed to ${zsh_completion_dir}/_${BIN_NAME}."
         else
-          warn "could not install shell completions for bash; run manually:"
-          warn "  ${BIN_NAME} completions bash | sudo tee /usr/share/bash-completion/completions/${BIN_NAME}"
+          warn "could not install shell completions; run manually:"
+          warn "  ${BIN_NAME} completions zsh | sudo tee ${zsh_completion_dir}/_${BIN_NAME}"
         fi
         ;;
-      zsh)
-        local zsh_completion_dir
-        if [ "$os" = "macos" ]; then
-          zsh_completion_dir="/usr/local/share/zsh/site-functions"
-        else
-          zsh_completion_dir="/usr/share/zsh/site-functions"
-        fi
-        log ""
-        log "Install shell completions for zsh? (requires sudo to write to ${zsh_completion_dir})"
-        printf 'Install completions? [Y/n] '
-        read -r answer </dev/tty 2>/dev/null || answer="n"
-        case "$answer" in
-          ''|Y|y|YES|Yes|yes)
-            if "$installed_bin" completions zsh 2>/dev/null \
-                | sudo_cmd tee "${zsh_completion_dir}/_${BIN_NAME}" >/dev/null; then
-              log "Shell completions installed to ${zsh_completion_dir}/_${BIN_NAME}."
-            else
-              warn "could not install shell completions; run manually:"
-              warn "  ${BIN_NAME} completions zsh | sudo tee ${zsh_completion_dir}/_${BIN_NAME}"
-            fi
-            ;;
-          *)
-            log "Skipping completions. Run later:"
-            log "  ${BIN_NAME} completions zsh | sudo tee ${zsh_completion_dir}/_${BIN_NAME}"
-            ;;
-        esac
+      *)
+        log "Skipping completions. Run later:"
+        log "  ${BIN_NAME} completions zsh | sudo tee ${zsh_completion_dir}/_${BIN_NAME}"
         ;;
-      fish)
-        local fish_completion_dir="$HOME/.config/fish/completions"
-        mkdir -p "$fish_completion_dir"
-        if "$installed_bin" completions fish 2>/dev/null \
-            > "${fish_completion_dir}/${BIN_NAME}.fish"; then
-          log "Shell completions installed for fish."
-        else
-          warn "could not install shell completions for fish; run manually:"
-          warn "  ${BIN_NAME} completions fish > ${fish_completion_dir}/${BIN_NAME}.fish"
-        fi
-        ;;
+      esac
+      ;;
+    fish)
+      local fish_completion_dir="$HOME/.config/fish/completions"
+      mkdir -p "$fish_completion_dir"
+      if "$installed_bin" completions fish 2>/dev/null \
+        >"${fish_completion_dir}/${BIN_NAME}.fish"; then
+        log "Shell completions installed for fish."
+      else
+        warn "could not install shell completions for fish; run manually:"
+        warn "  ${BIN_NAME} completions fish > ${fish_completion_dir}/${BIN_NAME}.fish"
+      fi
+      ;;
     esac
   fi
 
-  cat <<EOF
+  if [ "$install_mode" != "native-package" ] && [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+    local shell_name
+    shell_name="$(basename "${SHELL:-/bin/bash}")"
+
+    cat <<EOF
+
+${APP_NAME} installed successfully.
+
+Note: ${INSTALL_DIR} is not on your PATH yet.
+
+You can run OSTT now with the full path:
+  ${installed_bin} auth
+  ${installed_bin} record
+
+To run '${BIN_NAME}' from any terminal, add ${INSTALL_DIR} to your PATH:
+EOF
+
+    log "Add it to your shell profile:"
+    log ""
+
+    case "$shell_name" in
+    fish)
+      log "  fish_add_path ${INSTALL_DIR}"
+      ;;
+    zsh)
+      log "  echo 'export PATH=\"\$PATH:${INSTALL_DIR}\"' >> ~/.zshrc"
+      ;;
+    *)
+      log "  echo 'export PATH=\"\$PATH:${INSTALL_DIR}\"' >> ~/.bashrc"
+      ;;
+    esac
+
+    log ""
+    log "Then restart your shell or source your profile."
+  else
+    cat <<EOF
 
 ${APP_NAME} installed successfully.
 
@@ -620,29 +793,6 @@ Next steps:
   ${BIN_NAME} record
 
 EOF
-
-  if [ "$install_mode" != "native-package" ] && [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-    local shell_name
-    shell_name="$(basename "${SHELL:-/bin/bash}")"
-
-    log "Note: ${INSTALL_DIR} is not on your PATH."
-    log "Add it to your shell profile:"
-    log ""
-
-    case "$shell_name" in
-      fish)
-        log "  fish_add_path ${INSTALL_DIR}"
-        ;;
-      zsh)
-        log "  echo 'export PATH=\"\$PATH:${INSTALL_DIR}\"' >> ~/.zshrc"
-        ;;
-      *)
-        log "  echo 'export PATH=\"\$PATH:${INSTALL_DIR}\"' >> ~/.bashrc"
-        ;;
-    esac
-
-    log ""
-    log "Then restart your shell or source your profile."
   fi
 }
 
