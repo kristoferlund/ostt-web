@@ -21,7 +21,7 @@ Prefer a native `.deb` or `.rpm` package? See [Installation](../installation.md)
 2. Click Edit > New > Global Shortcut > Command/URL.
 3. Name it `OSTT`.
 4. In the Trigger tab, press your preferred key combination, such as `Alt+Space`.
-5. In the Action tab, enter the full path to the OSTT binary followed by `launch -c`. Find your path with:
+5. In the Action tab, enter the full path to the OSTT binary followed by `launch --paste`. Find your path with:
 
 ```bash
 which ostt
@@ -30,7 +30,7 @@ which ostt
 For example:
 
 ```bash
-/home/you/.local/bin/ostt launch -c
+/home/you/.local/bin/ostt launch --paste
 ```
 
 Desktop environments do not always include `~/.local/bin` in the PATH used for hotkey commands, so the full path is required for reliable operation.
@@ -42,7 +42,7 @@ Desktop environments do not always include `~/.local/bin` in the PATH used for h
 1. Press your hotkey to open the popup and start recording.
 2. Speak.
 3. Press the same hotkey again to stop recording and transcribe.
-4. Paste with `Ctrl+V`.
+4. With `--paste`, OSTT inserts the text into the app that regains focus after the popup closes.
 
 ## Multiple Hotkeys
 
@@ -50,9 +50,9 @@ Create additional Custom Shortcuts for common workflows:
 
 | Name | Command | Example hotkey |
 | --- | --- | --- |
-| OSTT | `/path/to/ostt launch -c` | `Alt+Space` |
-| OSTT Process | `/path/to/ostt launch -c -p` | `Alt+Ctrl+Space` |
-| OSTT Translate | `/path/to/ostt launch -c -p translate-en` | `Ctrl+Alt+T` |
+| OSTT | `/path/to/ostt launch --paste` | `Alt+Space` |
+| OSTT Process | `/path/to/ostt launch --paste -p` | `Alt+Ctrl+Space` |
+| OSTT Copy | `/path/to/ostt launch -c` | `Ctrl+Alt+T` |
 
 Replace `/path/to/ostt` with the output of `which ostt`.
 
@@ -98,5 +98,13 @@ Verify the command works from a terminal:
 ```bash
 ostt launch -c
 ```
+
+Test paste output directly:
+
+```bash
+ostt launch --paste
+```
+
+On KDE, OSTT defaults to `ctrl+v` for paste. If your target app is a terminal that requires another shortcut, set `[output.paste].paste_key` in `~/.config/ostt/ostt.toml`.
 
 If the shortcut cannot find OSTT, use the absolute path from `which ostt` in the Custom Shortcut action.

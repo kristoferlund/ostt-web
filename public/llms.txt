@@ -1,6 +1,6 @@
 # OSTT
 
-> Open source, terminal-native speech-to-text for Linux and macOS. Provider-agnostic, scriptable, and bring-your-own-key. Record from a hotkey, transcribe with the model you choose, and route output to the clipboard, files, AI prompts, or shell commands.
+> Open source, terminal-native speech-to-text for Linux and macOS. Provider-agnostic, scriptable, and bring-your-own-key. Record from a hotkey, transcribe with the model you choose, paste into the focused app, or route output to the clipboard, files, AI prompts, and shell commands.
 
 - Source: https://github.com/kristoferlund/ostt
 - License: MIT
@@ -8,13 +8,13 @@
 
 ## Documentation
 
-- [Getting Started](https://ostt.ai/guide/getting-started): Install OSTT, choose a transcription model, record from the terminal, set up a global hotkey, and configure text replace rules.
+- [Getting Started](https://ostt.ai/guide/getting-started): Install OSTT, choose a transcription model, record from the terminal, set up a global hotkey, use paste output, and configure text replace rules.
 - [Why OSTT?](https://ostt.ai/guide/why-ostt): Why OSTT exists and how it compares to GUI dictation apps.
 - [Installation](https://ostt.ai/guide/installation): Install via shell script, Homebrew, AUR, .deb, .rpm, or from source. Runtime dependency setup for each platform.
 - [Changelog](https://ostt.ai/guide/changelog): Release notes and notable changes for OSTT.
-- [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, auth, model, history, keyword, replace, config, logs, shell completions.
+- [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, paste output, auth, model, history, keyword, replace, config, logs, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions.
-- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, transcription params, text replace rules, popup, processing defaults.
+- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, transcription params, paste output, text replace rules, popup, processing defaults.
 
 ## Local Models
 
@@ -25,11 +25,11 @@
 
 ## Platform Setup
 
-- [Platform Setup Overview](https://ostt.ai/guide/platforms): Global hotkey setup overview for all supported platforms.
-- [macOS Setup](https://ostt.ai/guide/platforms/macos): Shortcuts.app hotkey setup on macOS.
-- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): Keybinding and window rules on Hyprland.
-- [GNOME Setup](https://ostt.ai/guide/platforms/gnome): Custom Shortcuts setup on GNOME.
-- [KDE Plasma Setup](https://ostt.ai/guide/platforms/kde): Custom Shortcuts setup on KDE Plasma.
+- [Platform Setup Overview](https://ostt.ai/guide/platforms): Global hotkey setup overview and paste output defaults for all supported platforms.
+- [macOS Setup](https://ostt.ai/guide/platforms/macos): Shortcuts.app hotkey setup on macOS, with `cmd+v` paste output.
+- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): Keybinding, window rules, and `shift+insert` paste output on Omarchy/Hyprland.
+- [GNOME Setup](https://ostt.ai/guide/platforms/gnome): Custom Shortcuts setup on GNOME, with `ctrl+v` paste output notes.
+- [KDE Plasma Setup](https://ostt.ai/guide/platforms/kde): Custom Shortcuts setup on KDE Plasma, with `ctrl+v` paste output notes.
 
 ## Reference
 

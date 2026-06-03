@@ -28,9 +28,11 @@ yay -S ostt
 Add the binding to `~/.config/hypr/bindings.conf`. Use the full path to the OSTT binary -- find it with `which ostt`:
 
 ```text
-# OSTT speech-to-text hotkey, clipboard output
-bindd = ALT, SPACE, ostt, exec, /home/you/.local/bin/ostt launch -c
+# OSTT speech-to-text hotkey, paste into focused app
+bindd = ALT, SPACE, ostt, exec, /home/you/.local/bin/ostt launch --paste
 ```
+
+Use `launch -c` instead if you want clipboard output and manual paste.
 
 ## Window Rules
 
@@ -53,9 +55,15 @@ hyprctl reload
 1. Press `Alt+Space` to open the popup and start recording.
 2. Speak.
 3. Press `Alt+Space` again, or press `Enter` in the popup, to stop recording and transcribe.
-4. Paste with `Ctrl+V`.
+4. With `--paste`, OSTT inserts the text into the app that regains focus after the popup closes.
 
 ## Output Options
+
+Paste output:
+
+```text
+bindd = ALT, SPACE, ostt, exec, /path/to/ostt launch --paste
+```
 
 Clipboard output:
 
@@ -78,10 +86,21 @@ bindd = ALT, SPACE, ostt, exec, /path/to/ostt launch -o ~/transcription.txt
 Processing output:
 
 ```text
-bindd = ALT CTRL, SPACE, ostt process, exec, /path/to/ostt launch -c -p
+bindd = ALT CTRL, SPACE, ostt process, exec, /path/to/ostt launch --paste -p
 ```
 
 Replace `/path/to/ostt` with the output of `which ostt`.
+
+### Paste Shortcut On Omarchy
+
+Omarchy's `SUPER+V` universal paste binding sends `SHIFT+Insert` to the focused app. OSTT uses `shift+insert` as the default paste key on Omarchy for the same reason.
+
+```toml
+[output.paste]
+paste_key = "shift+insert"
+```
+
+Do not set `paste_key = "super+v"` for this workflow. `SUPER+V` is a Hyprland binding, not the shortcut most apps receive for paste.
 
 ## Popup Appearance
 
@@ -112,6 +131,12 @@ Test launch directly:
 
 ```bash
 ostt launch -c
+```
+
+Test paste directly:
+
+```bash
+ostt launch --paste
 ```
 
 Reload Hyprland config:
