@@ -209,7 +209,7 @@ Default `paste_key` values:
 
 `restore_delay_ms` gives the focused app time to read the clipboard before OSTT restores the previous contents. Increase it if paste works intermittently or the old clipboard appears instead of the transcript.
 
-`post_popup_delay_ms` is used by `ostt launch --paste`. The popup closes first, then a detached helper waits for focus to return before sending the paste shortcut.
+`post_popup_delay_ms` is used by `ostt launch --paste`. The popup closes first, then OSTT waits for focus to return before sending the paste shortcut on supported desktops. On desktops where focus return cannot be detected, this value is used as the fallback delay.
 
 Linux paste shortcuts differ by app and desktop. GUI apps commonly use `ctrl+v`; terminals often use `ctrl+shift+v`; Omarchy maps `SUPER+v` to `shift+insert`. OSTT cannot reliably detect whether a paste succeeded, so it does not try multiple shortcuts automatically.
 

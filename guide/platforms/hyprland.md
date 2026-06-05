@@ -57,6 +57,8 @@ hyprctl reload
 3. Press `Alt+Space` again, or press `Enter` in the popup, to stop recording and transcribe.
 4. With `--paste`, OSTT inserts the text into the app that regains focus after the popup closes.
 
+On Hyprland, OSTT waits for the previous app to regain focus before sending the paste shortcut.
+
 ## Output Options
 
 Paste output:

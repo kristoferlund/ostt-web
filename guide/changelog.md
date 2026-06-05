@@ -4,6 +4,15 @@ description: Release notes and notable changes for OSTT.
 
 # Changelog
 
+## 0.0.20 - 2026-06-05
+
+### Changed
+
+- Popup recording now opens before audio setup completes, so first-run setup, microphone, model, API key, and ffmpeg errors appear inside the popup instead of failing silently.
+- Popup error screens now show clearer causes and next steps, including platform-specific ffmpeg guidance.
+- Paste and clipboard failures are now surfaced to users instead of being hidden in the launching process.
+- `ostt launch --paste` now waits for focus to return before pasting on supported desktops, including macOS and Hyprland.
+
 ## 0.0.19 - 2026-06-03
 
 ### Added

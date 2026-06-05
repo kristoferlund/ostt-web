@@ -60,9 +60,15 @@ Then retry with debug logs:
 RUST_LOG=debug ostt record
 ```
 
+When recording from a popup, OSTT shows setup, microphone, model, API key, local model file, and ffmpeg errors inside the popup. Use the message shown there first; it usually includes the next command to run.
+
+If the message mentions ffmpeg, install ffmpeg with your system package manager, then run `ostt record` again.
+
 ## Clipboard Does Not Work
 
 OSTT copies text using the first available clipboard tool. macOS uses `pbcopy` (built-in). Linux checks `wl-copy` (Wayland) then `xclip` (X11).
+
+Clipboard and paste errors are shown directly when you use `--clipboard` or `--paste`. If popup output disappears without text being inserted, run `ostt launch --paste` from a terminal to see the same error in your shell.
 
 If clipboard output fails, install the appropriate tool for your platform:
 
@@ -118,6 +124,8 @@ terminal = "ghostty"
 On GNOME Wayland, the compositor controls window placement so the `x` and `y` popup positions are ignored. The popup size (`width`, `height`) still works.
 
 On macOS, Terminal.app does not support true color. Install a preferred terminal from the auto-detection list (Ghostty, kitty, or Alacritty).
+
+On Linux, install `notify-send` if you want desktop notifications when a popup launch fails before the terminal window opens.
 
 ## Process Action Fails
 

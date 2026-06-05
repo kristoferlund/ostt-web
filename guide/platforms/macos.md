@@ -43,6 +43,8 @@ Typical locations:
 
 For popup mode, OSTT auto-detects Ghostty, kitty, or Alacritty. The installer warns you if none are installed. Ghostty is recommended on macOS.
 
+Ghostty is launched as a separate app instance for OSTT, which keeps the popup workflow separate from your regular terminal windows.
+
 Set a terminal explicitly if needed:
 
 ```toml
@@ -79,6 +81,8 @@ The suggested hotkey differs from the one used on Linux platforms because macOS 
 4. With `--paste`, OSTT inserts the text into the app that regains focus after the popup closes.
 
 The second hotkey press runs `ostt launch` again. OSTT detects the existing recording process and sends it a signal to finish recording.
+
+The first time you record, macOS may ask for microphone access. Allow access for the terminal app that opens the OSTT popup.
 
 ## Multiple Shortcuts
 
@@ -125,5 +129,7 @@ If clipboard output is missing, make sure `-c` is in the shell command. Without 
 Paste output uses `cmd+v` by default on macOS. It may require Accessibility permission for the terminal or automation process that sends the paste shortcut.
 
 When macOS shows an Accessibility Access prompt such as `"Ghostty" would like to control this computer using accessibility features`, choose Open System Settings and enable the app under Privacy & Security > Accessibility. If you use kitty or Alacritty instead of Ghostty, approve that terminal app.
+
+With `--paste`, OSTT waits for the previous app to regain focus before sending `cmd+v`. If paste still lands in the wrong app, increase `post_popup_delay_ms` in `[output.paste]`.
 
 macOS full-screen apps run in their own Space. Other windows cannot appear on top of a full-screen Space, so switch out of full-screen mode if the popup is hidden.
