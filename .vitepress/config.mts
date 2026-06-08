@@ -137,6 +137,7 @@ export default defineConfig({
     nav: [
       { text: 'Start', link: '/guide/getting-started' },
       { text: 'Why OSTT?', link: '/guide/why-ostt' },
+      { text: 'AI Agent', link: '/guide/ai-skill' },
       { text: 'Models', link: '/guide/choosing-a-model' },
       { text: 'Processing', link: '/guide/processing' },
       { text: 'Platforms', link: '/guide/platforms' },
@@ -149,6 +150,7 @@ export default defineConfig({
           { text: 'Getting Started', link: '/guide/getting-started' },
           { text: 'Why OSTT?', link: '/guide/why-ostt' },
           { text: 'Installation', link: '/guide/installation' },
+          { text: 'Install with an AI Agent', link: '/guide/ai-skill' },
           { text: 'Changelog', link: '/guide/changelog' }
         ]
       },

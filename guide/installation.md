@@ -4,6 +4,10 @@ description: Install OSTT via the one-line shell script, Homebrew, AUR, .deb, .r
 
 # Installation
 
+::: tip Install with an AI agent
+Prefer to let an AI coding agent do it? Run `npx skills add kristoferlund/ostt-skill` and your agent (Claude Code and other skill-aware tools) can install, configure, and troubleshoot OSTT for you. See [Install with an AI Agent](/guide/ai-skill).
+:::
+
 ## Recommended Installer
 
 ```bash
@@ -50,13 +54,23 @@ brew install ostt
 
 ### Arch / Omarchy -- AUR
 
-```bash
-# Using yay
-yay -S ostt
+Prebuilt binary packages (recommended -- no compilation, no Rust toolchain). Pick the one that matches your hardware:
 
-# Using paru
-paru -S ostt
+```bash
+yay -S ostt-bin          # CPU build (x86_64, aarch64)
+yay -S ostt-cuda-bin     # NVIDIA CUDA build (x86_64)
+yay -S ostt-vulkan-bin   # AMD / Intel Vulkan build (x86_64)
 ```
+
+These packages download the official release binary and install it directly. They conflict with each other and with the source package, so only one can be installed at a time.
+
+To build from source instead:
+
+```bash
+yay -S ostt
+```
+
+`paru` works in place of `yay` for any of the above.
 
 ### Debian / Ubuntu / Mint -- .deb
 
