@@ -4,6 +4,20 @@ description: Release notes and notable changes for OSTT.
 
 # Changelog
 
+## 0.0.21 - 2026-06-08
+
+### Changed
+
+- List-based TUI screens now use consistent scroll-margin behavior across model, keyword, replace, history, and process action views.
+- Popup error notifications now use a shared notifier with desktop notifications first, terminal OSC fallback for supported terminals, and stderr as the final fallback.
+- `ostt model` now opens on the currently active model instead of the first row.
+
+### Fixed
+
+- Improved `--paste` failure messages on GNOME Wayland so users are told when auto-paste is unavailable for native Wayland apps and the transcribed text remains in the clipboard.
+- Fixed `ostt model select whisper/<model>` for installed standard local Whisper model files that are not persisted in local model metadata.
+- Fixed test environment isolation so running the test suite cannot write to the user's real `~/.config/ostt/ostt.toml` when `XDG_CONFIG_HOME` is set.
+
 ## 0.0.20 - 2026-06-05
 
 ### Changed
