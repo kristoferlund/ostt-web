@@ -154,11 +154,13 @@ RUST_LOG=debug ostt process clean
 
 ### Shell Installer
 
-Ensure `~/.cargo/bin` is in your PATH:
+The installer places the binary in `~/.local/bin` by default (or the directory passed to `--install-dir`). Ensure that directory is in your PATH:
 
 ```bash
-export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 ```
+
+Add the same line to your shell profile (`~/.bashrc`, `~/.zshrc`, or `fish_add_path ~/.local/bin`) to make it permanent.
 
 ### Homebrew
 

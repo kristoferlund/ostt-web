@@ -329,7 +329,11 @@ missing_deps() {
     esac
   fi
 
-  printf '%s\n' "${deps[@]}"
+  # Guard the expansion: under `set -u`, "${deps[@]}" on an empty array raises
+  # "unbound variable" in bash < 4.4 (notably macOS's default bash 3.2).
+  if [ "${#deps[@]}" -gt 0 ]; then
+    printf '%s\n' "${deps[@]}"
+  fi
 }
 
 install_dependencies() {

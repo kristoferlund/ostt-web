@@ -20,6 +20,25 @@ On macOS, the installer uses the Metal-enabled build. On Linux x86_64, it instal
 curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu
 ```
 
+### Installer options
+
+Pass options after `-s --`. For example, a fully non-interactive install that keeps the CPU build:
+
+```bash
+curl -fsSL https://ostt.ai/install | bash -s -- --yes --no-gpu
+```
+
+| Option | Description |
+| --- | --- |
+| `-y`, `--yes` | Skip confirmation prompts (non-interactive install). |
+| `--no-deps` | Do not install system dependencies (ffmpeg, clipboard tools). |
+| `--no-gpu` | Install the CPU build even if GPU support is detected. |
+| `--version VERSION` | Install a specific release, for example `--version v0.0.20`. |
+| `--install-dir DIR` | Install `ostt` to `DIR` instead of `~/.local/bin`. |
+| `-h`, `--help` | Show usage and exit. |
+
+The install directory can also be set with the `OSTT_INSTALL_DIR` environment variable. When `--install-dir` is left at the default and a native `.deb`/`.rpm` package is available for your system, the installer uses that package (installing to `/usr/bin`) instead of the release archive.
+
 ## Native Package Options
 
 ### macOS -- Homebrew
