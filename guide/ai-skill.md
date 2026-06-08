@@ -17,7 +17,7 @@ You do not need to know anything about the skills system to use it &mdash; the o
 The skill is distributed with the `skills` CLI from Vercel Labs. There is **nothing to install first**: `npx` downloads and runs the CLI on demand.
 
 ```bash
-npx skills add kristoferlund/ostt-skill
+npx skills add https://github.com/kristoferlund/ostt-skill
 ```
 
 This installs the OSTT skill into the skills directory of every skill-aware agent `npx skills` detects on your machine. The first time you run it, `npx` will ask to download the `skills` package &mdash; accept, and it handles the rest.
@@ -39,7 +39,7 @@ The agent uses the skill to respond with correct OSTT commands and configuration
 Re-run the same command to pull the latest version of the skill:
 
 ```bash
-npx skills add kristoferlund/ostt-skill
+npx skills add https://github.com/kristoferlund/ostt-skill
 ```
 
 ## Source

@@ -108,7 +108,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
         <p>OSTT ships an official <a href="/guide/ai-skill">agent skill</a> for Claude Code and other skill-aware tools. Add it once and your agent knows how to install, configure, and troubleshoot OSTT for you &mdash; no need to read the docs by hand. It uses the open <a href="https://skills.sh">skills</a> ecosystem, and <code>npx</code> runs the CLI on demand, so there is nothing to install first.</p>
       </div>
       <div class="command-card">
-        <pre><code># Add the OSTT skill to your AI agent&#10;npx skills add kristoferlund/ostt-skill&#10;&#10;# Then just ask, for example:&#10;#   "Install OSTT and set up Deepgram."&#10;#   "Bind OSTT to Alt+Space on Hyprland with paste."</code></pre>
+        <pre><code># Add the OSTT skill to your AI agent&#10;npx skills add https://github.com/kristoferlund/ostt-skill&#10;&#10;# Then just ask, for example:&#10;#   "Install OSTT and set up Deepgram."&#10;#   "Bind OSTT to Alt+Space on Hyprland with paste."</code></pre>
       </div>
     </section>
   </div>

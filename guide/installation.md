@@ -5,7 +5,7 @@ description: Install OSTT via the one-line shell script, Homebrew, AUR, .deb, .r
 # Installation
 
 ::: tip Install with an AI agent
-Prefer to let an AI coding agent do it? Run `npx skills add kristoferlund/ostt-skill` and your agent (Claude Code and other skill-aware tools) can install, configure, and troubleshoot OSTT for you. See [Install with an AI Agent](/guide/ai-skill).
+Prefer to let an AI coding agent do it? Run `npx skills add https://github.com/kristoferlund/ostt-skill` and your agent (Claude Code and other skill-aware tools) can install, configure, and troubleshoot OSTT for you. See [Install with an AI Agent](/guide/ai-skill).
 :::
 
 ## Recommended Installer
