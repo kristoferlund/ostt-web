@@ -414,11 +414,7 @@ print_dependency_warning() {
 }
 
 release_base_url() {
-  if [ "$VERSION" = "latest" ]; then
-    echo "https://github.com/${REPO}/releases/latest/download"
-  else
-    echo "https://github.com/${REPO}/releases/download/${VERSION}"
-  fi
+  echo "https://github.com/${REPO}/releases/download/${VERSION}"
 }
 
 native_package_kind() {
@@ -442,15 +438,16 @@ download_and_install_native_package() {
   local gpu_variant="$4"
   local base_url pkg checksum tmpdir url checksum_url
 
+  local ver="${VERSION#v}"
   case "$kind:$arch:$gpu_variant" in
-  deb:x86_64:cuda) pkg="ostt-cuda_latest_amd64.deb" ;;
-  deb:x86_64:vulkan) pkg="ostt-vulkan_latest_amd64.deb" ;;
-  deb:x86_64:*) pkg="ostt_latest_amd64.deb" ;;
-  deb:aarch64:*) pkg="ostt_latest_arm64.deb" ;;
-  rpm:x86_64:cuda) pkg="ostt-cuda-latest.x86_64.rpm" ;;
-  rpm:x86_64:vulkan) pkg="ostt-vulkan-latest.x86_64.rpm" ;;
-  rpm:x86_64:*) pkg="ostt-latest.x86_64.rpm" ;;
-  rpm:aarch64:*) pkg="ostt-latest.aarch64.rpm" ;;
+  deb:x86_64:cuda) pkg="ostt-cuda_${ver}-1_amd64.deb" ;;
+  deb:x86_64:vulkan) pkg="ostt-vulkan_${ver}-1_amd64.deb" ;;
+  deb:x86_64:*) pkg="ostt_${ver}-1_amd64.deb" ;;
+  deb:aarch64:*) pkg="ostt_${ver}-1_arm64.deb" ;;
+  rpm:x86_64:cuda) pkg="ostt-cuda-${ver}-1.x86_64.rpm" ;;
+  rpm:x86_64:vulkan) pkg="ostt-vulkan-${ver}-1.x86_64.rpm" ;;
+  rpm:x86_64:*) pkg="ostt-${ver}-1.x86_64.rpm" ;;
+  rpm:aarch64:*) pkg="ostt-${ver}-1.aarch64.rpm" ;;
   *) return 1 ;;
   esac
 
@@ -544,6 +541,7 @@ EOF
 download_and_install() {
   local triple="$1"
   local gpu_variant="$2"
+  local ver="${VERSION#v}"
   local archive="ostt-${triple}.tar.gz"
   local checksum="${archive}.sha256"
   local base_url
@@ -553,7 +551,7 @@ download_and_install() {
   local extracted_bin
 
   case "$gpu_variant" in
-  cuda | vulkan) archive="ostt-${triple}-${gpu_variant}.tar.gz" ;;
+  cuda | vulkan) archive="ostt-${ver}-${triple}-${gpu_variant}.tar.gz" ;;
   esac
   checksum="${archive}.sha256"
 
@@ -591,6 +589,10 @@ main() {
   current_bin="$(installed_ostt_path)"
   current_version="$(installed_ostt_version "$current_bin")"
   target_release="$(target_version)"
+  VERSION="$target_release"
+  if [ "$VERSION" = "latest" ]; then
+    die "Could not resolve the latest release version from GitHub. Check your internet connection and try again."
+  fi
 
   os="$(detect_os)"
   arch="$(detect_arch)"
