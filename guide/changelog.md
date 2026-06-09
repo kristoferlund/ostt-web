@@ -4,6 +4,12 @@ description: Release notes and notable changes for OSTT.
 
 # Changelog
 
+## 0.0.24 - 2026-06-09
+
+### Fixed
+
+- `ostt -c` no longer hangs indefinitely on X11 when using xclip. The `-quiet` flag prevented xclip from forking to the background, causing ostt to wait forever. Stdout/stderr were already suppressed via Rust's `Stdio::null()`, making `-quiet` redundant.
+
 ## 0.0.23 - 2026-06-09
 
 ### Fixed
