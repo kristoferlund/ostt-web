@@ -152,6 +152,45 @@ On macOS, Terminal.app does not support true color. Install a preferred terminal
 
 On Linux, install `notify-send` if you want desktop notifications when a popup launch fails before the terminal window opens.
 
+## Auto-paste Fails on GNOME Wayland
+
+GNOME's Wayland compositor (Mutter) does not support the virtual keyboard protocol that `wtype` needs, and `xdotool` cannot target native Wayland apps. OSTT will copy the transcription to your clipboard and show:
+
+```
+Failed to send paste key 'ctrl+v'. Text was copied to the clipboard…
+Install ydotool and start ydotoold to enable auto-paste.
+```
+
+The simplest workaround is to use `-c` (clipboard mode) and paste manually with Ctrl+V.
+
+If you want automatic paste on GNOME Wayland, install `ydotool`. OSTT will use it automatically when it is available — no configuration needed.
+
+### Ubuntu / Debian
+
+```bash
+sudo apt install ydotool
+```
+
+Start the daemon (required for ydotool to work):
+
+```bash
+sudo systemctl enable --now ydotoold
+```
+
+### Arch Linux
+
+```bash
+sudo pacman -S ydotool
+sudo systemctl enable --now ydotoold
+```
+
+### Fedora
+
+```bash
+sudo dnf install ydotool
+sudo systemctl enable --now ydotoold
+```
+
 ## Process Action Fails
 
 List configured actions:
