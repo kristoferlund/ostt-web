@@ -46,6 +46,31 @@ reference_level_db = -12   # Adjust based on observed peak
 
 Common values: `-6` (very hot, near clipping), `-12` (professional standard), `-20` (conservative, typical card max).
 
+## GPU Build Running on CPU
+
+If you installed a CUDA or Vulkan build but transcription is slow and CPU usage is high, the GPU backend may not have initialised. Check the logs:
+
+```bash
+ostt logs
+```
+
+A successful GPU run looks like:
+
+```
+daemon: loading model 'whisper/large-v3' with Vulkan GPU acceleration
+daemon: backend active: Vulkan GPU acceleration using device(s): 0: AMD Radeon RX 7900 XTX (24576 MB VRAM)
+```
+
+If you see this instead:
+
+```
+daemon: backend active: Vulkan GPU acceleration requested, but no GPU devices were reported by ggml
+```
+
+The Vulkan loader is installed but the GPU driver ICD is missing. Install the Mesa Vulkan driver for your hardware — see [GPU Acceleration](/guide/gpu-acceleration#cpu-fallback) for per-distro instructions.
+
+If you see a shared library error on startup, the runtime library itself (`libvulkan.so.1` or `libcuda.so`) is missing. Install the driver packages or reinstall OSTT with `--no-gpu`.
+
 ## Transcription Fails
 
 Check authentication and selected model:

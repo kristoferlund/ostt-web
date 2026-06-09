@@ -26,10 +26,11 @@ Verify it is active in the logs:
 ostt logs
 ```
 
-Look for:
+Look for lines like:
 
 ```
-local transcription: Metal GPU acceleration enabled
+daemon: loading model 'whisper/large-v3' with Metal GPU acceleration
+daemon: backend active: Metal GPU acceleration using device(s): 0: Apple M2 Pro (16384 MB VRAM)
 ```
 
 ## Linux — NVIDIA (CUDA)
@@ -58,10 +59,11 @@ Verify CUDA is active:
 ostt logs
 ```
 
-Look for:
+Look for lines like:
 
 ```
-local transcription: CUDA GPU acceleration enabled
+daemon: loading model 'whisper/large-v3' with CUDA GPU acceleration
+daemon: backend active: CUDA GPU acceleration using device(s): 0: NVIDIA GeForce RTX 4080 (16384 MB VRAM)
 ```
 
 ## Linux — AMD and Intel (Vulkan)
@@ -86,10 +88,11 @@ Verify Vulkan is active:
 ostt logs
 ```
 
-Look for:
+Look for lines like:
 
 ```
-local transcription: Vulkan GPU acceleration enabled
+daemon: loading model 'whisper/large-v3' with Vulkan GPU acceleration
+daemon: backend active: Vulkan GPU acceleration using device(s): 0: AMD Radeon RX 7900 XTX (24576 MB VRAM)
 ```
 
 ## Manual Package Selection
@@ -98,9 +101,9 @@ If you install from `.deb`, `.rpm`, or direct release archives instead of the in
 
 | Hardware | Debian/Ubuntu | Fedora/RHEL/openSUSE | Archive |
 | --- | --- | --- | --- |
-| CPU or Linux ARM64 | `ostt_latest_amd64.deb` or `ostt_latest_arm64.deb` | `ostt-latest.x86_64.rpm` or `ostt-latest.aarch64.rpm` | `ostt-<target>.tar.gz` |
-| NVIDIA GPU with CUDA runtime libraries | `ostt-cuda_latest_amd64.deb` | `ostt-cuda-latest.x86_64.rpm` | `ostt-x86_64-unknown-linux-gnu-cuda.tar.gz` |
-| AMD/Intel GPU with Vulkan runtime library | `ostt-vulkan_latest_amd64.deb` | `ostt-vulkan-latest.x86_64.rpm` | `ostt-x86_64-unknown-linux-gnu-vulkan.tar.gz` |
+| CPU or Linux ARM64 | `ostt_<version>_amd64.deb` or `ostt_<version>_arm64.deb` | `ostt-<version>.x86_64.rpm` or `ostt-<version>.aarch64.rpm` | `ostt-<target>.tar.gz` |
+| NVIDIA GPU with CUDA runtime libraries | `ostt-cuda_<version>_amd64.deb` | `ostt-cuda-<version>.x86_64.rpm` | `ostt-<version>-x86_64-unknown-linux-gnu-cuda.tar.gz` |
+| AMD/Intel GPU with Vulkan runtime library | `ostt-vulkan_<version>_amd64.deb` | `ostt-vulkan-<version>.x86_64.rpm` | `ostt-<version>-x86_64-unknown-linux-gnu-vulkan.tar.gz` |
 | macOS | Homebrew or macOS archive | n/a | `ostt-x86_64-apple-darwin.tar.gz` or `ostt-aarch64-apple-darwin.tar.gz` |
 
 Run `uname -m` to check your CPU architecture. CUDA and Vulkan artifacts are currently Linux x86_64 only.
@@ -111,5 +114,40 @@ On Linux, if both NVIDIA and AMD/Intel GPUs are present, the install script sele
 
 ## CPU Fallback
 
-The CPU build works on all hardware. If you install the GPU build and the required runtime libraries are not present, the binary will fail to start. In that case, reinstall with `--no-gpu` or install the required driver packages.
+The CPU build works on all hardware. GPU builds can fail to accelerate in two distinct ways:
+
+**Missing runtime library** — if `libcuda.so` or `libvulkan.so.1` is not present, the binary fails to start with a shared library error. Install the required driver packages or reinstall with `--no-gpu`.
+
+**Library present but no GPU device visible** — the binary starts and runs, but whisper.cpp cannot find a usable GPU and silently falls back to CPU inference. This is the most common cause of unexpectedly high CPU usage after installing a GPU build. Check `ostt logs` for:
+
+```
+daemon: backend active: Vulkan GPU acceleration requested, but no GPU devices were reported by ggml
+```
+
+This means the Vulkan loader is installed but the GPU driver ICD is missing. On Arch Linux, install the Mesa Vulkan driver for your hardware:
+
+```bash
+sudo pacman -S vulkan-radeon    # AMD
+sudo pacman -S vulkan-intel     # Intel
+```
+
+On Debian/Ubuntu:
+
+```bash
+sudo apt install mesa-vulkan-drivers
+```
+
+On Fedora:
+
+```bash
+sudo dnf install mesa-vulkan-drivers
+```
+
+After installing the driver, restart the daemon:
+
+```bash
+ostt daemon restart
+```
+
+Then verify `ostt logs` shows your GPU device name and VRAM.
 
