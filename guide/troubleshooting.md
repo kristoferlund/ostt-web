@@ -46,6 +46,18 @@ reference_level_db = -12   # Adjust based on observed peak
 
 Common values: `-6` (very hot, near clipping), `-12` (professional standard), `-20` (conservative, typical card max).
 
+## Clipping Indicator Never Lights Up
+
+The red clipping indicator works on the **digital** signal OSTT receives from your microphone. If your system's input/recording volume is set below 100%, the OS applies a digital attenuation *after* the audio card but *before* OSTT sees it — so even when your interface's analog stage is clipping (e.g. the card's red LED is lit), the level reaching OSTT is reduced and never registers as clipping.
+
+For the indicator to reflect reality:
+
+1. Set your **system input/recording volume to 100%** (unity gain). On Linux check `wpctl status` / `pavucontrol`; on macOS check System Settings → Sound → Input.
+2. Set your actual recording level using the **gain knob on your microphone or audio interface**, not the system slider.
+3. Aim for peaks around `-12` to `-6` dBFS. If the indicator lights, lower the analog gain.
+
+This is standard pro-audio gain staging: a system input slider below 100% is an invisible layer between your hardware and the app, and no application can show accurate clipping through it. Leave the system slider at 100% and adjust gain at the source.
+
 ## GPU Build Running on CPU
 
 If you installed a CUDA or Vulkan build but transcription is slow and CPU usage is high, the GPU backend may not have initialised. Check the logs:
