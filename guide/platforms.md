@@ -32,11 +32,19 @@ Full setup: [macOS Setup](./platforms/macos.md).
 
 ## Omarchy / Hyprland
 
-Add the binding to `~/.config/hypr/bindings.conf`:
+Current Omarchy releases use Lua. Add the binding to `~/.config/hypr/bindings.lua`:
+
+```lua
+o.bind("ALT + SPACE", "OSTT speech-to-text", "/path/to/ostt launch --paste")
+```
+
+Older Hyprland and Omarchy releases use `~/.config/hypr/bindings.conf`:
 
 ```text
 bindd = ALT, SPACE, ostt, exec, /path/to/ostt launch --paste
 ```
+
+Use the format loaded by your installation, not both.
 
 Full setup: [Omarchy / Hyprland Setup](./platforms/hyprland.md).
 

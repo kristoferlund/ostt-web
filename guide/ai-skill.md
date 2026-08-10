@@ -28,6 +28,7 @@ Once the skill is added, talk to your agent in plain language. For example:
 
 - "Install OSTT and set up Deepgram as the provider."
 - "Bind OSTT to `Alt+Space` on Hyprland with paste output."
+- "Upgrade my legacy Omarchy OSTT hotkey and popup rules to the current Lua config."
 - "OSTT says `command not found` after install &mdash; fix my PATH."
 - "Download a local Whisper model and run it with GPU acceleration."
 - "Add a processing action that cleans up filler words."
