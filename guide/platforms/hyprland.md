@@ -44,9 +44,9 @@ Add this rule after the default imports in `~/.config/hypr/hyprland.lua`:
 
 ```lua
 -- Keep the OSTT popup floating, pinned, and centered near the bottom edge.
-o.window({ title = ".*ostt.*" }, {
+o.window({ title = "^ostt$" }, {
   float = true,
-  move = { "((monitor_w*0.5)-(window_w*0.5))", "(monitor_h*0.85)" },
+  move = { "((monitor_w*0.5)-(window_w*0.5))", "(monitor_h*0.8)" },
   pin = true,
 })
 ```
