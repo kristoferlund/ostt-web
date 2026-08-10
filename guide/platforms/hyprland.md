@@ -23,9 +23,9 @@ yay -S ostt
 
 `pacman` does not install AUR packages directly unless you build them manually.
 
-## Current Omarchy (Lua)
+## Omarchy 4.x Alpha (Lua)
 
-Current Omarchy releases load personal overrides from `~/.config/hypr/bindings.lua` and `~/.config/hypr/hyprland.lua`. Use this format when those files exist. Do not edit Omarchy files under `~/.local/share/omarchy`.
+Omarchy 4.x is currently an alpha release. It loads personal overrides from `~/.config/hypr/bindings.lua` and `~/.config/hypr/hyprland.lua`. Use this format when those files exist. Do not edit Omarchy files under `~/.local/share/omarchy`.
 
 ### Keybinding
 
@@ -60,9 +60,9 @@ hyprctl reload
 hyprctl configerrors
 ```
 
-## Legacy Hyprland / Omarchy (`.conf`)
+## Omarchy 3.x And Hyprland (`.conf`)
 
-Older Hyprland and Omarchy releases use Hyprlang `.conf` files. Keep using this format when your installation does not load the Lua files above. Do not configure the same hotkey in both formats.
+Omarchy 3.x remains a supported release and uses Hyprlang `.conf` files. Use this format when your installation does not load the Lua files above. Do not configure the same hotkey in both formats.
 
 ### Keybinding
 
@@ -104,7 +104,7 @@ On Hyprland, OSTT waits for the previous app to regain focus before sending the 
 
 ## Output Options
 
-For current Omarchy, use these commands as the third argument to `o.bind(...)`. The Hyprlang examples below are for legacy `.conf` installations.
+For Omarchy 4.x alpha, use these commands as the third argument to `o.bind(...)`. The Hyprlang examples below are for Omarchy 3.x and other `.conf` installations.
 
 Paste output:
 
@@ -162,7 +162,7 @@ font_size = 6
 borderless = true
 ```
 
-For a current Omarchy Lua installation, change the `move` values in the `o.window(...)` rule above. For a legacy `.conf` installation, use these move rules instead:
+For an Omarchy 4.x alpha installation, change the `move` values in the `o.window(...)` rule above. For Omarchy 3.x and other `.conf` installations, use these move rules instead:
 
 ```text
 # Centered horizontally near the bottom
@@ -192,4 +192,4 @@ Reload Hyprland config:
 hyprctl reload
 ```
 
-If the popup appears in the wrong position, make sure the OSTT window rules are placed after any catch-all rules that might override them. In current Omarchy, add the Lua rule after `require("default.hypr.omarchy")` in `hyprland.lua`.
+If the popup appears in the wrong position, make sure the OSTT window rules are placed after any catch-all rules that might override them. In Omarchy 4.x alpha, add the Lua rule after `require("default.hypr.omarchy")` in `hyprland.lua`.
