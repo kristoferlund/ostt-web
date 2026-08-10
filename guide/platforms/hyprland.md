@@ -23,7 +23,48 @@ yay -S ostt
 
 `pacman` does not install AUR packages directly unless you build them manually.
 
-## Keybinding
+## Omarchy 4.x Alpha (Lua)
+
+Omarchy 4.x is currently an alpha release. It loads personal overrides from `~/.config/hypr/bindings.lua` and `~/.config/hypr/hyprland.lua`. Use this format when those files exist. Do not edit Omarchy files under `~/.local/share/omarchy`.
+
+### Keybinding
+
+Add the binding to `~/.config/hypr/bindings.lua`. Use the full path to the OSTT binary -- find it with `which ostt`:
+
+```lua
+-- OSTT speech-to-text hotkey, paste into focused app
+o.bind("ALT + SPACE", "OSTT speech-to-text", "/home/you/.local/bin/ostt launch --paste")
+```
+
+Use `launch -c` instead if you want clipboard output and manual paste.
+
+### Window Rules
+
+Add this rule after the default imports in `~/.config/hypr/hyprland.lua`:
+
+```lua
+-- Keep the OSTT popup floating, pinned, and centered near the bottom edge.
+o.window({ title = ".*ostt.*" }, {
+  float = true,
+  move = { "((monitor_w*0.5)-(window_w*0.5))", "(monitor_h*0.85)" },
+  pin = true,
+})
+```
+
+`pin = true` keeps the floating popup visible when switching workspaces.
+
+### Apply the configuration
+
+```bash
+hyprctl reload
+hyprctl configerrors
+```
+
+## Omarchy 3.x And Hyprland (`.conf`)
+
+Omarchy 3.x remains a supported release and uses Hyprlang `.conf` files. Use this format when your installation does not load the Lua files above. Do not configure the same hotkey in both formats.
+
+### Keybinding
 
 Add the binding to `~/.config/hypr/bindings.conf`. Use the full path to the OSTT binary -- find it with `which ostt`:
 
@@ -34,7 +75,7 @@ bindd = ALT, SPACE, ostt, exec, /home/you/.local/bin/ostt launch --paste
 
 Use `launch -c` instead if you want clipboard output and manual paste.
 
-## Window Rules
+### Window Rules
 
 Add window rules to `~/.config/hypr/hyprland.conf`:
 
@@ -42,12 +83,14 @@ Add window rules to `~/.config/hypr/hyprland.conf`:
 # OSTT window overrides
 windowrule = float on, match:title ostt
 windowrule = move ((monitor_w*0.5)-(window_w*0.5)) (monitor_h*0.85), match:title ostt
+windowrule = pin on, match:title ostt
 ```
 
-Reload Hyprland:
+### Apply the configuration
 
 ```bash
 hyprctl reload
+hyprctl configerrors
 ```
 
 ## Usage
@@ -60,6 +103,8 @@ hyprctl reload
 On Hyprland, OSTT waits for the previous app to regain focus before sending the paste shortcut.
 
 ## Output Options
+
+For Omarchy 4.x alpha, use these commands as the third argument to `o.bind(...)`. The Hyprlang examples below are for Omarchy 3.x and other `.conf` installations.
 
 Paste output:
 
@@ -117,7 +162,7 @@ font_size = 6
 borderless = true
 ```
 
-Change the move rule to adjust position:
+For an Omarchy 4.x alpha installation, change the `move` values in the `o.window(...)` rule above. For Omarchy 3.x and other `.conf` installations, use these move rules instead:
 
 ```text
 # Centered horizontally near the bottom
@@ -147,4 +192,4 @@ Reload Hyprland config:
 hyprctl reload
 ```
 
-If the popup appears in the wrong position, make sure the OSTT window rules are placed before catch-all rules that might override them.
+If the popup appears in the wrong position, make sure the OSTT window rules are placed after any catch-all rules that might override them. In Omarchy 4.x alpha, add the Lua rule after `require("default.hypr.omarchy")` in `hyprland.lua`.
