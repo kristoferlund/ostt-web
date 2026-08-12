@@ -1,0 +1,36 @@
+{
+  "version": "0.0.25",
+  "tag": "v0.0.25",
+  "assets": {
+    "linux-aarch64": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-aarch64-unknown-linux-gnu.tar.gz",
+    "linux-aarch64-deb": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt_0.0.25-1_arm64.deb",
+    "linux-aarch64-rpm": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-0.0.25-1.aarch64.rpm",
+    "linux-x86_64": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-x86_64-unknown-linux-gnu.tar.gz",
+    "linux-x86_64-cuda": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-0.0.25-x86_64-unknown-linux-gnu-cuda.tar.gz",
+    "linux-x86_64-cuda-deb": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-cuda_0.0.25-1_amd64.deb",
+    "linux-x86_64-cuda-rpm": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-cuda-0.0.25-1.x86_64.rpm",
+    "linux-x86_64-deb": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt_0.0.25-1_amd64.deb",
+    "linux-x86_64-rpm": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-0.0.25-1.x86_64.rpm",
+    "linux-x86_64-vulkan": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-0.0.25-x86_64-unknown-linux-gnu-vulkan.tar.gz",
+    "linux-x86_64-vulkan-deb": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-vulkan_0.0.25-1_amd64.deb",
+    "linux-x86_64-vulkan-rpm": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-vulkan-0.0.25-1.x86_64.rpm",
+    "macos-aarch64": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-aarch64-apple-darwin.tar.gz",
+    "macos-x86_64": "https://github.com/kristoferlund/ostt/releases/download/v0.0.25/ostt-x86_64-apple-darwin.tar.gz"
+  },
+  "sha256": {
+    "linux-aarch64": "0c309f44aebb4888fdf98b1dc6953cd5e44f509eb7d02755516d64b92196244a",
+    "linux-aarch64-deb": "05e48224ccfcc66d57f7d531184efe09a44220ba40057f900c0e15bea402264c",
+    "linux-aarch64-rpm": "b8a5ee368a45667854621219108b159088bdb39c1885dd1c7c1312029cbb977b",
+    "linux-x86_64": "bc4e945f87328c48fe952abdd243af363d8f9bf3a3f1b55d2ea7b0e236a7425a",
+    "linux-x86_64-cuda": "818c006ae5a58b2853349b06c3d00440c38774ffcc317ac5711ee2e8c20ad9b2",
+    "linux-x86_64-cuda-deb": "627172f690f8773e83f3f1495216157c9a420c2581aca8ed5dbe240116851007",
+    "linux-x86_64-cuda-rpm": "cb2c535f4a8b37229e1740ff53fc0368690ebf5b689aa63eaca703273a8ca180",
+    "linux-x86_64-deb": "8a01a00e914e3cf0c01df5c3395c4aaebc046bb83ecc009cd4b59df5c877beb0",
+    "linux-x86_64-rpm": "3ece3c2ac40ba5b8874a1f55081854419989d9a82baeeded1707fef0bd834785",
+    "linux-x86_64-vulkan": "0851bbf894eb06b222f398a3e0bd508bab388b7fd7be4fc9388620d7762ee515",
+    "linux-x86_64-vulkan-deb": "2a85f5213ead1d00e26708325af792e2fe671357a8bbc672fbcfc1ff01bd76e8",
+    "linux-x86_64-vulkan-rpm": "7cb89cb05d04a68b9ca7e0ee36dafeb0ecd66427cfc865cd18f5cc55b9d56aee",
+    "macos-aarch64": "77038457df197da909332ab147361e9524c5a0fb26a2ddab8f5e62dae262c16e",
+    "macos-x86_64": "c8c784251cc0ba77602d8722896d5f2bf5bc5a26569b32ff6a504601d46cd0cd"
+  }
+}
