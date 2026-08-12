@@ -22,6 +22,8 @@ It uses native `.deb` or `.rpm` packages on supported Linux distributions when p
 
 Shell completions are installed to user-owned directories -- no `sudo` required. For zsh, the installer also adds the completions directory to `fpath` in your `.zshrc`, since zsh's default `fpath` contains no directory under `$HOME`.
 
+Download URLs and checksums come from a release manifest at [ostt.ai/latest.json](https://ostt.ai/latest.json), so the installer never guesses filenames. If the manifest is unreachable the install fails with an explicit error rather than falling back to a guess. Installing a pinned release with `--version` bypasses the manifest, since it only ever describes the latest release.
+
 On macOS, the installer uses the Metal-enabled build. On Linux x86_64, it installs the CUDA build when a usable NVIDIA CUDA runtime is detected, the Vulkan build when AMD/Intel Vulkan support is detected, and the CPU build otherwise. To force the CPU build:
 
 ```bash

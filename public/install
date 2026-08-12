@@ -4,6 +4,13 @@ set -euo pipefail
 REPO="kristoferlund/ostt"
 APP_NAME="OSTT"
 BIN_NAME="ostt"
+# Source of truth for the latest release: every download URL and checksum is
+# read from here rather than reconstructed from filename patterns.
+MANIFEST_URL="${OSTT_MANIFEST_URL:-https://ostt.ai/latest.json}"
+MANIFEST=""
+# Set by resolve_asset().
+RESOLVED_URL=""
+RESOLVED_SHA=""
 DEFAULT_INSTALL_DIR="$HOME/.local/bin"
 INSTALL_DIR="${OSTT_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 VERSION="latest"
@@ -261,20 +268,170 @@ installed_ostt_version() {
   printf '%s\n' "$raw" | sed -n 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/v\1/p' | head -n 1
 }
 
-target_version() {
-  local effective_url
+fetch_manifest() {
+  MANIFEST="$(curl "${CURL_OPTS[@]}" --max-time 20 -fsSL "$MANIFEST_URL" 2>/dev/null || true)"
 
-  if [ "$VERSION" != "latest" ]; then
-    printf '%s\n' "$VERSION"
+  # Deliberately fatal rather than falling back to constructing filenames: a
+  # silent fallback would hide a stale or unpublished manifest indefinitely.
+  if [ -z "$MANIFEST" ]; then
+    die "could not fetch the release manifest at ${MANIFEST_URL}
+  Check your connection and try again. To bypass the manifest entirely,
+  install a pinned version: curl -fsSL https://ostt.ai/install | bash -s -- --version vX.Y.Z"
+  fi
+}
+
+# Read a "key": "value" pair out of one top-level object in the manifest.
+# Values never contain a quote, so this stays a two-substitution job.
+manifest_get() {
+  local section="$1"
+  local key="$2"
+
+  printf '%s\n' "$MANIFEST" | awk -v section="\"$section\"" -v target="\"$key\":" '
+    $0 ~ "^[[:space:]]*" section "[[:space:]]*:" { in_section = 1; next }
+    in_section && /^[[:space:]]*}/ { exit }
+    in_section && index($0, target) {
+      sub(/^.*:[[:space:]]*"/, "")
+      sub(/".*$/, "")
+      print
+      exit
+    }
+  '
+}
+
+manifest_version() {
+  printf '%s\n' "$MANIFEST" | awk -F '"' '/^[[:space:]]*"version"[[:space:]]*:/ { print $4; exit }'
+}
+
+# Manifest key for a platform: linux-x86_64, linux-x86_64-cuda-deb, and so on.
+# macOS ships Metal in the base archive, so "metal" adds no suffix.
+manifest_key() {
+  local os="$1"
+  local arch="$2"
+  local gpu_variant="$3"
+  local kind="$4"
+  local key="${os}-${arch}"
+
+  case "$gpu_variant" in
+  cuda | vulkan) key="${key}-${gpu_variant}" ;;
+  esac
+
+  case "$kind" in
+  deb | rpm) key="${key}-${kind}" ;;
+  esac
+
+  printf '%s\n' "$key"
+}
+
+# Warn when the published manifest has fallen behind the newest GitHub
+# release, which means the manifest refresh step of a release was skipped.
+# Advisory only: any failure here is ignored rather than blocking an install.
+warn_if_manifest_stale() {
+  local effective_url latest
+
+  effective_url="$(curl "${CURL_OPTS[@]}" --max-time 10 -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest" 2>/dev/null || true)"
+  [ -n "$effective_url" ] || return 0
+
+  latest="${effective_url##*/}"
+  latest="${latest#v}"
+  [ -n "$latest" ] || return 0
+
+  if [ "$latest" != "${VERSION#v}" ]; then
+    warn "the install manifest offers v${VERSION#v}, but v${latest} is the newest release"
+    warn "installing v${VERSION#v} anyway; please report this at https://github.com/${REPO}/issues"
+  fi
+}
+
+# Sets RESOLVED_URL and RESOLVED_SHA for the requested target. For the default
+# "latest" install both come from the manifest. A pinned --version predates the
+# manifest, so that path still derives names from the release layout.
+resolve_asset() {
+  local os="$1"
+  local arch="$2"
+  local gpu_variant="$3"
+  local kind="$4"
+  local key name
+
+  RESOLVED_URL=""
+  RESOLVED_SHA=""
+
+  if [ -n "$MANIFEST" ]; then
+    key="$(manifest_key "$os" "$arch" "$gpu_variant" "$kind")"
+    RESOLVED_URL="$(manifest_get assets "$key")"
+    RESOLVED_SHA="$(manifest_get sha256 "$key")"
+
+    if [ -z "$RESOLVED_URL" ]; then
+      return 1
+    fi
+    if [ -z "$RESOLVED_SHA" ]; then
+      die "manifest lists ${key} but has no checksum for it; refusing to install unverified"
+    fi
     return 0
   fi
 
-  effective_url="$(curl "${CURL_OPTS[@]}" --max-time 20 -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest" 2>/dev/null || true)"
-  if [ -n "$effective_url" ]; then
-    printf '%s\n' "${effective_url##*/}"
-  else
-    printf '%s\n' "latest"
+  name="$(legacy_asset_name "$os" "$arch" "$gpu_variant" "$kind")" || return 1
+  RESOLVED_URL="$(release_base_url)/${name}"
+
+  # No manifest to read the digest from, so use the .sha256 published beside
+  # the asset. An empty RESOLVED_SHA tells the caller to fetch that sibling.
+  if ! curl "${CURL_OPTS[@]}" --max-time 20 -fsI "$RESOLVED_URL" >/dev/null 2>&1; then
+    return 1
   fi
+  return 0
+}
+
+legacy_asset_name() {
+  local os="$1"
+  local arch="$2"
+  local gpu_variant="$3"
+  local kind="$4"
+  local ver="${VERSION#v}"
+  local triple
+
+  case "$kind" in
+  deb | rpm)
+    case "$kind:$arch:$gpu_variant" in
+    deb:x86_64:cuda) printf '%s\n' "ostt-cuda_${ver}-1_amd64.deb" ;;
+    deb:x86_64:vulkan) printf '%s\n' "ostt-vulkan_${ver}-1_amd64.deb" ;;
+    deb:x86_64:*) printf '%s\n' "ostt_${ver}-1_amd64.deb" ;;
+    deb:aarch64:*) printf '%s\n' "ostt_${ver}-1_arm64.deb" ;;
+    rpm:x86_64:cuda) printf '%s\n' "ostt-cuda-${ver}-1.x86_64.rpm" ;;
+    rpm:x86_64:vulkan) printf '%s\n' "ostt-vulkan-${ver}-1.x86_64.rpm" ;;
+    rpm:x86_64:*) printf '%s\n' "ostt-${ver}-1.x86_64.rpm" ;;
+    rpm:aarch64:*) printf '%s\n' "ostt-${ver}-1.aarch64.rpm" ;;
+    *) return 1 ;;
+    esac
+    ;;
+  *)
+    triple="$(target_triple "$os" "$arch")"
+    case "$gpu_variant" in
+    cuda | vulkan) printf '%s\n' "ostt-${ver}-${triple}-${gpu_variant}.tar.gz" ;;
+    *) printf '%s\n' "ostt-${triple}.tar.gz" ;;
+    esac
+    ;;
+  esac
+}
+
+# Downloads $url to $dest and verifies it. Uses $sha when the manifest supplied
+# one, otherwise falls back to the .sha256 sibling of the asset.
+download_verified() {
+  local url="$1"
+  local sha="$2"
+  local dest="$3"
+  local checksum_url
+
+  log "Downloading ${url}"
+  curl "${CURL_OPTS[@]}" --max-time 300 -fsSL "$url" -o "$dest"
+
+  if [ -z "$sha" ]; then
+    checksum_url="${url}.sha256"
+    log "Downloading ${checksum_url}"
+    sha="$(curl "${CURL_OPTS[@]}" --max-time 30 -fsSL "$checksum_url" 2>/dev/null | awk '{print $1}')"
+    if [ -z "$sha" ]; then
+      die "could not fetch a checksum for $(basename "$url")"
+    fi
+  fi
+
+  verify_checksum "$dest" "$sha"
 }
 
 has_ld_library() {
@@ -467,44 +624,20 @@ native_package_kind() {
 download_and_install_native_package() {
   local kind="$1"
   local pm="$2"
-  local arch="$3"
-  local gpu_variant="$4"
-  local base_url pkg checksum tmpdir url checksum_url
+  local os="$3"
+  local arch="$4"
+  local gpu_variant="$5"
+  local pkg tmpdir
 
-  local ver="${VERSION#v}"
-  case "$kind:$arch:$gpu_variant" in
-  deb:x86_64:cuda) pkg="ostt-cuda_${ver}-1_amd64.deb" ;;
-  deb:x86_64:vulkan) pkg="ostt-vulkan_${ver}-1_amd64.deb" ;;
-  deb:x86_64:*) pkg="ostt_${ver}-1_amd64.deb" ;;
-  deb:aarch64:*) pkg="ostt_${ver}-1_arm64.deb" ;;
-  rpm:x86_64:cuda) pkg="ostt-cuda-${ver}-1.x86_64.rpm" ;;
-  rpm:x86_64:vulkan) pkg="ostt-vulkan-${ver}-1.x86_64.rpm" ;;
-  rpm:x86_64:*) pkg="ostt-${ver}-1.x86_64.rpm" ;;
-  rpm:aarch64:*) pkg="ostt-${ver}-1.aarch64.rpm" ;;
-  *) return 1 ;;
-  esac
+  resolve_asset "$os" "$arch" "$gpu_variant" "$kind" || return 1
 
-  checksum="${pkg}.sha256"
-  base_url="$(release_base_url)"
-  url="${base_url}/${pkg}"
-  checksum_url="${base_url}/${checksum}"
-
-  if ! curl "${CURL_OPTS[@]}" --max-time 20 -fsI "$url" >/dev/null 2>&1 ||
-    ! curl "${CURL_OPTS[@]}" --max-time 20 -fsI "$checksum_url" >/dev/null 2>&1; then
-    return 1
-  fi
-
+  pkg="${RESOLVED_URL##*/}"
   tmpdir="$(mktemp -d)"
   trap "rm -rf '$tmpdir'" RETURN
 
-  log "Downloading ${url}"
-  curl "${CURL_OPTS[@]}" --max-time 300 -fsSL "$url" -o "${tmpdir}/${pkg}"
-  log "Downloading ${checksum_url}"
-  curl "${CURL_OPTS[@]}" --max-time 30 -fsSL "$checksum_url" -o "${tmpdir}/${checksum}"
+  download_verified "$RESOLVED_URL" "$RESOLVED_SHA" "${tmpdir}/${pkg}"
   chmod 755 "$tmpdir"
-  chmod 644 "${tmpdir}/${pkg}" "${tmpdir}/${checksum}"
-
-  verify_checksum "${tmpdir}/${pkg}" "${tmpdir}/${checksum}"
+  chmod 644 "${tmpdir}/${pkg}"
 
   case "$pm" in
   apt)
@@ -524,14 +657,13 @@ download_and_install_native_package() {
 
 verify_checksum() {
   local archive_path="$1"
-  local checksum_path="$2"
-  local expected
+  local expected="$2"
   local actual
 
   printf '\nVerifying checksum: '
-  expected="$(awk '{print $1}' "$checksum_path")"
-  if [ -z "$expected" ]; then
-    die "checksum file was empty or invalid"
+  expected="$(printf '%s\n' "$expected" | tr 'A-Z' 'a-z')"
+  if ! printf '%s\n' "$expected" | grep -Eq '^[0-9a-f]{64}$'; then
+    die "invalid SHA-256 for $(basename "$archive_path"): ${expected}"
   fi
 
   if has sha256sum; then
@@ -575,35 +707,22 @@ EOF
 }
 
 download_and_install() {
-  local triple="$1"
-  local gpu_variant="$2"
-  local ver="${VERSION#v}"
-  local archive="ostt-${triple}.tar.gz"
-  local checksum="${archive}.sha256"
-  local base_url
-  local url
-  local checksum_url
+  local os="$1"
+  local arch="$2"
+  local gpu_variant="$3"
+  local archive
   local tmpdir
   local extracted_bin
 
-  case "$gpu_variant" in
-  cuda | vulkan) archive="ostt-${ver}-${triple}-${gpu_variant}.tar.gz" ;;
-  esac
-  checksum="${archive}.sha256"
+  if ! resolve_asset "$os" "$arch" "$gpu_variant" "archive"; then
+    die "no ${gpu_variant} archive is available for ${os}-${arch} in ${VERSION}"
+  fi
 
-  base_url="$(release_base_url)"
-  url="${base_url}/${archive}"
-  checksum_url="${base_url}/${checksum}"
-
+  archive="${RESOLVED_URL##*/}"
   tmpdir="$(mktemp -d)"
   trap "rm -rf '$tmpdir'" RETURN
 
-  log "Downloading ${url}"
-  curl "${CURL_OPTS[@]}" --max-time 300 -fsSL "$url" -o "${tmpdir}/${archive}"
-  log "Downloading ${checksum_url}"
-  curl "${CURL_OPTS[@]}" --max-time 30 -fsSL "$checksum_url" -o "${tmpdir}/${checksum}"
-
-  verify_checksum "${tmpdir}/${archive}" "${tmpdir}/${checksum}"
+  download_verified "$RESOLVED_URL" "$RESOLVED_SHA" "${tmpdir}/${archive}"
 
   tar -xzf "${tmpdir}/${archive}" -C "$tmpdir"
   extracted_bin="$(find "$tmpdir" -type f -name "$BIN_NAME" -perm -111 | head -n 1)"
@@ -719,7 +838,7 @@ install_completions() {
 
 main() {
   local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant
-  local current_bin current_version target_release pm_label
+  local current_bin current_version target_release pm_label source_label
   local deps=()
 
   print_header
@@ -727,10 +846,21 @@ main() {
 
   current_bin="$(installed_ostt_path)"
   current_version="$(installed_ostt_version "$current_bin")"
-  target_release="$(target_version)"
-  VERSION="$target_release"
+
   if [ "$VERSION" = "latest" ]; then
-    die "Could not resolve the latest release version from GitHub. Check your internet connection and try again."
+    fetch_manifest
+    target_release="v$(manifest_version)"
+    if [ "$target_release" = "v" ]; then
+      die "release manifest at ${MANIFEST_URL} has no version field"
+    fi
+    VERSION="$target_release"
+    source_label="manifest"
+    warn_if_manifest_stale
+  else
+    # A pinned version predates the manifest, which only ever describes the
+    # latest release, so this path derives asset names from the release layout.
+    target_release="$VERSION"
+    source_label="pinned"
   fi
 
   os="$(detect_os)"
@@ -783,7 +913,7 @@ main() {
   else
     printf '  Current OSTT: not found\n'
   fi
-  printf '  Target OSTT: %s\n' "$target_release"
+  printf '  Target OSTT: %s (%s)\n' "$target_release" "$source_label"
   printf '\nWill install:\n'
 
   if [ "$install_mode" = "native-package" ]; then
@@ -816,9 +946,9 @@ main() {
   fi
 
   if [ "$install_mode" = "native-package" ]; then
-    if ! download_and_install_native_package "$package_kind" "$pm" "$arch" "$gpu_variant"; then
+    if ! download_and_install_native_package "$package_kind" "$pm" "$os" "$arch" "$gpu_variant"; then
       warn "native package artifact was unavailable; falling back to release archive"
-      download_and_install "$triple" "$gpu_variant"
+      download_and_install "$os" "$arch" "$gpu_variant"
       installed_bin="${INSTALL_DIR}/${BIN_NAME}"
       install_mode="archive"
     else
@@ -829,7 +959,7 @@ main() {
       fi
     fi
   else
-    download_and_install "$triple" "$gpu_variant"
+    download_and_install "$os" "$arch" "$gpu_variant"
     installed_bin="${INSTALL_DIR}/${BIN_NAME}"
   fi
 
