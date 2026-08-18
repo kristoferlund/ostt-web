@@ -18,6 +18,7 @@ INTERACTIVE=0
 INSTALL_DEPS=1
 GPU_MODE="auto"
 MODIFY_PATH=1
+CONFIGURE_OMARCHY=1
 
 # Network hardening applied to every curl invocation.
 CURL_OPTS=(--retry 3 --retry-connrefused --connect-timeout 10)
@@ -29,14 +30,16 @@ OSTT installer
 Usage:
   curl -fsSL https://ostt.ai/install | bash
 
-Runs non-interactively by default: it prints what it is about to do, then
-does it.
+Runs non-interactively by default. Pass -i to see a summary of what will be
+installed and confirm before it runs.
 
 Options:
   -i, --interactive     Ask for confirmation before installing
       --no-deps         Do not install system dependencies
       --no-gpu          Install the CPU build even if GPU support is detected
       --no-modify-path  Do not add the install directory to your shell profile
+      --no-omarchy-setup
+                        Do not configure Omarchy hotkeys, popup rules, or agent action
       --version VERSION Install a specific version, for example v0.0.8
       --install-dir DIR Install ostt to DIR (default: ~/.local/bin)
   -y, --yes             Accepted for compatibility; this is now the default
@@ -57,6 +60,10 @@ while [ "$#" -gt 0 ]; do
     ;;
   --no-modify-path)
     MODIFY_PATH=0
+    shift
+    ;;
+  --no-omarchy-setup)
+    CONFIGURE_OMARCHY=0
     shift
     ;;
   --no-deps)
@@ -680,7 +687,7 @@ verify_checksum() {
     die "checksum verification failed for $(basename "$archive_path")"
   fi
 
-  printf 'ok'
+  printf 'ok\n'
 }
 
 check_macos_terminal() {
@@ -738,6 +745,244 @@ xdg_data_home() {
   printf '%s\n' "${XDG_DATA_HOME:-$HOME/.local/share}"
 }
 
+xdg_config_home() {
+  printf '%s\n' "${XDG_CONFIG_HOME:-$HOME/.config}"
+}
+
+is_omarchy() {
+  local distro="$1"
+
+  [ "$distro" = "omarchy" ] || {
+    has omarchy && { [ -d /usr/share/omarchy ] || [ -d "$HOME/.local/share/omarchy" ]; }
+  }
+}
+
+backup_config_file() {
+  local file="$1"
+  local backup
+
+  if [ ! -f "$file" ]; then
+    return 0
+  fi
+
+  backup="${file}.ostt.bak.$(date +%Y%m%d%H%M%S).$$"
+  cp -p "$file" "$backup" || return 1
+  printf '%s\n' "$backup"
+}
+
+append_config_block() {
+  local file="$1"
+  local block="$2"
+  local backup last_byte separator=""
+
+  mkdir -p "$(dirname "$file")" || return 1
+  if [ -e "$file" ] && [ ! -w "$file" ]; then
+    return 1
+  fi
+
+  backup="$(backup_config_file "$file")" || return 1
+  if [ -s "$file" ]; then
+    last_byte="$(printf x; tail -c 1 "$file")"
+    if [ "$last_byte" = "x" ]; then
+      separator=$'\n'
+    else
+      separator=$'\n\n'
+    fi
+  fi
+  printf '%s%s\n' "$separator" "$block" >>"$file" || {
+    [ -n "$backup" ] && cp -p "$backup" "$file"
+    return 1
+  }
+
+  printf '%s\n' "$backup"
+}
+
+shell_quote() {
+  local value="$1"
+  value=${value//\'/\'\\\'\'}
+  printf "'%s'" "$value"
+}
+
+lua_escape() {
+  local value="$1"
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  printf '%s' "$value"
+}
+
+lua_binding_exists() {
+  local file="$1"
+  local key="$2"
+  local key_regex alternate_regex=""
+
+  case "$key" in
+  "ALT + SPACE")
+    key_regex='ALT[[:space:]]*\+[[:space:]]*SPACE'
+    ;;
+  "ALT + SHIFT + SPACE")
+    key_regex='ALT[[:space:]]*\+[[:space:]]*SHIFT[[:space:]]*\+[[:space:]]*SPACE'
+    alternate_regex='SHIFT[[:space:]]*\+[[:space:]]*ALT[[:space:]]*\+[[:space:]]*SPACE'
+    ;;
+  *) return 1 ;;
+  esac
+
+  grep -Eiq "^[[:space:]]*(o|hl)\\.bind[[:space:]]*\\([[:space:]]*[\"'](${key_regex}${alternate_regex:+|${alternate_regex}})[\"']" "$file" 2>/dev/null
+}
+
+configure_omarchy_bindings() {
+  local installed_bin="$1"
+  local bindings_file="$2"
+  local quoted_bin clipboard_command agent_command clipboard_line agent_line block=""
+
+  quoted_bin="$(shell_quote "$installed_bin")"
+  clipboard_command="$(lua_escape "${quoted_bin} launch -c")"
+  agent_command="$(lua_escape "${quoted_bin} launch -p agent")"
+  clipboard_line="o.bind(\"ALT + SPACE\", \"OSTT\", \"${clipboard_command}\")"
+  agent_line="o.bind(\"ALT + SHIFT + SPACE\", \"OSTT to default agent\", \"${agent_command}\")"
+
+  if lua_binding_exists "$bindings_file" "ALT + SPACE"; then
+    if grep -qxF "$clipboard_line" "$bindings_file" 2>/dev/null; then
+      log "Omarchy clipboard hotkey already configured (ALT+SPACE)."
+    else
+      warn "ALT+SPACE is already configured; preserving the existing binding"
+    fi
+  else
+    block="$clipboard_line"
+  fi
+
+  if lua_binding_exists "$bindings_file" "ALT + SHIFT + SPACE"; then
+    if grep -qxF "$agent_line" "$bindings_file" 2>/dev/null; then
+      log "Omarchy agent hotkey already configured (ALT+SHIFT+SPACE)."
+    else
+      warn "ALT+SHIFT+SPACE is already configured; preserving the existing binding"
+    fi
+  elif [ -n "$block" ]; then
+    block="${block}"$'\n'"${agent_line}"
+  else
+    block="$agent_line"
+  fi
+
+  if [ -n "$block" ]; then
+    block="-- Added by the OSTT installer."$'\n'"${block}"
+    if append_config_block "$bindings_file" "$block" >/dev/null; then
+      log "Configured Omarchy hotkeys."
+    else
+      warn "could not update Omarchy hotkeys"
+    fi
+  fi
+}
+
+configure_omarchy_window() {
+  local hyprland_file="$1"
+  local block
+
+  if grep -Eq "^[[:space:]]*(title|class|app_id)[[:space:]]*=.*[\"']\\^?ostt(-popup)?\\\$?[\"']" "$hyprland_file" 2>/dev/null ||
+    grep -Eq "^[[:space:]]*o\\.window.*(title|class|app_id)[[:space:]]*=.*[\"']\\^?ostt(-popup)?\\\$?[\"']" "$hyprland_file" 2>/dev/null; then
+    log "Omarchy OSTT popup rule already configured."
+    return 0
+  fi
+
+  block='-- Keep OSTT'"'"'s popup above every workspace.
+o.window({ title = "^ostt$" }, {
+  float = true,
+  move = { "((monitor_w*0.5)-(window_w*0.5))", "(monitor_h*0.85)" },
+  pin = true,
+})'
+
+  if append_config_block "$hyprland_file" "$block" >/dev/null; then
+    log "Configured the Omarchy popup."
+  else
+    warn "could not update the Omarchy popup rule"
+  fi
+}
+
+configure_omarchy_agent_action() {
+  local installed_bin="$1"
+  local config_file="$(xdg_config_home)/ostt/ostt.toml"
+  local block backup
+
+  # A config-aware command creates and validates the default config on a fresh install.
+  if ! "$installed_bin" model current >/dev/null 2>&1; then
+    warn "could not initialize OSTT configuration; skipping the Omarchy agent action"
+    return 0
+  fi
+
+  if grep -Eq '^\[process\.actions\.("agent"|agent)\][[:space:]]*$' "$config_file" 2>/dev/null; then
+    log "Omarchy default-agent action already configured."
+    return 0
+  fi
+
+  block='[process.actions.agent]
+name = "Send to default agent"
+type = "bash"
+command = "setsid -f omarchy agent prompt \"$(cat)\" </dev/null >/dev/null 2>&1"'
+
+  backup="$(append_config_block "$config_file" "$block")" || {
+    warn "could not add the Omarchy default-agent action"
+    return 0
+  }
+
+  if ! "$installed_bin" model current >/dev/null 2>&1; then
+    # An empty backup means the file did not exist before the append.
+    if [ -n "$backup" ]; then
+      cp -p "$backup" "$config_file" || true
+    else
+      rm -f "$config_file"
+    fi
+    warn "the Omarchy agent action was not valid and has been rolled back"
+    return 0
+  fi
+
+  log "Configured the Omarchy default-agent action."
+}
+
+configure_omarchy() {
+  local installed_bin="$1"
+  local config_home hyprland_file bindings_file errors default_agent
+
+  if [ "$(id -u)" -eq 0 ]; then
+    warn "running as root; skipping user-level Omarchy configuration"
+    return 0
+  fi
+
+  config_home="$(xdg_config_home)"
+  hyprland_file="${config_home}/hypr/hyprland.lua"
+  bindings_file="${config_home}/hypr/bindings.lua"
+
+  configure_omarchy_agent_action "$installed_bin"
+
+  if [ -f "$hyprland_file" ]; then
+    configure_omarchy_bindings "$installed_bin" "$bindings_file"
+    configure_omarchy_window "$hyprland_file"
+
+    if has hyprctl && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+      if hyprctl reload >/dev/null 2>&1; then
+        errors="$(hyprctl configerrors 2>/dev/null || true)"
+        if [ -n "$errors" ]; then
+          warn "Hyprland reported configuration errors:"
+          printf '%s\n' "$errors" >&2
+        else
+          log "Reloaded Hyprland configuration."
+        fi
+      else
+        warn "could not reload Hyprland; the new configuration will load next session"
+      fi
+    fi
+  else
+    warn "Omarchy 4 Hyprland configuration was not found; skipping hotkeys and popup rule"
+  fi
+
+  default_agent=""
+  if has omarchy-default-agent; then
+    default_agent="$(omarchy-default-agent 2>/dev/null || true)"
+  fi
+  if [ -z "$default_agent" ]; then
+    printf '\nℹ️  No Omarchy default agent has been configured. Choose an agent: \033[1;32momarchy agent --pick\033[0m\n'
+  else
+    log "Omarchy default agent: ${default_agent}."
+  fi
+}
+
 # Profile file we append PATH / fpath lines to, per shell.
 shell_profile() {
   local shell_name="$1"
@@ -788,7 +1033,7 @@ install_completions() {
     dir="$(xdg_data_home)/bash-completion/completions"
     mkdir -p "$dir" || return 1
     if "$installed_bin" completions bash 2>/dev/null >"${dir}/${BIN_NAME}"; then
-      log "Shell completions installed for bash (${dir}/${BIN_NAME})."
+      log "Shell completions installed for bash."
     else
       rm -f "${dir}/${BIN_NAME}"
       warn "could not install shell completions for bash; run manually:"
@@ -801,7 +1046,7 @@ install_completions() {
     dir="$(xdg_data_home)/zsh/site-functions"
     mkdir -p "$dir" || return 1
     if "$installed_bin" completions zsh 2>/dev/null >"${dir}/_${BIN_NAME}"; then
-      log "Shell completions installed for zsh (${dir}/_${BIN_NAME})."
+      log "Shell completions installed for zsh."
     else
       rm -f "${dir}/_${BIN_NAME}"
       warn "could not install shell completions for zsh; run manually:"
@@ -816,7 +1061,7 @@ install_completions() {
     profile="$(shell_profile zsh "$os")"
     line="fpath=(\"${dir}\" \$fpath)"
     if [ "$MODIFY_PATH" -eq 1 ] && append_to_profile "$profile" "$line"; then
-      log "Added the completions directory to fpath in ${profile}."
+      :
     else
       log "To enable them, add this to ${profile}:"
       log "  ${line}"
@@ -826,7 +1071,7 @@ install_completions() {
     dir="$HOME/.config/fish/completions"
     mkdir -p "$dir" || return 1
     if "$installed_bin" completions fish 2>/dev/null >"${dir}/${BIN_NAME}.fish"; then
-      log "Shell completions installed for fish (${dir}/${BIN_NAME}.fish)."
+      log "Shell completions installed for fish."
     else
       rm -f "${dir}/${BIN_NAME}.fish"
       warn "could not install shell completions for fish; run manually:"
@@ -838,7 +1083,8 @@ install_completions() {
 
 main() {
   local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant
-  local current_bin current_version target_release pm_label source_label
+  local current_bin current_version target_release pm_label source_label selected_model
+  local omarchy_detected=0
   local deps=()
 
   print_header
@@ -870,6 +1116,9 @@ main() {
   if [ "$os" = "linux" ]; then
     distro="$(detect_distro)"
     session="$(detect_session)"
+    if is_omarchy "$distro"; then
+      omarchy_detected=1
+    fi
   fi
   pm="$(detect_package_manager "$os")"
   pm_label="$pm"
@@ -894,44 +1143,53 @@ main() {
     done < <(missing_deps "$os" "$session")
   fi
 
-  printf 'Detected:\n'
-  printf '  OS: %s\n' "$os"
-  printf '  Architecture: %s\n' "$arch"
-  printf '  Target: %s\n' "$triple"
-  if [ "$os" = "linux" ]; then
-    printf '  Distro: %s\n' "$distro"
-    printf '  Session: %s\n' "$session"
-  fi
-  printf '  Package manager: %s\n' "$pm_label"
-  printf '  GPU build: %s\n' "$gpu_variant"
-  if [ -n "$current_bin" ]; then
-    if [ -n "$current_version" ]; then
-      printf '  Current OSTT: %s (%s)\n' "$current_version" "$current_bin"
-    else
-      printf '  Current OSTT: installed, version unknown (%s)\n' "$current_bin"
+  if [ "$INTERACTIVE" -eq 1 ]; then
+    printf 'Detected:\n'
+    printf '  OS: %s\n' "$os"
+    printf '  Architecture: %s\n' "$arch"
+    printf '  Target: %s\n' "$triple"
+    if [ "$os" = "linux" ]; then
+      printf '  Distro: %s\n' "$distro"
+      printf '  Session: %s\n' "$session"
     fi
-  else
-    printf '  Current OSTT: not found\n'
-  fi
-  printf '  Target OSTT: %s (%s)\n' "$target_release" "$source_label"
-  printf '\nWill install:\n'
+    printf '  Package manager: %s\n' "$pm_label"
+    printf '  GPU build: %s\n' "$gpu_variant"
+    if [ -n "$current_bin" ]; then
+      if [ -n "$current_version" ]; then
+        printf '  Current OSTT: %s (%s)\n' "$current_version" "$current_bin"
+      else
+        printf '  Current OSTT: installed, version unknown (%s)\n' "$current_bin"
+      fi
+    else
+      printf '  Current OSTT: not found\n'
+    fi
+    printf '  Target OSTT: %s (%s)\n' "$target_release" "$source_label"
+    printf '\nWill install:\n'
 
-  if [ "$install_mode" = "native-package" ]; then
-    printf '  method: native %s package via %s\n' "$package_kind" "$pm"
-    printf '  %s -> /usr/bin/%s\n' "$BIN_NAME" "$BIN_NAME"
-  else
-    printf '  method: release archive\n'
-    printf '  %s -> %s/%s\n' "$BIN_NAME" "$INSTALL_DIR" "$BIN_NAME"
-  fi
+    if [ "$install_mode" = "native-package" ]; then
+      printf '  method: native %s package via %s\n' "$package_kind" "$pm"
+      printf '  %s -> /usr/bin/%s\n' "$BIN_NAME" "$BIN_NAME"
+    else
+      printf '  method: release archive\n'
+      printf '  %s -> %s/%s\n' "$BIN_NAME" "$INSTALL_DIR" "$BIN_NAME"
+    fi
 
-  if [ "$INSTALL_DEPS" -eq 1 ] && [ "${#deps[@]}" -gt 0 ]; then
-    printf '  dependencies: %s\n' "${deps[*]}"
-  elif [ "$INSTALL_DEPS" -eq 0 ]; then
-    printf '  dependencies: skipped\n'
-  else
-    printf '  dependencies: already satisfied\n'
+    if [ "$INSTALL_DEPS" -eq 1 ] && [ "${#deps[@]}" -gt 0 ]; then
+      printf '  dependencies: %s\n' "${deps[*]}"
+    elif [ "$INSTALL_DEPS" -eq 0 ]; then
+      printf '  dependencies: skipped\n'
+    else
+      printf '  dependencies: already satisfied\n'
+    fi
+    if [ "$omarchy_detected" -eq 1 ]; then
+      if [ "$CONFIGURE_OMARCHY" -eq 1 ]; then
+        printf '  Omarchy: ALT+SPACE dictation, ALT+SHIFT+SPACE default agent, popup rule\n'
+      else
+        printf '  Omarchy setup: skipped\n'
+      fi
+    fi
+    printf '\n'
   fi
-  printf '\n'
 
   # Guard the expansion: under `set -u`, "${deps[@]}" on an empty array raises
   # "unbound variable" in bash < 4.4 (notably macOS's default bash 3.2).
@@ -995,7 +1253,11 @@ main() {
     fi
   fi
 
-  printf '\n%s installed successfully.\n' "$APP_NAME"
+  if [ "$omarchy_detected" -eq 1 ] && [ "$CONFIGURE_OMARCHY" -eq 1 ]; then
+    configure_omarchy "$installed_bin"
+  fi
+
+  printf '\n✅ %s installed successfully.\n' "$APP_NAME"
 
   case "$path_action" in
   added)
@@ -1005,10 +1267,6 @@ Added ${INSTALL_DIR} to your PATH in ${profile}.
 
 Start a new shell, or run this once in the current one:
   ${path_line}
-
-Then:
-  ${BIN_NAME} auth
-  ${BIN_NAME} record
 
 EOF
     ;;
@@ -1020,22 +1278,18 @@ Note: ${INSTALL_DIR} is not on your PATH yet.
 Add it to ${profile}:
   ${path_line}
 
-Until then, run OSTT with the full path:
-  ${installed_bin} auth
-  ${installed_bin} record
-
 EOF
     ;;
   *)
-    cat <<EOF
-
-Next steps:
-  ${BIN_NAME} auth
-  ${BIN_NAME} record
-
-EOF
     ;;
   esac
+
+  selected_model="$("$installed_bin" model current 2>/dev/null || true)"
+  if [ -z "$selected_model" ] || [ "$selected_model" = "No model selected." ]; then
+    printf '\nA transcription model is required before recording. Configure a model: \033[1;32mostt model\033[0m\n'
+  fi
 }
 
-main "$@"
+if [ "${OSTT_INSTALLER_SOURCE_ONLY:-0}" -eq 0 ]; then
+  main "$@"
+fi

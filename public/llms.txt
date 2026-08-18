@@ -28,7 +28,7 @@
 
 - [Platform Setup Overview](https://ostt.ai/guide/platforms): Global hotkey setup overview and paste output defaults for all supported platforms.
 - [macOS Setup](https://ostt.ai/guide/platforms/macos): Shortcuts.app hotkey setup on macOS, with `cmd+v` paste output.
-- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): Omarchy 4.x alpha Lua and supported Omarchy 3.x Hyprlang `.conf` keybinding/window-rule setup, plus `shift+insert` paste output.
+- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): Automatic Omarchy 4 setup for `ALT+SPACE` clipboard dictation, `ALT+SHIFT+SPACE` voice prompts to the default coding agent, Lua popup rules, and legacy Omarchy 3 instructions.
 - [GNOME Setup](https://ostt.ai/guide/platforms/gnome): Custom Shortcuts setup on GNOME, with `ctrl+v` paste output notes.
 - [KDE Plasma Setup](https://ostt.ai/guide/platforms/kde): Custom Shortcuts setup on KDE Plasma, with `ctrl+v` paste output notes.
 

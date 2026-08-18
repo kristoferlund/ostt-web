@@ -14,9 +14,9 @@ Prefer to let an AI coding agent do it? Run `npx skills add https://github.com/k
 curl -fsSL https://ostt.ai/install | bash
 ```
 
-Use this unless you specifically prefer a platform package manager. It detects your platform, installs missing runtime dependencies (ffmpeg, clipboard tools) where supported, selects the right CPU/GPU build, downloads the latest release, verifies its checksum, and installs the `ostt` CLI. In most cases you do not need to install dependencies manually -- the installer handles them for you.
+Use this unless you specifically prefer a platform package manager. It detects your platform, installs missing runtime dependencies (ffmpeg, clipboard tools) where supported, selects the right CPU/GPU build, downloads the latest release, verifies its checksum, and installs the `ostt` CLI. On Omarchy 4, it also configures `ALT+SPACE` for clipboard dictation, `ALT+SHIFT+SPACE` for spoken prompts to the default agent, and the floating OSTT popup. In most cases you do not need to install dependencies or desktop integration manually.
 
-The installer runs non-interactively: it prints what it is about to do, then does it. No prompts.
+The installer runs non-interactively. When no transcription model is active, its final message tells you to run `ostt model` before recording.
 
 It uses native `.deb` or `.rpm` packages on supported Linux distributions when possible. Otherwise, including macOS, it installs the binary to `~/.local/bin` by default. If that directory is not already on your `PATH`, the installer adds it to your shell profile (`.bashrc`, `.zshrc`, or `config.fish`) so `ostt` works in your next shell with no manual steps. Pass `--no-modify-path` to opt out and get printed instructions instead.
 
@@ -44,12 +44,36 @@ curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu --no-modify-path
 | `--no-deps` | Do not install system dependencies (ffmpeg, clipboard tools). |
 | `--no-gpu` | Install the CPU build even if GPU support is detected. |
 | `--no-modify-path` | Do not add the install directory to your shell profile. |
+| `--no-omarchy-setup` | Do not configure Omarchy hotkeys, popup rules, or the default-agent action. |
 | `--version VERSION` | Install a specific release, for example `--version v0.0.20`. |
 | `--install-dir DIR` | Install `ostt` to `DIR` instead of `~/.local/bin`. |
 | `-y`, `--yes` | Accepted for compatibility; non-interactive is now the default. |
 | `-h`, `--help` | Show usage and exit. |
 
 The install directory can also be set with the `OSTT_INSTALL_DIR` environment variable. When `--install-dir` is left at the default and a native `.deb`/`.rpm` package is available for your system, the installer uses that package (installing to `/usr/bin`) instead of the release archive.
+
+### First Run
+
+OSTT requires an active transcription model before recording. The installer ends with this command when one is still needed:
+
+```bash
+ostt model
+```
+
+You can select and download a local model directly. To use a cloud provider, authenticate it first and then select one of its models:
+
+```bash
+ostt auth login
+ostt model
+```
+
+On Omarchy, also select the coding agent used by the voice-to-agent hotkey if you have not already done so:
+
+```bash
+omarchy agent --pick
+```
+
+The Omarchy installer changes are append-only and idempotent. Existing bindings, OSTT window rules, and `[process.actions.agent]` definitions are preserved instead of overwritten. See [Omarchy / Hyprland Setup](./platforms/hyprland.md) for the generated configuration and manual setup.
 
 ## Native Package Options
 

@@ -32,21 +32,14 @@ Full setup: [macOS Setup](./platforms/macos.md).
 
 ## Omarchy / Hyprland
 
-Omarchy 4.x, currently in alpha, uses Lua. Add the binding to `~/.config/hypr/bindings.lua`:
+On Omarchy 4, the one-line installer configures separate hotkeys for clipboard dictation and coding prompts:
 
 ```lua
-o.bind("ALT + SPACE", "OSTT speech-to-text", "/path/to/ostt launch --paste")
+o.bind("ALT + SPACE", "OSTT", "/path/to/ostt launch -c")
+o.bind("ALT + SHIFT + SPACE", "OSTT to default agent", "/path/to/ostt launch -p agent")
 ```
 
-Omarchy 3.x remains supported and uses `~/.config/hypr/bindings.conf`:
-
-```text
-bindd = ALT, SPACE, ostt, exec, /path/to/ostt launch --paste
-```
-
-Use the format loaded by your installation, not both.
-
-Full setup: [Omarchy / Hyprland Setup](./platforms/hyprland.md).
+The second binding turns a spoken request into a new prompt for Omarchy's default coding agent. OSTT closes when transcription finishes, then Omarchy opens the agent normally with the transcript ready to use. [Configure the complete Omarchy voice-to-agent setup.](./platforms/hyprland.md)
 
 ## GNOME
 
