@@ -43,7 +43,7 @@ The site is served at `http://localhost:5173` by default.
 
 ## Install Script
 
-`public/install` is the script served at `https://ostt.ai/install`. It detects the platform, installs dependencies, downloads the appropriate release artifact, verifies the checksum, installs the `ostt` binary, sets up shell completions, configures Omarchy 4 integration when detected, and prints first-run model guidance when needed.
+`public/install` is the script served at `https://ostt.ai/install`. It detects the platform, installs dependencies, downloads the appropriate release artifact, verifies the checksum, installs the `ostt` binary, sets up shell completions, configures Omarchy 4 integration when detected, and offers to download the Whisper base model when no transcription model is active yet.
 
 ```bash
 curl -fsSL https://ostt.ai/install | bash

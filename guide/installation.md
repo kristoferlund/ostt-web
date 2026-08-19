@@ -16,7 +16,7 @@ curl -fsSL https://ostt.ai/install | bash
 
 Use this unless you specifically prefer a platform package manager. It detects your platform, installs missing runtime dependencies (ffmpeg, clipboard tools) where supported, selects the right CPU/GPU build, downloads the latest release, verifies its checksum, and installs the `ostt` CLI. On Omarchy 4, it also configures `ALT+SPACE` for clipboard dictation, `ALT+SHIFT+SPACE` for spoken prompts to the default agent, and the floating OSTT popup. In most cases you do not need to install dependencies or desktop integration manually.
 
-The installer runs non-interactively. When no transcription model is active, its final message tells you to run `ostt model` before recording.
+The installer runs non-interactively. When no transcription model is active at the end of the install, it offers to download the local Whisper base model (142 MB) so you can start transcribing immediately -- accepting the offer leaves a fully working setup with nothing else to configure.
 
 It uses native `.deb` or `.rpm` packages on supported Linux distributions when possible. Otherwise, including macOS, it installs the binary to `~/.local/bin` by default. If that directory is not already on your `PATH`, the installer adds it to your shell profile (`.bashrc`, `.zshrc`, or `config.fish`) so `ostt` works in your next shell with no manual steps. Pass `--no-modify-path` to opt out and get printed instructions instead.
 
@@ -45,6 +45,7 @@ curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu --no-modify-path
 | `--no-gpu` | Install the CPU build even if GPU support is detected. |
 | `--no-modify-path` | Do not add the install directory to your shell profile. |
 | `--no-omarchy-setup` | Do not configure Omarchy hotkeys, popup rules, or the default-agent action. |
+| `--no-model-download` | Do not offer to download the Whisper base model when none is active. |
 | `--version VERSION` | Install a specific release, for example `--version v0.0.20`. |
 | `--install-dir DIR` | Install `ostt` to `DIR` instead of `~/.local/bin`. |
 | `-y`, `--yes` | Accepted for compatibility; non-interactive is now the default. |
@@ -54,7 +55,9 @@ The install directory can also be set with the `OSTT_INSTALL_DIR` environment va
 
 ### First Run
 
-OSTT requires an active transcription model before recording. The installer ends with this command when one is still needed:
+OSTT requires an active transcription model before recording. When none is active, the installer ends by offering to download the local Whisper base model (142 MB) and selecting it for you. If the base model is already on disk from an earlier install, it is selected without asking. Accept the offer and OSTT is ready to transcribe -- no further setup needed.
+
+If you decline (or ran the installer with `--no-model-download` or without a terminal), pick a model yourself:
 
 ```bash
 ostt model

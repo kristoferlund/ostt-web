@@ -19,6 +19,7 @@ INSTALL_DEPS=1
 GPU_MODE="auto"
 MODIFY_PATH=1
 CONFIGURE_OMARCHY=1
+DOWNLOAD_MODEL=1
 
 # Network hardening applied to every curl invocation.
 CURL_OPTS=(--retry 3 --retry-connrefused --connect-timeout 10)
@@ -40,6 +41,8 @@ Options:
       --no-modify-path  Do not add the install directory to your shell profile
       --no-omarchy-setup
                         Do not configure Omarchy hotkeys, popup rules, or agent action
+      --no-model-download
+                        Do not offer to download the Whisper base model
       --version VERSION Install a specific version, for example v0.0.8
       --install-dir DIR Install ostt to DIR (default: ~/.local/bin)
   -y, --yes             Accepted for compatibility; this is now the default
@@ -64,6 +67,10 @@ while [ "$#" -gt 0 ]; do
     ;;
   --no-omarchy-setup)
     CONFIGURE_OMARCHY=0
+    shift
+    ;;
+  --no-model-download)
+    DOWNLOAD_MODEL=0
     shift
     ;;
   --no-deps)
@@ -134,7 +141,7 @@ confirm() {
   fi
 
   printf 'Continue? [Y/n] '
-  read -r answer </dev/tty 2>/dev/null || return 0
+  read -r answer 2>/dev/null </dev/tty || return 0
   printf '\n'
   case "$answer" in
   '' | Y | y | YES | Yes | yes) return 0 ;;
@@ -983,6 +990,65 @@ configure_omarchy() {
   fi
 }
 
+print_model_hint() {
+  printf '\nA transcription model is required before recording. Configure a model: \033[1;32mostt model\033[0m\n'
+}
+
+# Leaves the install ready to transcribe: when no model is active, select the
+# Whisper base model if it is already on disk (reinstall/upgrade), otherwise
+# offer to download it. Falls back to printing the `ostt model` hint.
+offer_default_model() {
+  local installed_bin="$1"
+  local selected_model answer
+  local base_model_file="$(xdg_data_home)/ostt/models/base.bin"
+
+  selected_model="$("$installed_bin" model current 2>/dev/null || true)"
+  if [ -n "$selected_model" ] && [ "$selected_model" != "No model selected." ]; then
+    printf '\nTranscription model: %s\n' "$selected_model"
+    return 0
+  fi
+
+  if [ -f "$base_model_file" ]; then
+    if "$installed_bin" model select whisper/base >/dev/null 2>&1; then
+      log "Selected the already-downloaded Whisper base model (whisper/base)."
+      return 0
+    fi
+  fi
+
+  if [ "$DOWNLOAD_MODEL" -eq 0 ]; then
+    print_model_hint
+    return 0
+  fi
+
+  # Without a controlling terminal there is nobody to ask.
+  if ! { : </dev/tty; } 2>/dev/null; then
+    print_model_hint
+    return 0
+  fi
+
+  printf '\nOSTT transcribes with a cloud or local model; configure one with `ostt model`.\nOr start right away with the small Whisper base model (142 MB).\n'
+  printf 'Download it now? [Y/n] '
+  if ! read -r answer 2>/dev/null </dev/tty; then
+    printf '\n'
+    print_model_hint
+    return 0
+  fi
+  case "$answer" in
+  '' | Y | y | YES | Yes | yes)
+    if "$installed_bin" model local download base &&
+      "$installed_bin" model select whisper/base >/dev/null 2>&1; then
+      log "Whisper base model downloaded and selected; OSTT is ready to transcribe."
+    else
+      warn "could not download or select the Whisper base model"
+      print_model_hint
+    fi
+    ;;
+  *)
+    print_model_hint
+    ;;
+  esac
+}
+
 # Profile file we append PATH / fpath lines to, per shell.
 shell_profile() {
   local shell_name="$1"
@@ -1083,7 +1149,7 @@ install_completions() {
 
 main() {
   local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant
-  local current_bin current_version target_release pm_label source_label selected_model
+  local current_bin current_version target_release pm_label source_label
   local omarchy_detected=0
   local deps=()
 
@@ -1284,10 +1350,7 @@ EOF
     ;;
   esac
 
-  selected_model="$("$installed_bin" model current 2>/dev/null || true)"
-  if [ -z "$selected_model" ] || [ "$selected_model" = "No model selected." ]; then
-    printf '\nA transcription model is required before recording. Configure a model: \033[1;32mostt model\033[0m\n'
-  fi
+  offer_default_model "$installed_bin"
 }
 
 if [ "${OSTT_INSTALLER_SOURCE_ONLY:-0}" -eq 0 ]; then

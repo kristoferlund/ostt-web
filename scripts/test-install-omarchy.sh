@@ -8,6 +8,7 @@ trap 'rm -rf "$TMP"' EXIT
 export OSTT_INSTALLER_SOURCE_ONLY=1
 export HOME="$TMP/home"
 export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
 
 # shellcheck source=../public/install
 . "$ROOT/public/install"
@@ -85,6 +86,46 @@ EOF
 chmod +x "$HOME/bin/ostt-invalid"
 configure_omarchy_agent_action "$HOME/bin/ostt-invalid" 2>/dev/null
 [ ! -e "$XDG_CONFIG_HOME/ostt/ostt.toml" ]
+
+# Default-model offer: a fake ostt that tracks the selected model in a state
+# file and "downloads" by creating base.bin.
+cat >"$HOME/bin/ostt-model" <<'EOF'
+#!/usr/bin/env bash
+set -e
+data="${XDG_DATA_HOME:-$HOME/.local/share}/ostt"
+mkdir -p "$data/models"
+case "$1 $2 ${3:-}" in
+"model current ")
+  if [ -f "$data/selected" ]; then cat "$data/selected"; else printf 'No model selected.\n'; fi
+  ;;
+"model select whisper/base")
+  printf '%s\n' "whisper/base" >"$data/selected"
+  ;;
+"model local download")
+  : >"$data/models/base.bin"
+  ;;
+esac
+EOF
+chmod +x "$HOME/bin/ostt-model"
+DATA="$XDG_DATA_HOME/ostt"
+
+# No model selected, no base.bin, downloads disabled -> hint only, no download.
+DOWNLOAD_MODEL=0
+out="$(offer_default_model "$HOME/bin/ostt-model")"
+printf '%s' "$out" | grep -q 'ostt model'
+[ ! -e "$DATA/models/base.bin" ]
+[ ! -e "$DATA/selected" ]
+DOWNLOAD_MODEL=1
+
+# No model selected but base.bin already on disk -> select it without asking.
+: >"$DATA/models/base.bin"
+out="$(offer_default_model "$HOME/bin/ostt-model")"
+printf '%s' "$out" | grep -q 'already-downloaded'
+[ "$(cat "$DATA/selected")" = "whisper/base" ]
+
+# A model is already selected -> confirm it, ask nothing.
+out="$(offer_default_model "$HOME/bin/ostt-model")"
+[ "$(printf '%s' "$out" | tr -d '\n')" = "Transcription model: whisper/base" ]
 
 REAL_OSTT="${OSTT_TEST_BIN:-$(command -v ostt 2>/dev/null || true)}"
 if [ -n "$REAL_OSTT" ] && [ -x "$REAL_OSTT" ]; then
