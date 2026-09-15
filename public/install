@@ -20,6 +20,11 @@ INSTALL_MODE_USED=""
 # Set by has_ld_library(): whether the last positive answer came only from
 # LD_LIBRARY_PATH rather than the loader cache.
 LD_LIBRARY_PATH_HIT=0
+# Set by probe_gpus(). VULKAN_USABLE defaults to 1 so that an explicit
+# --gpu vulkan, which skips probing, is not filtered out of the fallback chain.
+NVIDIA_GPU=0
+OTHER_GPU=0
+VULKAN_USABLE=1
 DEFAULT_INSTALL_DIR="$HOME/.local/bin"
 INSTALL_DIR="${OSTT_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 VERSION="latest"
@@ -710,10 +715,51 @@ has_nvidia_vulkan_icd() {
   return 1
 }
 
+# Inventories the GPUs once, into globals, so that both detection and the
+# fallback chain see the same facts. This runs in the main shell rather than
+# inside detect_gpu_variant, whose output is captured in a subshell where any
+# globals it set would be lost.
+#
+# Only display controllers count for vendor detection. Matching the whole
+# lspci listing let an AMD host bridge or an Intel NIC pass for a GPU, which is
+# how an NVIDIA-only machine used to end up on the AMD/Intel branch. grep and
+# tr consume all of their input here, so there is no early-exit SIGPIPE.
+probe_gpus() {
+  local pci="" display=""
+
+  NVIDIA_GPU=0
+  OTHER_GPU=0
+  VULKAN_USABLE=0
+
+  if has lspci; then
+    pci="$(lspci 2>/dev/null || true)"
+  fi
+  display="$(printf '%s\n' "$pci" | grep -Ei 'VGA|3D|Display' | tr '[:upper:]' '[:lower:]' || true)"
+  case "$display" in
+  *nvidia*) NVIDIA_GPU=1 ;;
+  esac
+  case "$display" in
+  *"advanced micro devices"* | *"amd"* | *intel*) OTHER_GPU=1 ;;
+  esac
+  if has nvidia-smi; then
+    NVIDIA_GPU=1
+  fi
+
+  # Vulkan is usable when the loader is present and there is a driver behind
+  # it: Mesa covers AMD and Intel, NVIDIA needs its own ICD. The fallback chain
+  # consults this so that a degraded install (no cuda13 in the release, say)
+  # cannot land on a Vulkan build that would silently run on the CPU.
+  if has_ld_library 'libvulkan.so.1'; then
+    if [ "$OTHER_GPU" -eq 1 ] || { [ "$NVIDIA_GPU" -eq 1 ] && has_nvidia_vulkan_icd; }; then
+      VULKAN_USABLE=1
+    fi
+  fi
+}
+
 detect_gpu_variant() {
   local os="$1"
   local arch="$2"
-  local pci="" display="" major cuda_variant="" nvidia_gpu=0 other_gpu=0
+  local major cuda_variant="" nvidia_gpu=0 other_gpu=0
 
   # The CUDA and Vulkan builds exist for Linux x86_64 only, and macOS has a
   # single build with Metal always on -- there is no separate CPU build there,
@@ -751,25 +797,8 @@ detect_gpu_variant() {
     ;;
   esac
 
-  if has lspci; then
-    pci="$(lspci 2>/dev/null || true)"
-  fi
-
-  # Only display controllers count for vendor detection. Matching the whole
-  # lspci listing let an AMD host bridge or an Intel NIC pass for a GPU, which
-  # is how an NVIDIA-only machine used to end up on the AMD/Intel branch.
-  # grep and tr consume all of their input here, so there is no early-exit
-  # SIGPIPE to worry about.
-  display="$(printf '%s\n' "$pci" | grep -Ei 'VGA|3D|Display' | tr '[:upper:]' '[:lower:]' || true)"
-  case "$display" in
-  *nvidia*) nvidia_gpu=1 ;;
-  esac
-  case "$display" in
-  *"advanced micro devices"* | *"amd"* | *intel*) other_gpu=1 ;;
-  esac
-  if has nvidia-smi; then
-    nvidia_gpu=1
-  fi
+  nvidia_gpu="$NVIDIA_GPU"
+  other_gpu="$OTHER_GPU"
 
   if [ "$nvidia_gpu" -eq 1 ]; then
     # libcuda.so.1 comes from the driver and is unversioned across toolkits.
@@ -842,12 +871,23 @@ detect_gpu_variant() {
 # Ordered fallbacks for a detected variant, so a release that does not carry the
 # preferred artifact degrades instead of aborting the install.
 gpu_variant_fallbacks() {
+  local chain candidate
+
   case "$1" in
-  cuda13) printf '%s\n' cuda13 vulkan cpu ;;
-  cuda) printf '%s\n' cuda vulkan cpu ;;
-  vulkan) printf '%s\n' vulkan cpu ;;
-  *) printf '%s\n' "$1" ;;
+  cuda13) chain="cuda13 vulkan cpu" ;;
+  cuda) chain="cuda vulkan cpu" ;;
+  vulkan) chain="vulkan cpu" ;;
+  *) chain="$1" ;;
   esac
+
+  for candidate in $chain; do
+    # Detection ruled Vulkan out for this machine; do not reintroduce it as a
+    # fallback. An explicit --gpu vulkan never sets VULKAN_USABLE to 0.
+    if [ "$candidate" = "vulkan" ] && [ "$VULKAN_USABLE" -eq 0 ]; then
+      continue
+    fi
+    printf '%s\n' "$candidate"
+  done
 }
 
 # The next variant down the fallback chain from $1, or "cpu" at the end of it.
@@ -1696,6 +1736,9 @@ main() {
     install_mode="native-package"
   fi
 
+  if [ "$os:$arch" = "linux:x86_64" ] && [ "$GPU_MODE" = "auto" ]; then
+    probe_gpus
+  fi
   detected_variant="$(detect_gpu_variant "$os" "$arch")"
   # The detected variant is what this machine can run; narrow it to what the
   # target release actually publishes before anything is downloaded. The

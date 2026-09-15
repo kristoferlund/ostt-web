@@ -63,8 +63,10 @@ machine is below 7.5.
 That check depends on `nvidia-smi` reporting the field. Older drivers do not
 know `compute_cap`, and some virtualized and MIG configurations report `[N/A]`.
 When the capability cannot be determined the installer does not block `cuda13`.
-If you have a Maxwell, Pascal, or Volta card and an installed CUDA 13 toolkit,
-pass `--gpu cuda` or `--gpu vulkan` explicitly rather than relying on detection.
+If you have a Maxwell, Pascal, or Volta card and your only toolkit is CUDA 13,
+pass `--gpu vulkan` explicitly rather than relying on detection. (`--gpu cuda`
+would not help: that build needs a CUDA 12 toolkit, which such a machine does
+not have.)
 
 To check what your driver reports:
 
@@ -199,7 +201,7 @@ When both a CUDA 12 and a CUDA 13 toolkit are installed, the installer prefers
 
 ## CPU Fallback
 
-The CPU build works on all hardware. GPU builds can fail to accelerate in two distinct ways:
+The CPU build runs on any Linux ARM64 machine and on x86-64 CPUs with AVX2, FMA, and F16C — Intel Haswell (2013) and AMD Zen and newer. GPU builds can fail to accelerate in two distinct ways:
 
 **Missing runtime library** — if `libcuda.so.1` or `libvulkan.so.1` is not present, the binary fails to start with a shared library error. Install the required driver packages or reinstall with `--no-gpu`.
 
