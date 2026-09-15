@@ -11,6 +11,9 @@ MANIFEST=""
 # Set by resolve_asset().
 RESOLVED_URL=""
 RESOLVED_SHA=""
+# Set by download_and_install() to the variant it actually installed, which can
+# differ from the one detected when a release does not publish it.
+INSTALLED_VARIANT=""
 DEFAULT_INSTALL_DIR="$HOME/.local/bin"
 INSTALL_DIR="${OSTT_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 VERSION="latest"
@@ -293,11 +296,12 @@ installed_ostt_version() {
   fi
 
   raw="$($path --version 2>/dev/null || true)"
-  # Trim to the first line here rather than piping through `head`: with
-  # `set -o pipefail` an early `head` exit SIGPIPEs its producer and fails the
-  # whole pipeline, which in a `var="$(...)"` assignment would abort the script.
-  raw="${raw%%$'\n'*}"
-  printf '%s\n' "$raw" | sed -n 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/v\1/p'
+  # Take the first *matching* line, as `sed ... | head -n 1` did, but pick it
+  # off in the shell afterwards. Piping into `head` would SIGPIPE sed once the
+  # producer exceeds the pipe buffer, and under `set -o pipefail` that failure
+  # propagates out of this `var="$(...)"` assignment and aborts the installer.
+  raw="$(printf '%s\n' "$raw" | sed -n 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/v\1/p')"
+  printf '%s\n' "${raw%%$'\n'*}"
 }
 
 fetch_manifest() {
@@ -468,11 +472,21 @@ download_verified() {
   verify_checksum "$dest" "$sha"
 }
 
-# Directories to probe when the ldconfig cache cannot answer. Distributions do
-# not agree on where a CUDA toolkit lives: Arch and its derivatives use
-# /opt/cuda, Debian and Ubuntu use the multiarch directory, and NVIDIA's own
-# .run and .deb installers use /usr/local/cuda-<major>.<minor>.
-ld_search_dirs() {
+# Directories the dynamic loader will search for the binary we are about to
+# install, beyond what is in the ldconfig cache. LD_LIBRARY_PATH is inherited
+# from the environment this script runs in, so a library found there really
+# will resolve at runtime.
+ld_library_path_dirs() {
+  [ -n "${LD_LIBRARY_PATH:-}" ] || return 0
+  printf '%s\n' "${LD_LIBRARY_PATH//:/$'\n'}"
+  return 0
+}
+
+# Where distributions and NVIDIA's own installers put a CUDA toolkit. Consulted
+# only when there is no ldconfig cache to ask, because a library sitting in one
+# of these directories is not necessarily on the loader's search path -- and a
+# library the loader cannot find is of no use to the binary we are installing.
+toolkit_search_dirs() {
   local dir
 
   for dir in \
@@ -488,15 +502,11 @@ ld_search_dirs() {
     printf '%s\n' "$dir"
   done
 
-  # An explicitly configured toolkit, and anything already on the loader path.
   if [ -n "${CUDA_HOME:-}" ]; then
     printf '%s\n' "${CUDA_HOME}/lib64"
   fi
   if [ -n "${CUDA_PATH:-}" ]; then
     printf '%s\n' "${CUDA_PATH}/lib64"
-  fi
-  if [ -n "${LD_LIBRARY_PATH:-}" ]; then
-    printf '%s\n' "${LD_LIBRARY_PATH//:/$'\n'}"
   fi
 
   # Versioned prefixes, for when the unversioned /usr/local/cuda symlink is absent.
@@ -509,9 +519,24 @@ ld_search_dirs() {
   return 0
 }
 
+# True when the dynamic loader can be expected to resolve $lib at runtime.
+#
+# The question this answers is deliberately narrow. Finding the file on disk is
+# not enough: picking a GPU build whose libraries the loader cannot reach leaves
+# the user with a binary that will not start, which is a worse outcome than
+# installing the CPU build. So the ldconfig cache is treated as authoritative
+# when it exists, and the on-disk scan is reserved for systems that have no
+# cache to consult at all.
 has_ld_library() {
   local lib="$1"
   local cache dir
+
+  while IFS= read -r dir; do
+    [ -n "$dir" ] || continue
+    if compgen -G "${dir}/${lib}*" >/dev/null; then
+      return 0
+    fi
+  done < <(ld_library_path_dirs)
 
   # Read the cache into a variable rather than piping it into grep. Under
   # `set -o pipefail`, `ldconfig -p | grep -q` reports failure whenever grep
@@ -519,17 +544,22 @@ has_ld_library() {
   # hides libraries that are in fact installed.
   if has ldconfig; then
     cache="$(ldconfig -p 2>/dev/null || true)"
-    case "$cache" in
-    *"$lib"*) return 0 ;;
-    esac
+    if [ -n "$cache" ]; then
+      case "$cache" in
+      *"$lib"*) return 0 ;;
+      esac
+      return 1
+    fi
   fi
 
+  # No cache to consult: minimal containers and images without ldconfig. Fall
+  # back to scanning the usual toolkit locations.
   while IFS= read -r dir; do
     [ -n "$dir" ] || continue
     if compgen -G "${dir}/${lib}*" >/dev/null; then
       return 0
     fi
-  done < <(ld_search_dirs)
+  done < <(toolkit_search_dirs)
 
   return 1
 }
@@ -544,16 +574,46 @@ cuda_variant_for_major() {
   esac
 }
 
-# Compute capability of the first GPU, for example "8.6". Empty when unknown.
+# Lowest compute capability across every GPU in the machine, for example "6.1".
+# Empty when unknown, which includes the cases where nvidia-smi is absent, is
+# too old to know the compute_cap field, or reports [N/A] for it.
+#
+# The minimum is what matters, not the first GPU: a build has to have kernels
+# for every device it might be asked to run on, and the order nvidia-smi
+# enumerates them in is not something to depend on.
 nvidia_compute_cap() {
-  local out
+  local line cap="" lowest=""
 
   has nvidia-smi || return 0
 
-  out="$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null || true)"
-  out="${out%%$'\n'*}"
-  out="${out//[[:space:]]/}"
-  printf '%s\n' "$out"
+  while IFS= read -r line; do
+    cap="${line//[[:space:]]/}"
+    case "$cap" in
+    '' | *[!0-9.]*) continue ;;
+    esac
+    if [ -z "$lowest" ] || compute_cap_lt "$cap" "$lowest"; then
+      lowest="$cap"
+    fi
+  done <<EOF
+$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null || true)
+EOF
+
+  printf '%s\n' "$lowest"
+}
+
+# True when compute capability $1 is lower than $2. Both are "<major>.<minor>".
+compute_cap_lt() {
+  local a_major="${1%%.*}" a_minor="${1#*.}"
+  local b_major="${2%%.*}" b_minor="${2#*.}"
+
+  case "$a_minor" in '' | *[!0-9]*) a_minor=0 ;; esac
+  case "$b_minor" in '' | *[!0-9]*) b_minor=0 ;; esac
+
+  if [ "$a_major" -ne "$b_major" ]; then
+    [ "$a_major" -lt "$b_major" ]
+    return
+  fi
+  [ "$a_minor" -lt "$b_minor" ]
 }
 
 # CUDA 13 dropped offline compilation for Maxwell, Pascal, and Volta, so the
@@ -585,6 +645,25 @@ supports_cuda13() {
   return 1
 }
 
+# True when an NVIDIA Vulkan ICD manifest is installed. The loader finds ICDs
+# through these directories; the NVIDIA one is named nvidia_icd.json or
+# nvidia_icd.<arch>.json depending on the packaging.
+has_nvidia_vulkan_icd() {
+  local dir
+
+  for dir in \
+    /usr/share/vulkan/icd.d \
+    /usr/local/share/vulkan/icd.d \
+    /etc/vulkan/icd.d \
+    "${XDG_DATA_HOME:-$HOME/.local/share}/vulkan/icd.d"; do
+    if compgen -G "${dir}/*nvidia*.json" >/dev/null; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 detect_gpu_variant() {
   local os="$1"
   local arch="$2"
@@ -595,13 +674,21 @@ detect_gpu_variant() {
     return
   fi
 
+  # The CUDA and Vulkan builds exist for Linux x86_64 only; macOS gets Metal in
+  # the base archive. Say so rather than ignoring an explicit --gpu in silence.
   case "$os:$arch" in
   macos:*)
+    if [ "$GPU_MODE" != "auto" ]; then
+      warn "--gpu ${GPU_MODE} is Linux x86_64 only; macOS builds use Metal, which is always enabled"
+    fi
     echo "metal"
     return
     ;;
   linux:x86_64) ;;
   *)
+    if [ "$GPU_MODE" != "auto" ]; then
+      warn "--gpu ${GPU_MODE} is Linux x86_64 only; installing the CPU build for ${os}-${arch}"
+    fi
     echo "cpu"
     return
     ;;
@@ -630,8 +717,12 @@ detect_gpu_variant() {
           continue
         fi
         if has_ld_library "libcublas.so.${major}" && has_ld_library "libcudart.so.${major}"; then
-          cuda_variant="$(cuda_variant_for_major "$major")"
-          break
+          # `|| cuda_variant=""` keeps an unmapped major from aborting the whole
+          # installer: this is a bare assignment, so errexit applies to it.
+          cuda_variant="$(cuda_variant_for_major "$major")" || cuda_variant=""
+          if [ -n "$cuda_variant" ]; then
+            break
+          fi
         fi
       done
     fi
@@ -642,14 +733,20 @@ detect_gpu_variant() {
     fi
 
     # The NVIDIA driver ships a Vulkan ICD, so Vulkan is a real GPU fallback
-    # here rather than dropping all the way down to CPU.
-    if has_ld_library 'libvulkan.so.1'; then
-      warn "NVIDIA GPU detected, but no usable CUDA runtime (libcublas.so.12 or libcublas.so.13) was found; installing Vulkan build"
+    # here rather than dropping all the way down to CPU -- but only when that
+    # ICD is actually installed. libvulkan.so.1 alone proves nothing: the
+    # loader is pulled in by Mesa and by desktop packages on essentially every
+    # graphical Linux install, including ones where the NVIDIA driver was
+    # installed without its Vulkan component. Shipping the Vulkan build to
+    # those users produces a binary that starts and then silently runs on CPU,
+    # which is harder to diagnose than installing the CPU build outright.
+    if has_ld_library 'libvulkan.so.1' && has_nvidia_vulkan_icd; then
+      warn "NVIDIA GPU detected, but no complete CUDA runtime was found (need libcublas.so.N and libcudart.so.N for N=12 or 13); installing Vulkan build"
       echo "vulkan"
       return
     fi
-    warn "NVIDIA GPU detected, but neither a CUDA nor a Vulkan runtime was found; installing CPU build"
-    warn "install the CUDA toolkit or a Vulkan loader, then rerun to get GPU acceleration"
+    warn "NVIDIA GPU detected, but no complete CUDA runtime was found (need libcublas.so.N and libcudart.so.N for N=12 or 13); installing CPU build"
+    warn "install a CUDA toolkit, or the NVIDIA Vulkan driver, then rerun to get GPU acceleration"
   fi
 
   if printf '%s\n' "$pci" | grep -Eiq 'VGA|3D|Display' && printf '%s\n' "$pci" | grep -Eiq 'AMD|Advanced Micro Devices|Intel'; then
@@ -672,6 +769,23 @@ gpu_variant_fallbacks() {
   vulkan) printf '%s\n' vulkan cpu ;;
   *) printf '%s\n' "$1" ;;
   esac
+}
+
+# The next variant down the fallback chain from $1, or "cpu" at the end of it.
+demote_gpu_variant() {
+  local candidate seen=0
+
+  while IFS= read -r candidate; do
+    if [ "$seen" -eq 1 ]; then
+      printf '%s\n' "$candidate"
+      return
+    fi
+    if [ "$candidate" = "$1" ]; then
+      seen=1
+    fi
+  done < <(gpu_variant_fallbacks "$1")
+
+  printf '%s\n' "cpu"
 }
 
 # Narrows a detected variant to one the target release actually ships.
@@ -918,9 +1032,25 @@ download_and_install() {
   local archive
   local tmpdir
   local extracted_bin
+  local candidate
 
-  if ! resolve_asset "$os" "$arch" "$gpu_variant" "archive"; then
-    die "no ${gpu_variant} archive is available for ${os}-${arch} in ${VERSION}"
+  # Walk the fallback chain rather than aborting. main() already narrowed the
+  # variant against the manifest, but a pinned --version has no manifest to
+  # narrow against, so this is where an older release that predates the
+  # detected variant gets resolved to something it actually published.
+  INSTALLED_VARIANT=""
+  while IFS= read -r candidate; do
+    if resolve_asset "$os" "$arch" "$candidate" "archive"; then
+      INSTALLED_VARIANT="$candidate"
+      break
+    fi
+  done < <(gpu_variant_fallbacks "$gpu_variant")
+
+  if [ -z "$INSTALLED_VARIANT" ]; then
+    die "no archive is available for ${os}-${arch} in ${VERSION}"
+  fi
+  if [ "$INSTALLED_VARIANT" != "$gpu_variant" ]; then
+    warn "${VERSION} has no ${gpu_variant} archive for ${os}-${arch}; installing the ${INSTALLED_VARIANT} build instead"
   fi
 
   archive="${RESOLVED_URL##*/}"
@@ -1495,8 +1625,24 @@ main() {
     die "installed binary was not found at ${installed_bin}"
   fi
 
+  # Detection predicts whether the loader can resolve a GPU build's libraries;
+  # running the binary proves it. A GPU build that cannot start is recoverable
+  # on the archive path, so step down the fallback chain rather than leaving
+  # the user with nothing.
+  if [ "$install_mode" = "archive" ] && ! "$installed_bin" --version >/dev/null 2>&1; then
+    while [ "$gpu_variant" != "cpu" ]; do
+      warn "the ${gpu_variant} build could not start on this machine; trying the next build"
+      gpu_variant="$(demote_gpu_variant "$gpu_variant")"
+      download_and_install "$os" "$arch" "$gpu_variant"
+      installed_bin="${INSTALL_DIR}/${BIN_NAME}"
+      if "$installed_bin" --version >/dev/null 2>&1; then
+        break
+      fi
+    done
+  fi
+
   if ! "$installed_bin" --version >/dev/null 2>&1; then
-    die "installed binary did not respond to '${BIN_NAME} --version'"
+    die "installed binary did not respond to '${BIN_NAME} --version'; reinstall with --no-gpu to force the CPU build"
   fi
 
   local shell_name path_action="none" profile="" path_line=""

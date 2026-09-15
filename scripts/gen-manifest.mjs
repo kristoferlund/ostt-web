@@ -54,6 +54,15 @@ const REQUIRED = [
   "linux-aarch64-deb",
   "linux-x86_64-rpm",
   "linux-aarch64-rpm",
+  // The GPU packages matter as much as the GPU archives: apt and dnf users take
+  // the native-package path, and a release that ships a GPU archive but not its
+  // .deb/.rpm silently downgrades them to a different build.
+  "linux-x86_64-cuda-deb",
+  "linux-x86_64-cuda-rpm",
+  "linux-x86_64-cuda13-deb",
+  "linux-x86_64-cuda13-rpm",
+  "linux-x86_64-vulkan-deb",
+  "linux-x86_64-vulkan-rpm",
 ];
 
 // Non-binary release artifacts that intentionally have no manifest key.

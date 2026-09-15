@@ -56,12 +56,26 @@ installed, and vice versa.
 
 CUDA 13 dropped offline compilation for Maxwell, Pascal, and Volta, so GTX 900
 and GTX 10 series cards and the Titan V need the CUDA 12 build even on a system
-whose toolkit is CUDA 13. The installer checks the reported compute capability
-and will not select `cuda13` for those GPUs.
+whose toolkit is CUDA 13. The installer reads the compute capability from
+`nvidia-smi` and will not select `cuda13` when the lowest-capability GPU in the
+machine is below 7.5.
+
+That check depends on `nvidia-smi` reporting the field. Older drivers do not
+know `compute_cap`, and some virtualized and MIG configurations report `[N/A]`.
+When the capability cannot be determined the installer does not block `cuda13`.
+If you have a Maxwell, Pascal, or Volta card and an installed CUDA 13 toolkit,
+pass `--gpu cuda` or `--gpu vulkan` explicitly rather than relying on detection.
+
+To check what your driver reports:
+
+```bash
+nvidia-smi --query-gpu=name,compute_cap --format=csv
+```
 
 Distributions that track current CUDA — Arch, CachyOS, and other rolling
 releases — ship CUDA 13, so they get the `cuda13` build. Debian and Ubuntu LTS
-repositories generally still carry CUDA 12.
+repositories generally still carry CUDA 12. Rather than trusting that summary,
+check your own machine with `ldconfig -p | grep libcublas.so`.
 
 ### Installing
 
@@ -78,7 +92,9 @@ To force a specific build instead of detecting one:
 curl -fsSL https://ostt.ai/install | bash -s -- --gpu cuda13
 ```
 
-`--gpu` accepts `auto` (the default), `cuda`, `cuda13`, `vulkan`, or `cpu`.
+`--gpu` accepts `auto` (the default), `cuda`, `cuda13`, `vulkan`, or `cpu`. It
+applies to Linux x86_64 only; macOS always uses Metal, and Linux ARM64 has no
+GPU build.
 
 To opt out of GPU detection and install the CPU build:
 
@@ -87,9 +103,20 @@ curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu
 ```
 
 If an NVIDIA GPU is present but no matching CUDA toolkit is installed, the
-installer falls back to the Vulkan build rather than the CPU build — the NVIDIA
-driver ships a Vulkan ICD, so Vulkan works on NVIDIA hardware and is much faster
-than CPU inference.
+installer falls back to the Vulkan build rather than the CPU build, provided
+the NVIDIA Vulkan driver is installed too. It looks for an NVIDIA ICD manifest
+in `/usr/share/vulkan/icd.d` and the other standard ICD directories, because
+`libvulkan.so.1` on its own only proves the Vulkan *loader* is present — that
+comes with Mesa and with most desktop packages, and a Vulkan build with no
+NVIDIA ICD behind it starts normally and then runs on the CPU.
+
+If the release being installed does not publish the build that was selected,
+the installer says so and installs the next one down, so the build you end up
+with may not be the one detection chose. The version line reports which:
+
+```bash
+ostt --version    # e.g. "ostt 0.0.25-vulkan"
+```
 
 Verify CUDA is active:
 
