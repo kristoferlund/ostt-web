@@ -73,9 +73,17 @@ nvidia-smi --query-gpu=name,compute_cap --format=csv
 ```
 
 Distributions that track current CUDA — Arch, CachyOS, and other rolling
-releases — ship CUDA 13, so they get the `cuda13` build. Debian and Ubuntu LTS
-repositories generally still carry CUDA 12. Rather than trusting that summary,
-check your own machine with `ldconfig -p | grep libcublas.so`.
+releases — ship CUDA 13, so they get the `cuda13` build. Distribution-packaged
+CUDA elsewhere is often older than either build: Ubuntu 22.04's
+`nvidia-cuda-toolkit` is CUDA 11.5 and 24.04's is 12.0, and a CUDA 11 machine
+matches neither variant, so the installer falls through to Vulkan. Installing
+from NVIDIA's own apt repository gets you a current CUDA 12 or 13.
+
+Rather than trusting any of that, check your own machine:
+
+```bash
+ldconfig -p | grep libcublas.so
+```
 
 ### Installing
 

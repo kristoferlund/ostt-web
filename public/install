@@ -958,15 +958,19 @@ download_and_install_native_package() {
   chmod 755 "$tmpdir"
   chmod 644 "${tmpdir}/${pkg}"
 
+  # The ostt, ostt-cuda, ostt-cuda13 and ostt-vulkan packages all own
+  # /usr/bin/ostt and declare a conflict, so moving between them is a
+  # replacement rather than an install. apt handles that from the Replaces
+  # field; dnf and zypper have to be told they may erase the outgoing package.
   case "$pm" in
   apt)
     sudo_cmd apt-get install -y --reinstall "${tmpdir}/${pkg}"
     ;;
   dnf)
-    sudo_cmd dnf install -y "${tmpdir}/${pkg}"
+    sudo_cmd dnf install -y --allowerasing "${tmpdir}/${pkg}"
     ;;
   zypper)
-    sudo_cmd zypper --non-interactive install "${tmpdir}/${pkg}"
+    sudo_cmd zypper --non-interactive install --force-resolution "${tmpdir}/${pkg}"
     ;;
   *)
     return 1
