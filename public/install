@@ -11,9 +11,15 @@ MANIFEST=""
 # Set by resolve_asset().
 RESOLVED_URL=""
 RESOLVED_SHA=""
-# Set by download_and_install() to the variant it actually installed, which can
-# differ from the one detected when a release does not publish it.
+# Set by install_build() / download_and_install(): the variant actually
+# installed (which can differ from the one detected when a release does not
+# publish it), where it landed, and by which method.
 INSTALLED_VARIANT=""
+INSTALLED_BIN=""
+INSTALL_MODE_USED=""
+# Set by has_ld_library(): whether the last positive answer came only from
+# LD_LIBRARY_PATH rather than the loader cache.
+LD_LIBRARY_PATH_HIT=0
 DEFAULT_INSTALL_DIR="$HOME/.local/bin"
 INSTALL_DIR="${OSTT_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 VERSION="latest"
@@ -322,20 +328,25 @@ manifest_get() {
   local section="$1"
   local key="$2"
 
+  # awk reads the whole manifest rather than `exit`ing on the first hit: an
+  # early exit would SIGPIPE the producer once the manifest outgrows the pipe
+  # buffer, and under `set -o pipefail` that fails the bare assignments that
+  # call this. The manifest is a few KB, so reading it all costs nothing.
   printf '%s\n' "$MANIFEST" | awk -v section="\"$section\"" -v target="\"$key\":" '
+    found { next }
     $0 ~ "^[[:space:]]*" section "[[:space:]]*:" { in_section = 1; next }
-    in_section && /^[[:space:]]*}/ { exit }
+    in_section && /^[[:space:]]*}/ { in_section = 0; next }
     in_section && index($0, target) {
       sub(/^.*:[[:space:]]*"/, "")
       sub(/".*$/, "")
       print
-      exit
+      found = 1
     }
   '
 }
 
 manifest_version() {
-  printf '%s\n' "$MANIFEST" | awk -F '"' '/^[[:space:]]*"version"[[:space:]]*:/ { print $4; exit }'
+  printf '%s\n' "$MANIFEST" | awk -F '"' '!found && /^[[:space:]]*"version"[[:space:]]*:/ { print $4; found = 1 }'
 }
 
 # Manifest key for a platform: linux-x86_64, linux-x86_64-cuda-deb, and so on.
@@ -458,7 +469,13 @@ download_verified() {
   local checksum_url
 
   log "Downloading ${url}"
-  curl "${CURL_OPTS[@]}" --max-time 300 -fsSL "$url" -o "$dest"
+  # A listed asset can still fail to download (renamed, a half-published
+  # release, an outage outlasting the retries). Report it and let the caller
+  # decide whether another build can be tried, rather than aborting here.
+  if ! curl "${CURL_OPTS[@]}" --max-time 300 -fsSL "$url" -o "$dest"; then
+    warn "could not download $(basename "$url")"
+    return 1
+  fi
 
   if [ -z "$sha" ]; then
     checksum_url="${url}.sha256"
@@ -531,9 +548,14 @@ has_ld_library() {
   local lib="$1"
   local cache dir
 
+  LD_LIBRARY_PATH_HIT=0
   while IFS= read -r dir; do
     [ -n "$dir" ] || continue
-    if compgen -G "${dir}/${lib}*" >/dev/null; then
+    if dir_has_library "$dir" "$lib"; then
+      # This only proves the library resolves for the current process. Whether
+      # it resolves in the user's login shell depends on where they set the
+      # variable, so the caller warns about it.
+      LD_LIBRARY_PATH_HIT=1
       return 0
     fi
   done < <(ld_library_path_dirs)
@@ -556,10 +578,25 @@ has_ld_library() {
   # back to scanning the usual toolkit locations.
   while IFS= read -r dir; do
     [ -n "$dir" ] || continue
-    if compgen -G "${dir}/${lib}*" >/dev/null; then
+    if dir_has_library "$dir" "$lib"; then
       return 0
     fi
   done < <(toolkit_search_dirs)
+
+  return 1
+}
+
+# True when $1 contains a file whose name starts with $2. The directory is
+# quoted so glob metacharacters in it (a bracket in an LD_LIBRARY_PATH entry)
+# stay literal; only the name suffix is a pattern.
+dir_has_library() {
+  local f
+
+  for f in "$1"/"$2"*; do
+    if [ -e "$f" ]; then
+      return 0
+    fi
+  done
 
   return 1
 }
@@ -588,8 +625,15 @@ nvidia_compute_cap() {
 
   while IFS= read -r line; do
     cap="${line//[[:space:]]/}"
+    # Accept "8.6" and a bare "8" (normalised to "8.0"); skip [N/A], error
+    # text, and anything else that is not a capability.
     case "$cap" in
-    '' | *[!0-9.]*) continue ;;
+    [0-9]*.[0-9]*) ;;
+    [0-9]*) cap="${cap}.0" ;;
+    *) continue ;;
+    esac
+    case "$cap" in
+    *[!0-9.]*) continue ;;
     esac
     if [ -z "$lowest" ] || compute_cap_lt "$cap" "$lowest"; then
       lowest="$cap"
@@ -656,9 +700,11 @@ has_nvidia_vulkan_icd() {
     /usr/local/share/vulkan/icd.d \
     /etc/vulkan/icd.d \
     "${XDG_DATA_HOME:-$HOME/.local/share}/vulkan/icd.d"; do
-    if compgen -G "${dir}/*nvidia*.json" >/dev/null; then
-      return 0
-    fi
+    for manifest in "$dir"/*nvidia*.json; do
+      if [ -e "$manifest" ]; then
+        return 0
+      fi
+    done
   done
 
   return 1
@@ -667,32 +713,35 @@ has_nvidia_vulkan_icd() {
 detect_gpu_variant() {
   local os="$1"
   local arch="$2"
-  local pci="" major cuda_variant=""
+  local pci="" display="" major cuda_variant="" nvidia_gpu=0 other_gpu=0
 
-  if [ "$GPU_MODE" = "cpu" ]; then
-    echo "cpu"
-    return
-  fi
-
-  # The CUDA and Vulkan builds exist for Linux x86_64 only; macOS gets Metal in
-  # the base archive. Say so rather than ignoring an explicit --gpu in silence.
+  # The CUDA and Vulkan builds exist for Linux x86_64 only, and macOS has a
+  # single build with Metal always on -- there is no separate CPU build there,
+  # so --no-gpu cannot do anything either. Say so rather than staying silent.
   case "$os:$arch" in
   macos:*)
     if [ "$GPU_MODE" != "auto" ]; then
-      warn "--gpu ${GPU_MODE} is Linux x86_64 only; macOS builds use Metal, which is always enabled"
+      warn "--gpu ${GPU_MODE} has no effect on macOS: the only macOS build includes Metal, which is always enabled"
     fi
     echo "metal"
     return
     ;;
   linux:x86_64) ;;
   *)
-    if [ "$GPU_MODE" != "auto" ]; then
+    case "$GPU_MODE" in
+    cuda | cuda13 | vulkan)
       warn "--gpu ${GPU_MODE} is Linux x86_64 only; installing the CPU build for ${os}-${arch}"
-    fi
+      ;;
+    esac
     echo "cpu"
     return
     ;;
   esac
+
+  if [ "$GPU_MODE" = "cpu" ]; then
+    echo "cpu"
+    return
+  fi
 
   # An explicit --gpu choice skips detection.
   case "$GPU_MODE" in
@@ -706,7 +755,23 @@ detect_gpu_variant() {
     pci="$(lspci 2>/dev/null || true)"
   fi
 
-  if has nvidia-smi || { printf '%s\n' "$pci" | grep -Eiq 'VGA|3D|Display' && printf '%s\n' "$pci" | grep -iq 'NVIDIA'; }; then
+  # Only display controllers count for vendor detection. Matching the whole
+  # lspci listing let an AMD host bridge or an Intel NIC pass for a GPU, which
+  # is how an NVIDIA-only machine used to end up on the AMD/Intel branch.
+  # grep and tr consume all of their input here, so there is no early-exit
+  # SIGPIPE to worry about.
+  display="$(printf '%s\n' "$pci" | grep -Ei 'VGA|3D|Display' | tr '[:upper:]' '[:lower:]' || true)"
+  case "$display" in
+  *nvidia*) nvidia_gpu=1 ;;
+  esac
+  case "$display" in
+  *"advanced micro devices"* | *"amd"* | *intel*) other_gpu=1 ;;
+  esac
+  if has nvidia-smi; then
+    nvidia_gpu=1
+  fi
+
+  if [ "$nvidia_gpu" -eq 1 ]; then
     # libcuda.so.1 comes from the driver and is unversioned across toolkits.
     # libcublas and libcudart come from the toolkit and carry the CUDA major in
     # their soname; a build linked against one major cannot load another, so the
@@ -728,6 +793,10 @@ detect_gpu_variant() {
     fi
 
     if [ -n "$cuda_variant" ]; then
+      if [ "$LD_LIBRARY_PATH_HIT" -eq 1 ]; then
+        warn "the CUDA libraries were found through LD_LIBRARY_PATH, not the system loader cache"
+        warn "make sure LD_LIBRARY_PATH is set in your login shell as well, or ${BIN_NAME} will not start there"
+      fi
       echo "$cuda_variant"
       return
     fi
@@ -745,11 +814,21 @@ detect_gpu_variant() {
       echo "vulkan"
       return
     fi
-    warn "NVIDIA GPU detected, but no complete CUDA runtime was found (need libcublas.so.N and libcudart.so.N for N=12 or 13); installing CPU build"
+    warn "NVIDIA GPU detected, but no complete CUDA runtime (libcublas.so.N and libcudart.so.N for N=12 or 13) and no NVIDIA Vulkan driver were found"
     warn "install a CUDA toolkit, or the NVIDIA Vulkan driver, then rerun to get GPU acceleration"
+    # Do not fall through into the AMD/Intel branch on the strength of the
+    # NVIDIA card alone. Only a second, AMD or Intel display controller
+    # (hybrid graphics) justifies the Vulkan build here, and then it is that
+    # GPU which runs it.
+    if [ "$other_gpu" -eq 0 ]; then
+      warn "installing CPU build"
+      echo "cpu"
+      return
+    fi
+    warn "an AMD or Intel GPU is also present; checking whether Vulkan can use it instead"
   fi
 
-  if printf '%s\n' "$pci" | grep -Eiq 'VGA|3D|Display' && printf '%s\n' "$pci" | grep -Eiq 'AMD|Advanced Micro Devices|Intel'; then
+  if [ "$other_gpu" -eq 1 ]; then
     if has_ld_library 'libvulkan.so.1'; then
       echo "vulkan"
       return
@@ -786,6 +865,47 @@ demote_gpu_variant() {
   done < <(gpu_variant_fallbacks "$1")
 
   printf '%s\n' "cpu"
+}
+
+# Installs build $3 by native package when $7 is "native-package", falling back
+# to the release archive when the package is unavailable or refused. The
+# archive is narrowed from the detected variant $4, not from $3, because $3 may
+# already have been narrowed on .deb/.rpm availability. Leaves the result in
+# INSTALLED_VARIANT, INSTALLED_BIN and INSTALL_MODE_USED.
+install_build() {
+  local os="$1"
+  local arch="$2"
+  local variant="$3"
+  local detected="$4"
+  local package_kind="$5"
+  local pm="$6"
+  local mode="$7"
+  local rc=0 archive_variant
+
+  INSTALL_MODE_USED="$mode"
+
+  if [ "$mode" = "native-package" ]; then
+    if download_and_install_native_package "$package_kind" "$pm" "$os" "$arch" "$variant"; then
+      INSTALLED_VARIANT="$variant"
+      INSTALLED_BIN="/usr/bin/${BIN_NAME}"
+      return 0
+    else
+      rc=$?
+    fi
+    case "$rc" in
+    1) warn "${VERSION} has no ${variant} ${package_kind} package; falling back to the release archive" ;;
+    2) warn "the ${variant} ${package_kind} package could not be downloaded; falling back to the release archive" ;;
+    *) warn "${pm} refused the ${variant} ${package_kind} package; falling back to the release archive" ;;
+    esac
+    INSTALL_MODE_USED="archive"
+    archive_variant="$(available_gpu_variant "$os" "$arch" "$detected" "archive")"
+    if [ "$archive_variant" != "$variant" ]; then
+      variant="$archive_variant"
+    fi
+  fi
+
+  download_and_install "$os" "$arch" "$variant"
+  INSTALLED_BIN="${INSTALL_DIR}/${BIN_NAME}"
 }
 
 # Narrows a detected variant to one the target release actually ships.
@@ -946,36 +1066,88 @@ download_and_install_native_package() {
   local os="$3"
   local arch="$4"
   local gpu_variant="$5"
-  local pkg tmpdir
+  local pkg tmpdir new_name sibling
 
+  # Returns 1 when the release has no such package, 2 when it could not be
+  # downloaded, 3 when the package manager refused it. The caller words its
+  # fallback message from that, so a refusal is not reported as "unavailable".
   resolve_asset "$os" "$arch" "$gpu_variant" "$kind" || return 1
 
   pkg="${RESOLVED_URL##*/}"
   tmpdir="$(mktemp -d)"
-  trap "rm -rf '$tmpdir'" RETURN
+  trap "rm -rf $(printf '%q' "$tmpdir")" RETURN
 
-  download_verified "$RESOLVED_URL" "$RESOLVED_SHA" "${tmpdir}/${pkg}"
+  download_verified "$RESOLVED_URL" "$RESOLVED_SHA" "${tmpdir}/${pkg}" || return 2
   chmod 755 "$tmpdir"
   chmod 644 "${tmpdir}/${pkg}"
 
   # The ostt, ostt-cuda, ostt-cuda13 and ostt-vulkan packages all own
-  # /usr/bin/ostt and declare a conflict, so moving between them is a
-  # replacement rather than an install. apt handles that from the Replaces
-  # field; dnf and zypper have to be told they may erase the outgoing package.
+  # /usr/bin/ostt and declare a conflict, so moving from one to another is a
+  # replacement. apt does that from the Replaces field. dnf and zypper need to
+  # be allowed to remove the outgoing package -- but only then: the flags that
+  # permit it are not scoped to one package, so they are passed only when a
+  # sibling is actually installed and named explicitly where the tool allows.
+  new_name="$(package_name_for_variant "$gpu_variant")"
+  sibling="$(installed_sibling_package "$pm" "$new_name")"
+
   case "$pm" in
   apt)
-    sudo_cmd apt-get install -y --reinstall "${tmpdir}/${pkg}"
+    # --allow-downgrades: a pinned --version older than what is installed is a
+    # downgrade, which apt refuses under -y without it.
+    sudo_cmd apt-get install -y --reinstall --allow-downgrades "${tmpdir}/${pkg}" || return 3
     ;;
   dnf)
-    sudo_cmd dnf install -y --allowerasing "${tmpdir}/${pkg}"
+    if [ -n "$sibling" ]; then
+      sudo_cmd dnf swap -y "$sibling" "${tmpdir}/${pkg}" || return 3
+    else
+      sudo_cmd dnf install -y "${tmpdir}/${pkg}" || return 3
+    fi
     ;;
   zypper)
-    sudo_cmd zypper --non-interactive install --force-resolution "${tmpdir}/${pkg}"
+    if [ -n "$sibling" ]; then
+      sudo_cmd zypper --non-interactive install --force-resolution "${tmpdir}/${pkg}" || return 3
+    else
+      sudo_cmd zypper --non-interactive install "${tmpdir}/${pkg}" || return 3
+    fi
     ;;
   *)
-    return 1
+    return 3
     ;;
   esac
+}
+
+package_name_for_variant() {
+  case "$1" in
+  cuda | cuda13 | vulkan) printf '%s\n' "${BIN_NAME}-$1" ;;
+  *) printf '%s\n' "$BIN_NAME" ;;
+  esac
+}
+
+# Name of an installed ostt package other than $2, or nothing.
+installed_sibling_package() {
+  local pm="$1"
+  local keep="$2"
+  local name status
+
+  for name in "$BIN_NAME" "${BIN_NAME}-cuda" "${BIN_NAME}-cuda13" "${BIN_NAME}-vulkan"; do
+    [ "$name" != "$keep" ] || continue
+    case "$pm" in
+    apt)
+      status="$(dpkg-query -W -f '${Status}' "$name" 2>/dev/null || true)"
+      case "$status" in
+      *" installed") printf '%s\n' "$name"; return 0 ;;
+      esac
+      ;;
+    dnf | zypper)
+      if rpm -q "$name" >/dev/null 2>&1; then
+        printf '%s\n' "$name"
+        return 0
+      fi
+      ;;
+    esac
+  done
+
+  return 0
 }
 
 verify_checksum() {
@@ -1042,26 +1214,26 @@ download_and_install() {
   # variant against the manifest, but a pinned --version has no manifest to
   # narrow against, so this is where an older release that predates the
   # detected variant gets resolved to something it actually published.
+  # A download that fails after the manifest listed it is treated the same
+  # way as an unlisted one: move on to the next build.
   INSTALLED_VARIANT=""
+  tmpdir="$(mktemp -d)"
+  trap "rm -rf $(printf '%q' "$tmpdir")" RETURN
   while IFS= read -r candidate; do
-    if resolve_asset "$os" "$arch" "$candidate" "archive"; then
+    resolve_asset "$os" "$arch" "$candidate" "archive" || continue
+    archive="${RESOLVED_URL##*/}"
+    if download_verified "$RESOLVED_URL" "$RESOLVED_SHA" "${tmpdir}/${archive}"; then
       INSTALLED_VARIANT="$candidate"
       break
     fi
   done < <(gpu_variant_fallbacks "$gpu_variant")
 
   if [ -z "$INSTALLED_VARIANT" ]; then
-    die "no archive is available for ${os}-${arch} in ${VERSION}"
+    die "no archive could be downloaded for ${os}-${arch} in ${VERSION}"
   fi
   if [ "$INSTALLED_VARIANT" != "$gpu_variant" ]; then
-    warn "${VERSION} has no ${gpu_variant} archive for ${os}-${arch}; installing the ${INSTALLED_VARIANT} build instead"
+    warn "${VERSION} has no usable ${gpu_variant} archive for ${os}-${arch}; installing the ${INSTALLED_VARIANT} build instead"
   fi
-
-  archive="${RESOLVED_URL##*/}"
-  tmpdir="$(mktemp -d)"
-  trap "rm -rf '$tmpdir'" RETURN
-
-  download_verified "$RESOLVED_URL" "$RESOLVED_SHA" "${tmpdir}/${archive}"
 
   tar -xzf "${tmpdir}/${archive}" -C "$tmpdir"
   extracted_bin="$(find "$tmpdir" -type f -name "$BIN_NAME" -perm -111)"
@@ -1474,7 +1646,7 @@ install_completions() {
 }
 
 main() {
-  local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant available_variant
+  local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant detected_variant next_variant on_path
   local current_bin current_version target_release pm_label source_label
   local omarchy_detected=0
   local deps=()
@@ -1524,17 +1696,19 @@ main() {
     install_mode="native-package"
   fi
 
-  gpu_variant="$(detect_gpu_variant "$os" "$arch")"
+  detected_variant="$(detect_gpu_variant "$os" "$arch")"
   # The detected variant is what this machine can run; narrow it to what the
-  # target release actually publishes before anything is downloaded.
+  # target release actually publishes before anything is downloaded. The
+  # detected value is kept: if the package path falls back to the archive,
+  # the archive gets narrowed from it afresh rather than inheriting a
+  # narrowing that was about .deb/.rpm availability.
   if [ "$install_mode" = "native-package" ]; then
-    available_variant="$(available_gpu_variant "$os" "$arch" "$gpu_variant" "$package_kind")"
+    gpu_variant="$(available_gpu_variant "$os" "$arch" "$detected_variant" "$package_kind")"
   else
-    available_variant="$(available_gpu_variant "$os" "$arch" "$gpu_variant" "archive")"
+    gpu_variant="$(available_gpu_variant "$os" "$arch" "$detected_variant" "archive")"
   fi
-  if [ "$available_variant" != "$gpu_variant" ]; then
-    warn "${VERSION} has no ${gpu_variant} build for ${os}-${arch}; installing the ${available_variant} build instead"
-    gpu_variant="$available_variant"
+  if [ "$gpu_variant" != "$detected_variant" ]; then
+    warn "${VERSION} has no ${detected_variant} build for ${os}-${arch}; installing the ${gpu_variant} build instead"
   fi
 
   if [ "$os" = "macos" ]; then
@@ -1607,38 +1781,24 @@ main() {
     install_dependencies "$pm" "${deps[@]}"
   fi
 
-  if [ "$install_mode" = "native-package" ]; then
-    if ! download_and_install_native_package "$package_kind" "$pm" "$os" "$arch" "$gpu_variant"; then
-      warn "native package artifact was unavailable; falling back to release archive"
-      download_and_install "$os" "$arch" "$gpu_variant"
-      installed_bin="${INSTALL_DIR}/${BIN_NAME}"
-      install_mode="archive"
-    else
-      hash -r 2>/dev/null || true
-      installed_bin="$(command -v "$BIN_NAME" || true)"
-      if [ -z "$installed_bin" ]; then
-        installed_bin="/usr/bin/${BIN_NAME}"
-      fi
-    fi
-  else
-    download_and_install "$os" "$arch" "$gpu_variant"
-    installed_bin="${INSTALL_DIR}/${BIN_NAME}"
-  fi
-
-  if [ ! -x "$installed_bin" ]; then
-    die "installed binary was not found at ${installed_bin}"
-  fi
+  install_build "$os" "$arch" "$gpu_variant" "$detected_variant" "$package_kind" "$pm" "$install_mode"
+  install_mode="$INSTALL_MODE_USED"
+  installed_bin="$INSTALLED_BIN"
+  gpu_variant="$INSTALLED_VARIANT"
 
   # Detection predicts whether the loader can resolve a GPU build's libraries;
-  # running the binary proves it. A GPU build that cannot start is recoverable
-  # on the archive path, so step down the fallback chain rather than leaving
-  # the user with nothing.
-  if [ "$install_mode" = "archive" ] && ! "$installed_bin" --version >/dev/null 2>&1; then
-    while [ "$gpu_variant" != "cpu" ]; do
-      warn "the ${gpu_variant} build could not start on this machine; trying the next build"
-      gpu_variant="$(demote_gpu_variant "$gpu_variant")"
-      download_and_install "$os" "$arch" "$gpu_variant"
-      installed_bin="${INSTALL_DIR}/${BIN_NAME}"
+  # running the binary proves it. A GPU build that cannot start is stepped
+  # down the fallback chain -- on the package path too, where the broken
+  # package has by now replaced whatever was there, so leaving it is not an
+  # option. macOS has only one build, so there is nothing to step down to.
+  if ! "$installed_bin" --version >/dev/null 2>&1; then
+    while [ "$os" != "macos" ] && [ "$gpu_variant" != "cpu" ]; do
+      next_variant="$(demote_gpu_variant "$gpu_variant")"
+      warn "the ${gpu_variant} build could not start on this machine; trying the ${next_variant} build"
+      install_build "$os" "$arch" "$next_variant" "$next_variant" "$package_kind" "$pm" "$install_mode"
+      install_mode="$INSTALL_MODE_USED"
+      installed_bin="$INSTALLED_BIN"
+      gpu_variant="$INSTALLED_VARIANT"
       if "$installed_bin" --version >/dev/null 2>&1; then
         break
       fi
@@ -1646,7 +1806,17 @@ main() {
   fi
 
   if ! "$installed_bin" --version >/dev/null 2>&1; then
-    die "installed binary did not respond to '${BIN_NAME} --version'; reinstall with --no-gpu to force the CPU build"
+    die "installed binary at ${installed_bin} did not respond to '${BIN_NAME} --version'; reinstall with --no-gpu to force the CPU build"
+  fi
+
+  # A package install lands in /usr/bin, but an earlier archive install in
+  # ~/.local/bin is usually ahead of it on PATH and would keep running instead.
+  if [ "$install_mode" = "native-package" ]; then
+    hash -r 2>/dev/null || true
+    on_path="$(command -v "$BIN_NAME" 2>/dev/null || true)"
+    if [ -n "$on_path" ] && [ "$on_path" != "$installed_bin" ]; then
+      warn "${on_path} comes before ${installed_bin} on your PATH and is what '${BIN_NAME}' will run; remove it to use the package"
+    fi
   fi
 
   local shell_name path_action="none" profile="" path_line=""
@@ -1654,7 +1824,9 @@ main() {
 
   if [ "$install_mode" != "native-package" ]; then
     printf '\n'
-    install_completions "$installed_bin" "$shell_name" "$os"
+    # Completions are a nicety; an unwritable data directory must not turn a
+    # finished install into a non-zero exit with no success message.
+    install_completions "$installed_bin" "$shell_name" "$os" || warn "shell completions were not installed"
   fi
 
   # Native packages land in /usr/bin, which is always on PATH.
@@ -1677,7 +1849,9 @@ main() {
     configure_omarchy "$installed_bin"
   fi
 
-  printf '\n✅ %s installed successfully.\n' "$APP_NAME"
+  # Name the build that was actually installed: with the fallbacks above it is
+  # not always the one detection chose.
+  printf '\n✅ %s installed successfully: %s\n' "$APP_NAME" "$("$installed_bin" --version 2>/dev/null || printf '%s' "$BIN_NAME")"
 
   case "$path_action" in
   added)
