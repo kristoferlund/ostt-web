@@ -13,8 +13,9 @@ GPU acceleration has no effect on cloud providers — it only applies to local m
 | Backend | Hardware | Platform |
 | --- | --- | --- |
 | Metal | Apple Silicon and Intel Mac | macOS |
-| CUDA | NVIDIA GPUs | Linux x86_64 |
-| Vulkan | AMD and Intel GPUs | Linux x86_64 |
+| CUDA 12 | NVIDIA GPUs, compute capability 5.0 and newer | Linux x86_64 |
+| CUDA 13 | NVIDIA GPUs, compute capability 7.5 and newer | Linux x86_64 |
+| Vulkan | AMD, Intel, and NVIDIA GPUs | Linux x86_64 |
 
 ## macOS — Metal
 
@@ -38,20 +39,57 @@ daemon: backend active: Metal GPU acceleration using device(s): 0: Apple M2 Pro 
 The CUDA build is available for Linux x86_64 and requires:
 
 - An NVIDIA GPU
-- NVIDIA driver (`libcuda.so`)
-- cuBLAS runtime (`libcublas.so`)
+- NVIDIA driver (`libcuda.so.1`)
+- cuBLAS and CUDA runtimes from a CUDA toolkit (`libcublas.so.<major>`, `libcudart.so.<major>`)
 
-The install script detects usable NVIDIA CUDA support automatically and installs the CUDA build:
+### CUDA 12 And CUDA 13 Builds
+
+OSTT ships one build per CUDA major version, because the sonames differ
+(`libcublas.so.12` versus `libcublas.so.13`) and are not interchangeable. A
+binary built against CUDA 12 will not start on a machine that only has CUDA 13
+installed, and vice versa.
+
+| Build | Requires | GPU support |
+| --- | --- | --- |
+| `cuda` | CUDA 12.x toolkit | Maxwell and newer (compute capability 5.0+) |
+| `cuda13` | CUDA 13.x toolkit | Turing and newer (compute capability 7.5+) |
+
+CUDA 13 dropped offline compilation for Maxwell, Pascal, and Volta, so GTX 900
+and GTX 10 series cards and the Titan V need the CUDA 12 build even on a system
+whose toolkit is CUDA 13. The installer checks the reported compute capability
+and will not select `cuda13` for those GPUs.
+
+Distributions that track current CUDA — Arch, CachyOS, and other rolling
+releases — ship CUDA 13, so they get the `cuda13` build. Debian and Ubuntu LTS
+repositories generally still carry CUDA 12.
+
+### Installing
+
+The install script detects the NVIDIA driver, the installed CUDA major version,
+and the GPU's compute capability, then installs the matching build:
 
 ```bash
 curl -fsSL https://ostt.ai/install | bash
 ```
+
+To force a specific build instead of detecting one:
+
+```bash
+curl -fsSL https://ostt.ai/install | bash -s -- --gpu cuda13
+```
+
+`--gpu` accepts `auto` (the default), `cuda`, `cuda13`, `vulkan`, or `cpu`.
 
 To opt out of GPU detection and install the CPU build:
 
 ```bash
 curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu
 ```
+
+If an NVIDIA GPU is present but no matching CUDA toolkit is installed, the
+installer falls back to the Vulkan build rather than the CPU build — the NVIDIA
+driver ships a Vulkan ICD, so Vulkan works on NVIDIA hardware and is much faster
+than CPU inference.
 
 Verify CUDA is active:
 
@@ -102,21 +140,41 @@ If you install from `.deb`, `.rpm`, or direct release archives instead of the in
 | Hardware | Debian/Ubuntu | Fedora/RHEL/openSUSE | Archive |
 | --- | --- | --- | --- |
 | CPU or Linux ARM64 | `ostt_<version>_amd64.deb` or `ostt_<version>_arm64.deb` | `ostt-<version>.x86_64.rpm` or `ostt-<version>.aarch64.rpm` | `ostt-<target>.tar.gz` |
-| NVIDIA GPU with CUDA runtime libraries | `ostt-cuda_<version>_amd64.deb` | `ostt-cuda-<version>.x86_64.rpm` | `ostt-<version>-x86_64-unknown-linux-gnu-cuda.tar.gz` |
+| NVIDIA GPU, CUDA 12 toolkit installed | `ostt-cuda_<version>_amd64.deb` | `ostt-cuda-<version>.x86_64.rpm` | `ostt-<version>-x86_64-unknown-linux-gnu-cuda.tar.gz` |
+| NVIDIA GPU, CUDA 13 toolkit installed | `ostt-cuda13_<version>_amd64.deb` | `ostt-cuda13-<version>.x86_64.rpm` | `ostt-<version>-x86_64-unknown-linux-gnu-cuda13.tar.gz` |
 | AMD/Intel GPU with Vulkan runtime library | `ostt-vulkan_<version>_amd64.deb` | `ostt-vulkan-<version>.x86_64.rpm` | `ostt-<version>-x86_64-unknown-linux-gnu-vulkan.tar.gz` |
 | macOS | Homebrew or macOS archive | n/a | `ostt-x86_64-apple-darwin.tar.gz` or `ostt-aarch64-apple-darwin.tar.gz` |
 
 Run `uname -m` to check your CPU architecture. CUDA and Vulkan artifacts are currently Linux x86_64 only.
 
+To see which CUDA major version is installed, so you can pick between the `cuda`
+and `cuda13` artifacts:
+
+```bash
+ldconfig -p | grep libcublas.so
+```
+
 ## Detection Priority
 
-On Linux, if both NVIDIA and AMD/Intel GPUs are present, the install script selects the CUDA build. CUDA is faster for NVIDIA hardware than Vulkan.
+On Linux, if both NVIDIA and AMD/Intel GPUs are present, the install script selects a CUDA build. CUDA is faster for NVIDIA hardware than Vulkan.
+
+When both a CUDA 12 and a CUDA 13 toolkit are installed, the installer prefers
+`cuda13`, unless the GPU's compute capability is below 7.5, in which case only
+`cuda` can run.
 
 ## CPU Fallback
 
 The CPU build works on all hardware. GPU builds can fail to accelerate in two distinct ways:
 
-**Missing runtime library** — if `libcuda.so` or `libvulkan.so.1` is not present, the binary fails to start with a shared library error. Install the required driver packages or reinstall with `--no-gpu`.
+**Missing runtime library** — if `libcuda.so.1` or `libvulkan.so.1` is not present, the binary fails to start with a shared library error. Install the required driver packages or reinstall with `--no-gpu`.
+
+**Wrong CUDA major version** — an error like this means the CUDA build does not match the installed toolkit:
+
+```
+error while loading shared libraries: libcublas.so.12: cannot open shared object file
+```
+
+Check which major you have with `ldconfig -p | grep libcublas.so`, then reinstall with the matching build, for example `--gpu cuda13` for `libcublas.so.13`.
 
 **Library present but no GPU device visible** — the binary starts and runs, but whisper.cpp cannot find a usable GPU and silently falls back to CPU inference. This is the most common cause of unexpectedly high CPU usage after installing a GPU build. Check `ostt logs` for:
 

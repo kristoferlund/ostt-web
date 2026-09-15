@@ -37,6 +37,9 @@ installed and confirm before it runs.
 Options:
   -i, --interactive     Ask for confirmation before installing
       --no-deps         Do not install system dependencies
+      --gpu MODE        Force a build instead of detecting one. MODE is auto
+                        (default), cuda (CUDA 12), cuda13 (CUDA 13), vulkan,
+                        or cpu
       --no-gpu          Install the CPU build even if GPU support is detected
       --no-modify-path  Do not add the install directory to your shell profile
       --no-omarchy-setup
@@ -80,6 +83,17 @@ while [ "$#" -gt 0 ]; do
   --no-gpu)
     GPU_MODE="cpu"
     shift
+    ;;
+  --gpu)
+    GPU_MODE="${2:-}"
+    case "$GPU_MODE" in
+    auto | cpu | cuda | cuda13 | vulkan) ;;
+    *)
+      echo "error: --gpu expects auto, cpu, cuda, cuda13, or vulkan" >&2
+      exit 1
+      ;;
+    esac
+    shift 2
     ;;
   --version)
     VERSION="${2:-}"
@@ -279,7 +293,11 @@ installed_ostt_version() {
   fi
 
   raw="$($path --version 2>/dev/null || true)"
-  printf '%s\n' "$raw" | sed -n 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/v\1/p' | head -n 1
+  # Trim to the first line here rather than piping through `head`: with
+  # `set -o pipefail` an early `head` exit SIGPIPEs its producer and fails the
+  # whole pipeline, which in a `var="$(...)"` assignment would abort the script.
+  raw="${raw%%$'\n'*}"
+  printf '%s\n' "$raw" | sed -n 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/v\1/p'
 }
 
 fetch_manifest() {
@@ -326,7 +344,7 @@ manifest_key() {
   local key="${os}-${arch}"
 
   case "$gpu_variant" in
-  cuda | vulkan) key="${key}-${gpu_variant}" ;;
+  cuda | cuda13 | vulkan) key="${key}-${gpu_variant}" ;;
   esac
 
   case "$kind" in
@@ -405,10 +423,12 @@ legacy_asset_name() {
   deb | rpm)
     case "$kind:$arch:$gpu_variant" in
     deb:x86_64:cuda) printf '%s\n' "ostt-cuda_${ver}-1_amd64.deb" ;;
+    deb:x86_64:cuda13) printf '%s\n' "ostt-cuda13_${ver}-1_amd64.deb" ;;
     deb:x86_64:vulkan) printf '%s\n' "ostt-vulkan_${ver}-1_amd64.deb" ;;
     deb:x86_64:*) printf '%s\n' "ostt_${ver}-1_amd64.deb" ;;
     deb:aarch64:*) printf '%s\n' "ostt_${ver}-1_arm64.deb" ;;
     rpm:x86_64:cuda) printf '%s\n' "ostt-cuda-${ver}-1.x86_64.rpm" ;;
+    rpm:x86_64:cuda13) printf '%s\n' "ostt-cuda13-${ver}-1.x86_64.rpm" ;;
     rpm:x86_64:vulkan) printf '%s\n' "ostt-vulkan-${ver}-1.x86_64.rpm" ;;
     rpm:x86_64:*) printf '%s\n' "ostt-${ver}-1.x86_64.rpm" ;;
     rpm:aarch64:*) printf '%s\n' "ostt-${ver}-1.aarch64.rpm" ;;
@@ -418,7 +438,7 @@ legacy_asset_name() {
   *)
     triple="$(target_triple "$os" "$arch")"
     case "$gpu_variant" in
-    cuda | vulkan) printf '%s\n' "ostt-${ver}-${triple}-${gpu_variant}.tar.gz" ;;
+    cuda | cuda13 | vulkan) printf '%s\n' "ostt-${ver}-${triple}-${gpu_variant}.tar.gz" ;;
     *) printf '%s\n' "ostt-${triple}.tar.gz" ;;
     esac
     ;;
@@ -448,26 +468,127 @@ download_verified() {
   verify_checksum "$dest" "$sha"
 }
 
-has_ld_library() {
-  local lib="$1"
+# Directories to probe when the ldconfig cache cannot answer. Distributions do
+# not agree on where a CUDA toolkit lives: Arch and its derivatives use
+# /opt/cuda, Debian and Ubuntu use the multiarch directory, and NVIDIA's own
+# .run and .deb installers use /usr/local/cuda-<major>.<minor>.
+ld_search_dirs() {
+  local dir
 
-  if has ldconfig && ldconfig -p 2>/dev/null | grep -q "$lib"; then
-    return 0
+  for dir in \
+    /usr/lib \
+    /usr/lib64 \
+    /usr/lib/x86_64-linux-gnu \
+    /usr/local/lib \
+    /usr/local/lib64 \
+    /opt/cuda/lib64 \
+    /opt/cuda/targets/x86_64-linux/lib \
+    /usr/local/cuda/lib64 \
+    /usr/local/cuda/targets/x86_64-linux/lib; do
+    printf '%s\n' "$dir"
+  done
+
+  # An explicitly configured toolkit, and anything already on the loader path.
+  if [ -n "${CUDA_HOME:-}" ]; then
+    printf '%s\n' "${CUDA_HOME}/lib64"
+  fi
+  if [ -n "${CUDA_PATH:-}" ]; then
+    printf '%s\n' "${CUDA_PATH}/lib64"
+  fi
+  if [ -n "${LD_LIBRARY_PATH:-}" ]; then
+    printf '%s\n' "${LD_LIBRARY_PATH//:/$'\n'}"
   fi
 
-  for dir in /usr/lib /usr/lib64 /usr/local/lib /usr/local/cuda/lib64; do
-    if compgen -G "${dir}/${lib}*" >/dev/null; then
-      return 0
+  # Versioned prefixes, for when the unversioned /usr/local/cuda symlink is absent.
+  for dir in /usr/local/cuda-*/lib64 /usr/local/cuda-*/targets/x86_64-linux/lib; do
+    if [ -d "$dir" ]; then
+      printf '%s\n' "$dir"
     fi
   done
 
+  return 0
+}
+
+has_ld_library() {
+  local lib="$1"
+  local cache dir
+
+  # Read the cache into a variable rather than piping it into grep. Under
+  # `set -o pipefail`, `ldconfig -p | grep -q` reports failure whenever grep
+  # matches early enough to SIGPIPE ldconfig, which on a large cache silently
+  # hides libraries that are in fact installed.
+  if has ldconfig; then
+    cache="$(ldconfig -p 2>/dev/null || true)"
+    case "$cache" in
+    *"$lib"*) return 0 ;;
+    esac
+  fi
+
+  while IFS= read -r dir; do
+    [ -n "$dir" ] || continue
+    if compgen -G "${dir}/${lib}*" >/dev/null; then
+      return 0
+    fi
+  done < <(ld_search_dirs)
+
+  return 1
+}
+
+# Artifact variant name for a CUDA major version. CUDA 12 keeps the historical
+# unsuffixed "cuda" name so existing release assets stay valid.
+cuda_variant_for_major() {
+  case "$1" in
+  13) printf '%s\n' "cuda13" ;;
+  12) printf '%s\n' "cuda" ;;
+  *) return 1 ;;
+  esac
+}
+
+# Compute capability of the first GPU, for example "8.6". Empty when unknown.
+nvidia_compute_cap() {
+  local out
+
+  has nvidia-smi || return 0
+
+  out="$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null || true)"
+  out="${out%%$'\n'*}"
+  out="${out//[[:space:]]/}"
+  printf '%s\n' "$out"
+}
+
+# CUDA 13 dropped offline compilation for Maxwell, Pascal, and Volta, so the
+# cuda13 build carries no kernels for compute capability below 7.5. Those GPUs
+# need the CUDA 12 build (or Vulkan) even when a CUDA 13 toolkit is installed.
+supports_cuda13() {
+  local cap major minor
+
+  cap="$(nvidia_compute_cap)"
+
+  # Unknown capability: assume supported rather than refuse a working build.
+  [ -n "$cap" ] || return 0
+
+  major="${cap%%.*}"
+  minor="${cap#*.}"
+  case "$major" in
+  '' | *[!0-9]*) return 0 ;;
+  esac
+  case "$minor" in
+  '' | *[!0-9]*) minor=0 ;;
+  esac
+
+  if [ "$major" -gt 7 ]; then
+    return 0
+  fi
+  if [ "$major" -eq 7 ] && [ "$minor" -ge 5 ]; then
+    return 0
+  fi
   return 1
 }
 
 detect_gpu_variant() {
   local os="$1"
   local arch="$2"
-  local pci=""
+  local pci="" major cuda_variant=""
 
   if [ "$GPU_MODE" = "cpu" ]; then
     echo "cpu"
@@ -486,16 +607,49 @@ detect_gpu_variant() {
     ;;
   esac
 
+  # An explicit --gpu choice skips detection.
+  case "$GPU_MODE" in
+  cuda | cuda13 | vulkan)
+    echo "$GPU_MODE"
+    return
+    ;;
+  esac
+
   if has lspci; then
     pci="$(lspci 2>/dev/null || true)"
   fi
 
   if has nvidia-smi || { printf '%s\n' "$pci" | grep -Eiq 'VGA|3D|Display' && printf '%s\n' "$pci" | grep -iq 'NVIDIA'; }; then
-    if has_ld_library 'libcuda.so.1' && has_ld_library 'libcublas.so'; then
-      echo "cuda"
+    # libcuda.so.1 comes from the driver and is unversioned across toolkits.
+    # libcublas and libcudart come from the toolkit and carry the CUDA major in
+    # their soname; a build linked against one major cannot load another, so the
+    # variant has to match what is actually installed.
+    if has_ld_library 'libcuda.so.1'; then
+      for major in 13 12; do
+        if [ "$major" = "13" ] && ! supports_cuda13; then
+          continue
+        fi
+        if has_ld_library "libcublas.so.${major}" && has_ld_library "libcudart.so.${major}"; then
+          cuda_variant="$(cuda_variant_for_major "$major")"
+          break
+        fi
+      done
+    fi
+
+    if [ -n "$cuda_variant" ]; then
+      echo "$cuda_variant"
       return
     fi
-    warn "NVIDIA GPU detected, but CUDA runtime libraries were not found; installing CPU build"
+
+    # The NVIDIA driver ships a Vulkan ICD, so Vulkan is a real GPU fallback
+    # here rather than dropping all the way down to CPU.
+    if has_ld_library 'libvulkan.so.1'; then
+      warn "NVIDIA GPU detected, but no usable CUDA runtime (libcublas.so.12 or libcublas.so.13) was found; installing Vulkan build"
+      echo "vulkan"
+      return
+    fi
+    warn "NVIDIA GPU detected, but neither a CUDA nor a Vulkan runtime was found; installing CPU build"
+    warn "install the CUDA toolkit or a Vulkan loader, then rerun to get GPU acceleration"
   fi
 
   if printf '%s\n' "$pci" | grep -Eiq 'VGA|3D|Display' && printf '%s\n' "$pci" | grep -Eiq 'AMD|Advanced Micro Devices|Intel'; then
@@ -507,6 +661,43 @@ detect_gpu_variant() {
   fi
 
   echo "cpu"
+}
+
+# Ordered fallbacks for a detected variant, so a release that does not carry the
+# preferred artifact degrades instead of aborting the install.
+gpu_variant_fallbacks() {
+  case "$1" in
+  cuda13) printf '%s\n' cuda13 vulkan cpu ;;
+  cuda) printf '%s\n' cuda vulkan cpu ;;
+  vulkan) printf '%s\n' vulkan cpu ;;
+  *) printf '%s\n' "$1" ;;
+  esac
+}
+
+# Narrows a detected variant to one the target release actually ships.
+available_gpu_variant() {
+  local os="$1"
+  local arch="$2"
+  local gpu_variant="$3"
+  local kind="$4"
+  local candidate
+
+  # Only the manifest can be probed without network round trips. A pinned
+  # --version resolves names against the release layout instead, and is left to
+  # the download step to sort out.
+  if [ -z "$MANIFEST" ]; then
+    printf '%s\n' "$gpu_variant"
+    return
+  fi
+
+  while IFS= read -r candidate; do
+    if [ -n "$(manifest_get assets "$(manifest_key "$os" "$arch" "$candidate" "$kind")")" ]; then
+      printf '%s\n' "$candidate"
+      return
+    fi
+  done < <(gpu_variant_fallbacks "$gpu_variant")
+
+  printf '%s\n' "cpu"
 }
 
 missing_deps() {
@@ -739,7 +930,8 @@ download_and_install() {
   download_verified "$RESOLVED_URL" "$RESOLVED_SHA" "${tmpdir}/${archive}"
 
   tar -xzf "${tmpdir}/${archive}" -C "$tmpdir"
-  extracted_bin="$(find "$tmpdir" -type f -name "$BIN_NAME" -perm -111 | head -n 1)"
+  extracted_bin="$(find "$tmpdir" -type f -name "$BIN_NAME" -perm -111)"
+  extracted_bin="${extracted_bin%%$'\n'*}"
   if [ -z "$extracted_bin" ]; then
     die "downloaded archive did not contain an executable ${BIN_NAME} binary"
   fi
@@ -1120,9 +1312,9 @@ install_completions() {
       return 0
     fi
 
-    if printf '%s\n' ${FPATH:+"${FPATH}"} | tr ':' '\n' | grep -qxF "$dir"; then
-      return 0
-    fi
+    case ":${FPATH:-}:" in
+    *":${dir}:"*) return 0 ;;
+    esac
 
     profile="$(shell_profile zsh "$os")"
     line="fpath=(\"${dir}\" \$fpath)"
@@ -1148,7 +1340,7 @@ install_completions() {
 }
 
 main() {
-  local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant
+  local os arch distro pm session triple package_kind install_mode installed_bin gpu_variant available_variant
   local current_bin current_version target_release pm_label source_label
   local omarchy_detected=0
   local deps=()
@@ -1192,11 +1384,23 @@ main() {
     pm_label="not found"
   fi
   triple="$(target_triple "$os" "$arch")"
-  gpu_variant="$(detect_gpu_variant "$os" "$arch")"
   package_kind="$(native_package_kind "$os" "$arch" "$pm")"
   install_mode="archive"
   if [ -n "$package_kind" ] && [ "$INSTALL_DIR" = "$DEFAULT_INSTALL_DIR" ] && [ "$INSTALL_DEPS" -eq 1 ]; then
     install_mode="native-package"
+  fi
+
+  gpu_variant="$(detect_gpu_variant "$os" "$arch")"
+  # The detected variant is what this machine can run; narrow it to what the
+  # target release actually publishes before anything is downloaded.
+  if [ "$install_mode" = "native-package" ]; then
+    available_variant="$(available_gpu_variant "$os" "$arch" "$gpu_variant" "$package_kind")"
+  else
+    available_variant="$(available_gpu_variant "$os" "$arch" "$gpu_variant" "archive")"
+  fi
+  if [ "$available_variant" != "$gpu_variant" ]; then
+    warn "${VERSION} has no ${gpu_variant} build for ${os}-${arch}; installing the ${available_variant} build instead"
+    gpu_variant="$available_variant"
   fi
 
   if [ "$os" = "macos" ]; then
