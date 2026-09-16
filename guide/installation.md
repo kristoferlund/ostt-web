@@ -24,7 +24,7 @@ Shell completions are installed to user-owned directories -- no `sudo` required.
 
 Download URLs and checksums come from a release manifest at [ostt.ai/latest.json](https://ostt.ai/latest.json), so the installer never guesses filenames. If the manifest is unreachable the install fails with an explicit error rather than falling back to a guess. Installing a pinned release with `--version` bypasses the manifest, since it only ever describes the latest release.
 
-On macOS, the installer uses the Metal-enabled build. On Linux x86_64, it installs the CUDA build when a usable NVIDIA CUDA runtime is detected, the Vulkan build when AMD/Intel Vulkan support is detected, and the CPU build otherwise. To force the CPU build:
+On macOS, the installer uses the Metal-enabled build. On Linux x86_64 it installs a CUDA build when a usable NVIDIA CUDA runtime is detected — `cuda` for a CUDA 12 toolkit, `cuda13` for CUDA 13 — the Vulkan build when Vulkan support is detected, and the CPU build otherwise. An NVIDIA GPU with no usable CUDA toolkit gets the Vulkan build rather than the CPU build. See [GPU Acceleration](/guide/gpu-acceleration) for how the choice is made. To force the CPU build:
 
 ```bash
 curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu
@@ -42,6 +42,7 @@ curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu --no-modify-path
 | --- | --- |
 | `-i`, `--interactive` | Ask for confirmation before installing. |
 | `--no-deps` | Do not install system dependencies (ffmpeg, clipboard tools). |
+| `--gpu MODE` | Force a build instead of detecting one: `auto` (default), `cuda` (CUDA 12), `cuda13` (CUDA 13), `vulkan`, or `cpu`. Linux x86_64 only. |
 | `--no-gpu` | Install the CPU build even if GPU support is detected. |
 | `--no-modify-path` | Do not add the install directory to your shell profile. |
 | `--no-omarchy-setup` | Do not configure Omarchy hotkeys, popup rules, or the default-agent action. |
@@ -93,8 +94,8 @@ Prebuilt binary packages (recommended -- no compilation, no Rust toolchain). Pic
 
 ```bash
 yay -S ostt-bin          # CPU build (x86_64, aarch64)
-yay -S ostt-cuda-bin     # NVIDIA CUDA build (x86_64)
-yay -S ostt-vulkan-bin   # AMD / Intel Vulkan build (x86_64)
+yay -S ostt-cuda-bin     # NVIDIA CUDA build (x86_64), matches the `cuda` package in Arch's repos
+yay -S ostt-vulkan-bin   # AMD / Intel / NVIDIA Vulkan build (x86_64)
 ```
 
 These packages download the official release binary and install it directly. They conflict with each other and with the source package, so only one can be installed at a time.
@@ -110,64 +111,82 @@ yay -S ostt
 ### Debian / Ubuntu / Mint -- .deb
 
 ```bash
+# Set this to the release you want, for example 0.0.25
+VERSION=<VERSION>
+BASE=https://github.com/kristoferlund/ostt/releases/download/v${VERSION}
+
 # x86_64 CPU build
-curl -sLO https://github.com/kristoferlund/ostt/releases/latest/download/ostt_latest_amd64.deb
-sudo apt install ./ostt_latest_amd64.deb
+curl -sLO ${BASE}/ostt_${VERSION}-1_amd64.deb && sudo apt install ./ostt_${VERSION}-1_amd64.deb
 
-# x86_64 NVIDIA CUDA build
-curl -sLO https://github.com/kristoferlund/ostt/releases/latest/download/ostt-cuda_latest_amd64.deb
-sudo apt install ./ostt-cuda_latest_amd64.deb
+# x86_64 NVIDIA, CUDA 12 toolkit
+curl -sLO ${BASE}/ostt-cuda_${VERSION}-1_amd64.deb && sudo apt install ./ostt-cuda_${VERSION}-1_amd64.deb
 
-# x86_64 AMD/Intel Vulkan build
-curl -sLO https://github.com/kristoferlund/ostt/releases/latest/download/ostt-vulkan_latest_amd64.deb
-sudo apt install ./ostt-vulkan_latest_amd64.deb
+# x86_64 NVIDIA, CUDA 13 toolkit
+curl -sLO ${BASE}/ostt-cuda13_${VERSION}-1_amd64.deb && sudo apt install ./ostt-cuda13_${VERSION}-1_amd64.deb
+
+# x86_64 AMD/Intel/NVIDIA Vulkan build
+curl -sLO ${BASE}/ostt-vulkan_${VERSION}-1_amd64.deb && sudo apt install ./ostt-vulkan_${VERSION}-1_amd64.deb
 
 # ARM64 (Raspberry Pi, etc.)
-curl -sLO https://github.com/kristoferlund/ostt/releases/latest/download/ostt_latest_arm64.deb
-sudo apt install ./ostt_latest_arm64.deb
+curl -sLO ${BASE}/ostt_${VERSION}-1_arm64.deb && sudo apt install ./ostt_${VERSION}-1_arm64.deb
 ```
 
 ### Fedora / RHEL -- .rpm
 
 ```bash
+VERSION=<VERSION>
+BASE=https://github.com/kristoferlund/ostt/releases/download/v${VERSION}
+
 # x86_64 CPU build
-sudo dnf install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.x86_64.rpm
+sudo dnf install ${BASE}/ostt-${VERSION}-1.x86_64.rpm
 
-# x86_64 NVIDIA CUDA build
-sudo dnf install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-cuda-latest.x86_64.rpm
+# x86_64 NVIDIA, CUDA 12 toolkit
+sudo dnf install ${BASE}/ostt-cuda-${VERSION}-1.x86_64.rpm
 
-# x86_64 AMD/Intel Vulkan build
-sudo dnf install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-vulkan-latest.x86_64.rpm
+# x86_64 NVIDIA, CUDA 13 toolkit
+sudo dnf install ${BASE}/ostt-cuda13-${VERSION}-1.x86_64.rpm
+
+# x86_64 AMD/Intel/NVIDIA Vulkan build
+sudo dnf install ${BASE}/ostt-vulkan-${VERSION}-1.x86_64.rpm
 
 # ARM64
-sudo dnf install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.aarch64.rpm
+sudo dnf install ${BASE}/ostt-${VERSION}-1.aarch64.rpm
 ```
 
 ### openSUSE -- .rpm
 
 ```bash
+VERSION=<VERSION>
+BASE=https://github.com/kristoferlund/ostt/releases/download/v${VERSION}
+
 # x86_64 CPU build
-sudo zypper install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.x86_64.rpm
+sudo zypper install ${BASE}/ostt-${VERSION}-1.x86_64.rpm
 
-# x86_64 NVIDIA CUDA build
-sudo zypper install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-cuda-latest.x86_64.rpm
+# x86_64 NVIDIA, CUDA 12 toolkit
+sudo zypper install ${BASE}/ostt-cuda-${VERSION}-1.x86_64.rpm
 
-# x86_64 AMD/Intel Vulkan build
-sudo zypper install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-vulkan-latest.x86_64.rpm
+# x86_64 NVIDIA, CUDA 13 toolkit
+sudo zypper install ${BASE}/ostt-cuda13-${VERSION}-1.x86_64.rpm
+
+# x86_64 AMD/Intel/NVIDIA Vulkan build
+sudo zypper install ${BASE}/ostt-vulkan-${VERSION}-1.x86_64.rpm
 
 # ARM64
-sudo zypper install https://github.com/kristoferlund/ostt/releases/latest/download/ostt-latest.aarch64.rpm
+sudo zypper install ${BASE}/ostt-${VERSION}-1.aarch64.rpm
 ```
 
-Run `uname -m` to check your architecture (`x86_64` or `aarch64`). CUDA and Vulkan packages are currently only published for Linux x86_64. Use the CPU package on ARM64.
+Find the current `<VERSION>` on the [releases page](https://github.com/kristoferlund/ostt/releases/latest). Run `uname -m` to check your architecture (`x86_64` or `aarch64`). CUDA and Vulkan packages are currently only published for Linux x86_64. Use the CPU package on ARM64.
+
+The `ostt`, `ostt-cuda`, `ostt-cuda13` and `ostt-vulkan` packages all provide `/usr/bin/ostt` and conflict with each other, so installing one replaces any other that is present.
 
 Choose the package variant by hardware:
 
 | Hardware | Package |
 | --- | --- |
 | No local models, no supported GPU, or ARM64 Linux | `ostt` CPU build |
-| NVIDIA GPU with CUDA runtime libraries | `ostt-cuda` |
-| AMD or Intel GPU with Vulkan runtime library | `ostt-vulkan` |
+| NVIDIA GPU, CUDA 12 toolkit installed | `ostt-cuda` |
+| NVIDIA GPU, CUDA 13 toolkit installed | `ostt-cuda13` |
+| AMD, Intel, or NVIDIA GPU with a Vulkan driver | `ostt-vulkan` |
 | macOS | Homebrew or direct macOS archive; Metal is built in |
 
 ### Direct Binary Download
@@ -175,8 +194,10 @@ Choose the package variant by hardware:
 Download from [GitHub Releases](https://github.com/kristoferlund/ostt/releases):
 
 ```bash
-# CPU archives: x86_64-linux, aarch64-linux, x86_64-macos, aarch64-macos
-# GPU archives: x86_64-linux-cuda, x86_64-linux-vulkan
+# CPU archives:  ostt-x86_64-unknown-linux-gnu.tar.gz, ostt-aarch64-unknown-linux-gnu.tar.gz,
+#                ostt-x86_64-apple-darwin.tar.gz, ostt-aarch64-apple-darwin.tar.gz
+# GPU archives:  ostt-<version>-x86_64-unknown-linux-gnu-{cuda,cuda13,vulkan}.tar.gz
+#                (GPU archives carry the version in the filename, CPU archives do not)
 tar -xzf ostt-<platform>.tar.gz
 sudo cp <extracted-path>/ostt /usr/local/bin/
 ```
