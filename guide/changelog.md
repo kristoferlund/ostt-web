@@ -4,7 +4,7 @@ description: Release notes and notable changes for OSTT.
 
 # Changelog
 
-## [Unreleased]
+## 0.0.26 - 2026-09-20
 
 ### Added
 
