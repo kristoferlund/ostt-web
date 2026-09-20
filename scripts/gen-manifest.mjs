@@ -18,16 +18,19 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "lates
 // Asset filename -> manifest key. Order matters: the first match wins, so the
 // cuda/vulkan variants must be tested before the plain ones.
 const RULES = [
+  [/^ostt-[\d.]+-x86_64-unknown-linux-gnu-cuda13\.tar\.gz$/, "linux-x86_64-cuda13"],
   [/^ostt-[\d.]+-x86_64-unknown-linux-gnu-cuda\.tar\.gz$/, "linux-x86_64-cuda"],
   [/^ostt-[\d.]+-x86_64-unknown-linux-gnu-vulkan\.tar\.gz$/, "linux-x86_64-vulkan"],
   [/^ostt-x86_64-unknown-linux-gnu\.tar\.gz$/, "linux-x86_64"],
   [/^ostt-aarch64-unknown-linux-gnu\.tar\.gz$/, "linux-aarch64"],
   [/^ostt-x86_64-apple-darwin\.tar\.gz$/, "macos-x86_64"],
   [/^ostt-aarch64-apple-darwin\.tar\.gz$/, "macos-aarch64"],
+  [/^ostt-cuda13_[\d.]+-\d+_amd64\.deb$/, "linux-x86_64-cuda13-deb"],
   [/^ostt-cuda_[\d.]+-\d+_amd64\.deb$/, "linux-x86_64-cuda-deb"],
   [/^ostt-vulkan_[\d.]+-\d+_amd64\.deb$/, "linux-x86_64-vulkan-deb"],
   [/^ostt_[\d.]+-\d+_amd64\.deb$/, "linux-x86_64-deb"],
   [/^ostt_[\d.]+-\d+_arm64\.deb$/, "linux-aarch64-deb"],
+  [/^ostt-cuda13-[\d.]+-\d+\.x86_64\.rpm$/, "linux-x86_64-cuda13-rpm"],
   [/^ostt-cuda-[\d.]+-\d+\.x86_64\.rpm$/, "linux-x86_64-cuda-rpm"],
   [/^ostt-vulkan-[\d.]+-\d+\.x86_64\.rpm$/, "linux-x86_64-vulkan-rpm"],
   [/^ostt-[\d.]+-\d+\.x86_64\.rpm$/, "linux-x86_64-rpm"],
@@ -36,18 +39,30 @@ const RULES = [
 
 // Targets the installer knows how to ask for. A missing one is a hard error:
 // silently shipping a manifest with holes would make the installer fall back
-// or fail for those users.
+// or fail for those users. This describes what a current release must contain,
+// so regenerating for a tag cut before a target existed is expected to fail --
+// regenerate against the release you just published.
 const REQUIRED = [
   "linux-x86_64",
   "linux-aarch64",
   "macos-x86_64",
   "macos-aarch64",
   "linux-x86_64-cuda",
+  "linux-x86_64-cuda13",
   "linux-x86_64-vulkan",
   "linux-x86_64-deb",
   "linux-aarch64-deb",
   "linux-x86_64-rpm",
   "linux-aarch64-rpm",
+  // The GPU packages matter as much as the GPU archives: apt and dnf users take
+  // the native-package path, and a release that ships a GPU archive but not its
+  // .deb/.rpm silently downgrades them to a different build.
+  "linux-x86_64-cuda-deb",
+  "linux-x86_64-cuda-rpm",
+  "linux-x86_64-cuda13-deb",
+  "linux-x86_64-cuda13-rpm",
+  "linux-x86_64-vulkan-deb",
+  "linux-x86_64-vulkan-rpm",
 ];
 
 // Non-binary release artifacts that intentionally have no manifest key.
