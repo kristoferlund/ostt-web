@@ -42,7 +42,7 @@ Local Whisper params use the same provider/model format as cloud providers, for 
 | Groq | `groq/whisper-large-v3`, `groq/whisper-large-v3-turbo` | [Groq](./providers/groq.md) |
 | DeepInfra | Whisper, Whisper Large V3 Turbo, and Voxtral speech-recognition models | [DeepInfra](./providers/deepinfra.md) |
 | AssemblyAI | `assemblyai/universal-3-pro` | [AssemblyAI](./providers/assemblyai.md) |
-| Berget | `berget/KBLab/kb-whisper-large`, `berget/NbAiLab/nb-whisper-large`, `berget/openai/whisper-large-v3` | [Berget](./providers/berget.md) |
+| Berget | `berget/klang/pianissimo` (unreleased), `berget/KBLab/kb-whisper-large`, `berget/NbAiLab/nb-whisper-large`, `berget/openai/whisper-large-v3` | [Berget](./providers/berget.md) |
 | ElevenLabs | `elevenlabs/scribe_v2`, `elevenlabs/scribe_v1` | [ElevenLabs](./providers/elevenlabs.md) |
 | Mistral | `mistral/voxtral-mini-latest`, `mistral/voxtral-mini-2602` | [Mistral](./providers/mistral.md) |
 
@@ -58,4 +58,5 @@ These pages are broader introductions and workflow overviews:
 - [ElevenLabs Transcription CLI](/lp/elevenlabs-transcription-cli)
 - [Mistral Voxtral CLI](/lp/mistral-voxtral-cli)
 - [Berget Whisper for Swedish](/lp/berget-whisper-svenska)
+- [Klang Pianissimo for Swedish](/lp/klang-pianissimo-svenska)
 - [Berget Whisper for Norwegian](/lp/berget-whisper-norsk)
