@@ -53,8 +53,6 @@ Berget states that Pianissimo ignores prompts, temperature, and keywords. OSTT d
 
 Requires a Berget API key, network access to the WebSocket endpoint, and ffmpeg. This is cloud transcription, not local inference. Connection errors, server errors, and a connection closing before a final transcript are reported as failures rather than returning partial text.
 
-See [Pianissimo Swedish transcription with OSTT](/lp/klang-pianissimo-svenska) for a workflow overview.
-
 ## Whisper params
 
 ```toml

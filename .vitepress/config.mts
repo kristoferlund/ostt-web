@@ -192,7 +192,6 @@ export default defineConfig({
           { text: 'DeepInfra', link: '/reference/providers/deepinfra' },
           { text: 'AssemblyAI', link: '/reference/providers/assemblyai' },
           { text: 'Berget', link: '/reference/providers/berget' },
-          { text: 'Pianissimo for Swedish', link: '/lp/klang-pianissimo-svenska' },
           { text: 'ElevenLabs', link: '/reference/providers/elevenlabs' },
           { text: 'Mistral', link: '/reference/providers/mistral' },
           { text: 'Troubleshooting', link: '/guide/troubleshooting' }

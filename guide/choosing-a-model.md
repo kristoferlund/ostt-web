@@ -15,7 +15,7 @@ If you are unsure, start with one good default and let OSTT make comparison prac
 | --- | --- | --- |
 | Fastest setup | OpenAI `openai/gpt-4o-transcribe` or Deepgram `deepgram/nova-3` | Hosted APIs avoid local model downloads and local runtime setup. |
 | Strong general cloud quality | OpenAI `openai/gpt-4o-transcribe`, Deepgram `deepgram/nova-3`, or AssemblyAI `assemblyai/universal-3-pro` | These are current general-purpose cloud transcription models with useful params for language, formatting, prompts, or keyterms. |
-| Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` (since 0.0.27) | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting; see the [Pianissimo overview](/lp/klang-pianissimo-svenska). |
+| Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` (since 0.0.27) | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting. |
 | Norwegian work | Berget `berget/NbAiLab/nb-whisper-large` | NB-Whisper is documented for Norwegian, Bokmal, Nynorsk, and English. |
 | Offline or privacy-sensitive work | Built-in local Whisper, such as `whisper/turbo` if it fits your hardware | Audio stays on your machine after the model file is downloaded. |
 | Fast local dictation | Built-in local Whisper with daemon mode, or an external hot local HTTP engine | Daemon mode avoids reloading the local model every call. External servers can keep other engines hot. |
