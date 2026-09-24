@@ -6,9 +6,15 @@ description: Release notes and notable changes for OSTT.
 
 ## [Unreleased]
 
+## 0.0.27 - 2026-09-24
+
 ### Added
 
 - Swedish transcription with [Klang AI Pianissimo](/lp/klang-pianissimo-svenska) through Berget (`berget/klang/pianissimo`). OSTT sends the completed recording through Berget's realtime WebSocket API and returns the final transcript; text is not displayed during recording. Supports `language` (default `sv`) and positive `chunk_seconds` (default `3`). Keyword boosting, prompts, and temperature are not supported. See the [Berget reference](/reference/providers/berget#pianissimo-params).
+
+### Fixed
+
+- Berget Whisper requests now send timestamp granularities as CSV and label audio uploads with the correct MIME type. Requests have a 10-second connection timeout and a 30-minute total deadline covering upload, processing, and response reading, with regression coverage for request serialization, response parsing, and timeouts.
 
 ## 0.0.26 - 2026-09-20
 

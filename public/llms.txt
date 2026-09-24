@@ -40,14 +40,14 @@
 - [Groq](https://ostt.ai/reference/providers/groq): Groq Whisper transcription models and configuration options for OSTT.
 - [DeepInfra](https://ostt.ai/reference/providers/deepinfra): DeepInfra speech-recognition models and configuration options for OSTT.
 - [AssemblyAI](https://ostt.ai/reference/providers/assemblyai): AssemblyAI Universal transcription models and configuration options for OSTT.
-- [Berget](https://ostt.ai/reference/providers/berget): Berget-hosted Whisper and Klang Pianissimo models, supported parameters, and record-then-transcribe behavior. Pianissimo support is unreleased.
+- [Berget](https://ostt.ai/reference/providers/berget): Berget-hosted Whisper and Klang Pianissimo models, supported parameters, and record-then-transcribe behavior. Pianissimo requires OSTT 0.0.27 or later.
 - [ElevenLabs](https://ostt.ai/reference/providers/elevenlabs): ElevenLabs Scribe transcription models and configuration options for OSTT.
 - [Mistral](https://ostt.ai/reference/providers/mistral): Mistral Voxtral transcription models and configuration options for OSTT.
 - [Troubleshooting](https://ostt.ai/guide/troubleshooting): Solutions for common issues — audio input, transcription failures, clipboard, popup, PATH, and architecture.
 
 ## Landing Pages
 
-- [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget. Unreleased OSTT support sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
+- [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget, available since OSTT 0.0.27. Sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
 
 - [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, paste output, local engines, cloud providers, retry, and developer workflows.
 - [OSTT vs Hyprwhspr](https://ostt.ai/lp/ostt-vs-hyprwhspr): Compare OSTT and Hyprwhspr for Linux dictation, system-wide paste, local and cloud models, external engines, retry, and terminal-native speech-to-text.

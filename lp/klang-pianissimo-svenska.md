@@ -19,7 +19,7 @@ description: "Transkribera svenska med Klang AI Pianissimo via Berget i OSTT. Sp
     <p class="eyebrow">Klang AI · Berget · OSTT</p>
     <h1>Pianissimo. Svenskt tal till text i terminalen.</h1>
     <p class="lede">Använd Klang AI:s svenska taligenkänningsmodell på Linux och macOS. Spela in med OSTT eller välj en ljudfil, låt Berget transkribera och skicka texten till urklipp, en fil eller nästa skalkommando.</p>
-    <p>Stödet är ännu inte släppt. Exemplen kräver en OSTT-version som innehåller Pianissimo-integrationen. Se <a href="/guide/changelog">ändringsloggen</a> för releasestatus.</p>
+    <p>Pianissimo stöds från OSTT 0.0.27. Se <a href="/guide/changelog">ändringsloggen</a> för versionsinformation.</p>
     <div class="landing-actions">
       <a href="/reference/providers/berget#pianissimo-params">Konfiguration och parametrar</a>
       <a href="/guide/installation">Installera OSTT</a>

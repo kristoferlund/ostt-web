@@ -17,7 +17,7 @@ Berget documentation:
 
 | Model ID | Notes |
 | --- | --- |
-| `berget/klang/pianissimo` | Swedish Parakeet-based model by Klang AI, published as `KlangAI/pianissimo-sv` on Hugging Face. Uses Berget's realtime API. OSTT support is unreleased. |
+| `berget/klang/pianissimo` | Swedish Parakeet-based model by Klang AI, published as `KlangAI/pianissimo-sv` on Hugging Face. Uses Berget's realtime API. Available since OSTT 0.0.27. |
 | `berget/KBLab/kb-whisper-large` | Swedish-optimized KB Whisper Large. KBLab reports 50,000+ hours of Swedish speech training and 47% average WER reduction versus OpenAI Whisper Large V3 across FLEURS, CommonVoice, and NST. |
 | `berget/NbAiLab/nb-whisper-large` | Norwegian-optimized NB-Whisper Large. NbAiLab reports 66,000 hours of training data and support for Norwegian, Bokmal, Nynorsk, and English. |
 | `berget/openai/whisper-large-v3` | General-purpose multilingual Whisper Large V3. |
@@ -26,7 +26,7 @@ Check [Berget's pricing](https://berget.ai/en/pricing) for current model-specifi
 
 ## Pianissimo params
 
-Pianissimo support is currently unreleased. Use a build containing this addition; older releases will report an unknown model. Authenticate with `ostt auth login`, choose Berget, then use `ostt model` to select Pianissimo.
+Pianissimo requires OSTT 0.0.27 or later; older releases will report an unknown model. Authenticate with `ostt auth login`, choose Berget, then use `ostt model` to select Pianissimo.
 
 ```bash
 ostt transcribe recording.mp3 -m berget/klang/pianissimo
@@ -74,6 +74,8 @@ ostt model params berget/KBLab/kb-whisper-large --format json
 ```
 
 OSTT always returns plain transcript text. `verbose_json`, word alignment, and diarization params are supported because Berget responses still include a top-level `text` field; metadata is not emitted in command output.
+
+Whisper uploads use a MIME type selected from the file extension. Timestamp granularities are sent as a CSV field. Requests have a 10-second connection timeout and a 30-minute total timeout covering upload, processing, and response reading.
 
 | Param | Type | Description |
 | --- | --- | --- |

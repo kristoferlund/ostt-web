@@ -15,7 +15,7 @@ If you are unsure, start with one good default and let OSTT make comparison prac
 | --- | --- | --- |
 | Fastest setup | OpenAI `openai/gpt-4o-transcribe` or Deepgram `deepgram/nova-3` | Hosted APIs avoid local model downloads and local runtime setup. |
 | Strong general cloud quality | OpenAI `openai/gpt-4o-transcribe`, Deepgram `deepgram/nova-3`, or AssemblyAI `assemblyai/universal-3-pro` | These are current general-purpose cloud transcription models with useful params for language, formatting, prompts, or keyterms. |
-| Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` (unreleased) | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting; see the [Pianissimo overview](/lp/klang-pianissimo-svenska). |
+| Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` (since 0.0.27) | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting; see the [Pianissimo overview](/lp/klang-pianissimo-svenska). |
 | Norwegian work | Berget `berget/NbAiLab/nb-whisper-large` | NB-Whisper is documented for Norwegian, Bokmal, Nynorsk, and English. |
 | Offline or privacy-sensitive work | Built-in local Whisper, such as `whisper/turbo` if it fits your hardware | Audio stays on your machine after the model file is downloaded. |
 | Fast local dictation | Built-in local Whisper with daemon mode, or an external hot local HTTP engine | Daemon mode avoids reloading the local model every call. External servers can keep other engines hot. |
@@ -53,7 +53,7 @@ Cloud providers are usually easiest when you want strong transcription without d
 | [Groq](/reference/providers/groq) | Very fast hosted Whisper variants and OpenAI-compatible request shape | Groq model choices differ in accuracy, cost, and translation support. |
 | [DeepInfra](/reference/providers/deepinfra) | Hosted open speech-recognition models, including Whisper and Voxtral options | Model availability and pricing can change. Check the provider docs. |
 | [AssemblyAI](/reference/providers/assemblyai) | Universal-3 Pro, promptable transcription, speaker labels, language detection, keyterms | Async-provider behavior and params differ from OpenAI-style endpoints. |
-| [Berget](/reference/providers/berget) | Swedish Pianissimo (unreleased), Swedish and Norwegian optimized Whisper models, European hosting | Choose model-specific params: Pianissimo does not support Whisper prompts or hotwords. |
+| [Berget](/reference/providers/berget) | Swedish Pianissimo, Swedish and Norwegian optimized Whisper models, European hosting | Choose model-specific params: Pianissimo does not support Whisper prompts or hotwords. |
 | [ElevenLabs](/reference/providers/elevenlabs) | Scribe transcription and multilingual speech-to-text workflows | Advanced diarization and role params have provider-specific constraints. |
 | [Mistral](/reference/providers/mistral) | Voxtral transcription, context bias, diarization, timestamp granularity | OSTT uses the synchronous transcription endpoint, not streaming. |
 
