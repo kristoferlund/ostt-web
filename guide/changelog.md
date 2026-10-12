@@ -6,6 +6,18 @@ description: Release notes and notable changes for OSTT.
 
 ## [Unreleased]
 
+## 0.0.28 - 2026-10-12
+
+### Changed
+
+- The `model`, `history`, `keyword` and `replace` screens and the process-action picker now use ratcn: movable dialogs with clickable buttons, mouse and paste support in lists and inputs, and colors that follow the terminal theme. Recording popups are unchanged.
+- Ctrl+C during a model download now cancels the download before quitting, so no partial model file is left behind.
+- The process-action picker is now shown even when only one action is configured.
+
+### Fixed
+
+- Fixed a select timeout on macOS by updating rustix to 1.1.5.
+
 ## 0.0.27 - 2026-09-24
 
 ### Added
