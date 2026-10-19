@@ -1,5 +1,5 @@
 ---
-description: Keep a local Whisper model loaded in a background process to eliminate per-transcription load time. Install as a systemd or launchd login service.
+description: Keep a local model loaded in a background process to eliminate per-transcription load time. Install as a systemd or launchd login service.
 ---
 
 # Daemon Mode

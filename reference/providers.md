@@ -4,7 +4,7 @@ description: Supported OSTT transcription providers, cloud models, local models,
 
 # Providers and Models
 
-OSTT can use cloud providers or local Whisper-compatible models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
+OSTT can use cloud providers or local Parakeet and Whisper models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
 
 Transcription request params are configured under `[provider.params]` or `[provider."model".params]`, or passed per invocation with `--param key=value`. Use `ostt model params PROVIDER/MODEL` to list supported params for a cloud or local model.
 
@@ -24,6 +24,11 @@ The curated model list is maintained in the [kristoferlund/ostt-models](https://
 
 Local transcription supports GPU acceleration through Metal on macOS and CUDA or Vulkan builds on Linux.
 
+| Provider | Models | Params |
+| --- | --- | --- |
+| `parakeet` | `parakeet/parakeet-ultra`, `parakeet/parakeet-tdt-0.6b-v3`, `parakeet/parakeet-tdt-0.6b-v2`, `parakeet/parakeet-tdt_ctc-110m` | None; the language is detected automatically |
+| `whisper` | `whisper/turbo`, `whisper/large-v3`, regional KB-Whisper and NB-Whisper models, and more | `language`, `no_context`, `temperature`, `no_speech_thold` |
+
 Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
 
 ```toml
@@ -31,7 +36,7 @@ Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
 output_format = "pcm_s16le -ar 16000"
 ```
 
-Local Whisper params use the same provider/model format as cloud providers, for example `[whisper.params]`, `[whisper.turbo.params]`, or `--param language=sv`. Use model IDs such as `whisper/turbo`. See [Local Models](../guide/local-models.md) for setup details and local param descriptions.
+Local Whisper params use the same provider/model format as cloud providers, for example `[whisper.params]`, `[whisper.turbo.params]`, or `--param language=sv`. Use model IDs such as `whisper/turbo` or `parakeet/parakeet-ultra`. See [Local Models](../guide/local-models.md) for setup details and local param descriptions.
 
 ## Cloud Provider Guides
 

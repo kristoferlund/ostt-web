@@ -63,7 +63,7 @@ description: "Compare OSTT and Voxtype for open source speech-to-text, Linux dic
           <tr><td>macOS support</td><td>✅ macOS support with Homebrew and Shortcuts.app hotkeys</td><td>✅ Apple Silicon macOS support documented</td></tr>
           <tr><td>Focused app insertion</td><td>✅ <code>--paste</code> inserts into the focused app and can restore the previous clipboard</td><td>✅ Public docs describe typing/clipboard output backends and direct dictation flow</td></tr>
           <tr><td>Cloud transcription providers</td><td>✅ OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral</td><td>⚠️ Primarily local-engine oriented, with documented remote/OpenAI-style options</td></tr>
-          <tr><td>Built-in local transcription</td><td>✅ Whisper-compatible local models through <code>whisper-rs</code></td><td>✅ Whisper and ONNX engine setup documented</td></tr>
+          <tr><td>Built-in local transcription</td><td>✅ Parakeet and Whisper local models through <code>transcribe.cpp</code></td><td>✅ Whisper and ONNX engine setup documented</td></tr>
           <tr><td>Custom local engines</td><td>✅ <code>command/&lt;profile&gt;</code> wrappers and <code>http/&lt;profile&gt;</code> OpenAI-compatible endpoints</td><td>✅ Public docs describe multiple local engines and engine variants</td></tr>
           <tr><td>Provider/model switching</td><td>✅ <code>ostt model</code>, <code>-m PROVIDER/MODEL</code>, and per-run <code>--param</code> overrides</td><td>✅ Engine/model configuration and setup flows</td></tr>
           <tr><td>Retry same recording with another model</td><td>✅ First-class <code>ostt retry -m PROVIDER/MODEL</code></td><td>⚠️ Not the main documented workflow</td></tr>

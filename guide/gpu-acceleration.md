@@ -4,7 +4,7 @@ description: Enable GPU-accelerated local transcription with Metal on macOS, CUD
 
 # GPU Acceleration
 
-Local transcription with Whisper models can use your GPU to significantly reduce transcription time. OSTT supports Metal on macOS, CUDA on NVIDIA Linux hardware, and Vulkan on AMD and Intel Linux hardware.
+Local transcription with Parakeet and Whisper models can use your GPU to significantly reduce transcription time. OSTT supports Metal on macOS, CUDA on NVIDIA Linux hardware, and Vulkan on AMD and Intel Linux hardware.
 
 GPU acceleration has no effect on cloud providers — it only applies to local models.
 
@@ -30,9 +30,11 @@ ostt logs
 Look for lines like:
 
 ```
-daemon: loading model 'whisper/large-v3' with Metal GPU acceleration
-daemon: backend active: Metal GPU acceleration using device(s): 0: Apple M2 Pro (16384 MB VRAM)
+local inference devices: metal (Apple M4 Pro), cpu (Apple M4 Pro)
+daemon: backend active: parakeet model on MTL0 (Apple M4 Pro, 36864 MB)
 ```
+
+The first transcription after installing or upgrading takes several seconds longer while macOS compiles the GPU kernels. macOS caches them, so later runs start immediately.
 
 ## Linux — NVIDIA (CUDA)
 
@@ -137,8 +139,8 @@ ostt logs
 Look for lines like:
 
 ```
-daemon: loading model 'whisper/large-v3' with CUDA GPU acceleration
-daemon: backend active: CUDA GPU acceleration using device(s): 0: NVIDIA GeForce RTX 4080 (16384 MB VRAM)
+local inference devices: cuda (NVIDIA GeForce RTX 4080), cpu (...)
+daemon: backend active: whisper model on CUDA0 (NVIDIA GeForce RTX 4080, 16376 MB)
 ```
 
 ## Linux — AMD and Intel (Vulkan)
@@ -166,8 +168,8 @@ ostt logs
 Look for lines like:
 
 ```
-daemon: loading model 'whisper/large-v3' with Vulkan GPU acceleration
-daemon: backend active: Vulkan GPU acceleration using device(s): 0: AMD Radeon RX 7900 XTX (24576 MB VRAM)
+local inference devices: vulkan (AMD Radeon Graphics (RADV REMBRANDT)), cpu (...)
+daemon: backend active: parakeet model on Vulkan0 (AMD Radeon Graphics (RADV REMBRANDT), 18009 MB)
 ```
 
 ## Manual Package Selection
@@ -213,13 +215,14 @@ error while loading shared libraries: libcublas.so.12: cannot open shared object
 
 Check which major you have with `ldconfig -p | grep libcublas.so`, then reinstall with the matching build, for example `--gpu cuda13` for `libcublas.so.13`.
 
-**Library present but no GPU device visible** — the binary starts and runs, but whisper.cpp cannot find a usable GPU and silently falls back to CPU inference. This is the most common cause of unexpectedly high CPU usage after installing a GPU build. Check `ostt logs` for:
+**Library present but no GPU device visible** — the binary starts and runs, but the inference engine cannot find a usable GPU and falls back to CPU inference. This is the most common cause of unexpectedly high CPU usage after installing a GPU build. Check `ostt logs` for a device list without a GPU and a model running on CPU:
 
 ```
-daemon: backend active: Vulkan GPU acceleration requested, but no GPU devices were reported by ggml
+local inference devices: cpu (AMD Ryzen 7 6800H with Radeon Graphics)
+daemon: backend active: whisper model on CPU (AMD Ryzen 7 6800H with Radeon Graphics, 27827 MB)
 ```
 
-This means the Vulkan loader is installed but the GPU driver ICD is missing. On Arch Linux, install the Mesa Vulkan driver for your hardware:
+With the Vulkan build, this means the Vulkan loader is installed but the GPU driver ICD is missing. On Arch Linux, install the Mesa Vulkan driver for your hardware:
 
 ```bash
 sudo pacman -S vulkan-radeon    # AMD

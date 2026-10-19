@@ -211,6 +211,8 @@ cargo build --profile dist --locked
 # Binary at target/dist/ostt
 ```
 
+Building needs a Rust toolchain, a C/C++ compiler and CMake, plus the ALSA and OpenSSL development headers on Linux. For GPU builds, add `--features cuda` (CUDA toolkit required) or `--features vulkan` (Vulkan headers, `glslc` and SPIRV-Headers required). macOS builds use Metal automatically.
+
 ## Runtime Dependencies
 
 | Dependency | Purpose | Required |

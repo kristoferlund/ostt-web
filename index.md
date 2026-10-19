@@ -48,7 +48,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
     </article>
     <article>
       <h3>Cloud or local models</h3>
-      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or local Whisper-compatible models. Switch when quality, latency, price, privacy, or offline access matters.</p>
+      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or local Parakeet and Whisper models. Switch when quality, latency, price, privacy, or offline access matters.</p>
     </article>
     <article>
       <h3>GPU acceleration</h3>

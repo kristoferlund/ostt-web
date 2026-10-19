@@ -63,7 +63,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
           <tr><td>macOS support</td><td>✅ macOS supported</td><td>❌ Public docs describe Linux support</td></tr>
           <tr><td>Focused app insertion</td><td>✅ <code>--paste</code> sends text to the focused app and can restore the previous clipboard</td><td>✅ Auto-paste into the active buffer is a core documented workflow</td></tr>
           <tr><td>Cloud transcription providers</td><td>✅ OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral</td><td>✅ REST API and realtime WebSocket backends are documented for cloud-style integrations</td></tr>
-          <tr><td>Built-in local transcription</td><td>✅ Built-in Whisper-compatible local models</td><td>✅ Public docs describe Cohere Transcribe, Parakeet, Whisper, onnx-asr, and related local backends</td></tr>
+          <tr><td>Built-in local transcription</td><td>✅ Built-in local Parakeet and Whisper models</td><td>✅ Public docs describe Cohere Transcribe, Parakeet, Whisper, onnx-asr, and related local backends</td></tr>
           <tr><td>External local engines</td><td>✅ <code>command/&lt;profile&gt;</code> and <code>http/&lt;profile&gt;</code> integrations for user-managed engines</td><td>✅ Broad backend setup is a core Hyprwhspr feature</td></tr>
           <tr><td>Retry same recording with another model</td><td>✅ First-class <code>ostt retry -m PROVIDER/MODEL</code></td><td>⚠️ Not the main documented workflow</td></tr>
           <tr><td>File/stdout/shell workflows</td><td>✅ Core workflow: stdout, files, clipboard, paste, scripts, and processing actions</td><td>⚠️ Dictation-oriented, with command controls and capture workflows documented</td></tr>

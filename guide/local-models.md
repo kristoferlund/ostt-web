@@ -1,10 +1,15 @@
 ---
-description: Run offline transcription with local Whisper-compatible models. No API key required. Download curated models or add custom Hugging Face model files.
+description: Run offline transcription with local Parakeet and Whisper models. No API key required. Download curated models or add custom Hugging Face model files.
 ---
 
 # Local Models
 
-OSTT can transcribe with local Whisper-compatible models. Local models run on your machine, do not require an API key, and can work offline after the model file has been downloaded.
+OSTT can transcribe with local Parakeet and Whisper models. Local models run on your machine, do not require an API key, and can work offline after the model file has been downloaded.
+
+Both model families run on the same built-in engine, [transcribe.cpp](https://github.com/handy-computer/transcribe.cpp), with the same GPU support, daemon mode and model picker. Choose per model:
+
+- **Parakeet** (`parakeet/...`) is fast and accurate, adds punctuation and capitalization, and detects the language by itself. Good default for English and the 25 European languages it covers.
+- **Whisper** (`whisper/...`) covers around 100 languages and has regional fine-tunes such as KB-Whisper for Swedish and NB-Whisper for Norwegian.
 
 Use local models when you want privacy, predictable cost, or offline transcription. Use cloud providers when you prefer hosted accuracy, lower local CPU load, or no large model downloads. See [Choosing a Transcription Model or Provider](/guide/choosing-a-model) for practical recommendations across cloud, local, and external engines.
 
@@ -42,18 +47,35 @@ ostt retry 2
 You can also manage curated local models from scripts:
 
 ```bash
+ostt model list --provider parakeet
+ostt model local download parakeet-ultra
+ostt model select parakeet/parakeet-ultra
 ostt model list --provider whisper
-ostt model local download turbo
 ostt model local download whisper/turbo
 ostt model select whisper/turbo
 ostt model local remove turbo
 ```
 
-`ostt model local download` shows download progress in the terminal. Local download and remove commands accept either the short model ID (`turbo`) or full provider/model ID (`whisper/turbo`).
+`ostt model local download` shows download progress in the terminal and verifies the file's checksum when the registry lists one. Local download and remove commands accept either the short model ID (`turbo`) or full provider/model ID (`whisper/turbo`). Select commands need the full ID.
+
+## Parakeet Models
+
+The curated list includes these Parakeet models. All are Q8_0 GGUF files pinned to a fixed revision and verified by checksum.
+
+| Model ID | Download | Languages | Notes |
+| --- | ---: | --- | --- |
+| `parakeet/parakeet-ultra` | 707 MiB | 25 European languages, auto-detected | Most accurate multilingual Parakeet. Moondream's post-trained version of TDT 0.6B v3. |
+| `parakeet/parakeet-tdt-0.6b-v3` | 706 MiB | 25 European languages, auto-detected | NVIDIA's original multilingual release. |
+| `parakeet/parakeet-tdt-0.6b-v2` | 696 MiB | English | NVIDIA's English model. |
+| `parakeet/parakeet-tdt_ctc-110m` | 130 MiB | English | Small and very fast, for low-power machines, at somewhat lower accuracy. |
+
+The 25 languages are Bulgarian, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish, Swedish and Ukrainian. English-only models produce nonsense for other languages.
+
+Parakeet models take no params. They detect the language themselves, and OSTT rejects `--param` values for them. Keyword boosting is not supported; [text replacements](/guide/configuration#text-replace) still apply.
 
 ## Whisper Params
 
-All local models use the same Whisper inference params. Set global local defaults under `[whisper.params]`, or override them for a specific model under `[whisper.<model-id>.params]`:
+Whisper models share these inference params. Set global defaults under `[whisper.params]`, or override them for a specific model under `[whisper.<model-id>.params]`:
 
 ```toml
 [whisper]
@@ -61,10 +83,8 @@ output_format = "pcm_s16le -ar 16000"
 
 [whisper.params]
 language = "auto"
-no_timestamps = true
 no_context = true
 temperature = 0.0
-entropy_thold = 2.4
 no_speech_thold = 0.6
 
 [whisper.turbo.params]
@@ -88,11 +108,11 @@ The same param meanings apply whether the param is set globally in `[whisper.par
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | `language` | string | `"auto"` | Language hint for Whisper. Use `"auto"` for language detection or an ISO language code such as `"en"`, `"sv"`, or `"no"` when the language is known. |
-| `no_timestamps` | boolean | `true` | Suppress timestamp output from Whisper. OSTT returns plain transcript text, so this is normally left enabled. |
 | `no_context` | boolean | `true` | Prevent Whisper from conditioning each segment on previously decoded text. This can reduce repetition and hallucinated carry-over between segments. |
 | `temperature` | number | `0.0` | Sampling temperature. `0.0` uses deterministic greedy decoding; higher values make decoding less deterministic. Valid range: `0.0` to `1.0`. |
-| `entropy_thold` | number | `2.4` | Entropy threshold used by Whisper fallback behavior. Higher entropy indicates uncertain decoding. Must be `>= 0.0`. |
 | `no_speech_thold` | number | `0.6` | No-speech probability threshold. Higher values make Whisper less likely to treat audio as silence. Valid range: `0.0` to `1.0`. |
+
+`no_timestamps` and `entropy_thold` from earlier versions no longer have any effect. Configs that still set them keep working; OSTT ignores them and notes it in the log.
 
 ## Audio Format
 
@@ -103,7 +123,7 @@ Local transcription requires WAV audio in signed 16-bit PCM, 16 kHz, mono. OSTT 
 output_format = "pcm_s16le -ar 16000"
 ```
 
-For recordings, OSTT uses the `[whisper].output_format` default when the active model provider is `whisper`, so cloud-friendly global `[audio].output_format` can remain unchanged.
+For recordings, OSTT uses this format automatically when the active model is local, so a cloud-friendly global `[audio].output_format` can remain unchanged. To override it, set `output_format` under `[whisper]` or `[parakeet]`.
 
 The default cloud-friendly MP3 setting still works for cloud providers. Switch to the WAV/PCM setting when using local models.
 
@@ -114,13 +134,13 @@ Press `c` in the local model screen to add a custom model. OSTT accepts:
 - Hugging Face model pages, for example `https://huggingface.co/Supertone/supertonic-3`
 - direct model file URLs
 
-Supported file names are `.gguf` and `ggml-*.bin`. After the URL resolves, OSTT asks for the model ID and display name, downloads the file, and stores the custom entry with the other local models.
+Supported files are Whisper models (`.gguf` or `ggml-*.bin`) and Parakeet models (`.gguf`). After the URL resolves, OSTT asks for the model ID and display name, downloads the file, and loads it once to check that it works and whether it is a Whisper or Parakeet model. The custom model is then listed under that provider. Other model types are refused.
 
 Use safe model IDs containing lowercase letters, numbers, `.`, `_`, or `-`.
 
 ## Storage
 
-Local model files and custom model metadata are stored under:
+Local model files, custom model metadata and a cached copy of the curated list are stored under:
 
 ```text
 ~/.local/share/ostt/models/
@@ -130,7 +150,7 @@ Model downloads can be hundreds of megabytes or several gigabytes. Delete unused
 
 ## Curated Model List
 
-OSTT's built-in local model list is maintained outside the CLI in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. This keeps the curated list updateable without changing the application code.
+OSTT's built-in local model list is maintained outside the CLI in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. This keeps the curated list updateable without changing the application code. OSTT keeps the last downloaded copy, so downloaded models stay usable offline.
 
 To suggest a model for everyone, open a pull request in that repository. Include the model URL, display name, size, language coverage, and any useful hardware or accuracy notes.
 
