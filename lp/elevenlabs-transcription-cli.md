@@ -1,7 +1,7 @@
 ---
 layout: false
 title: "ElevenLabs Scribe v2 from the Command Line"
-description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OSTT connects the most accurate speech-to-text model available to your hotkey, clipboard, and shell pipeline."
+description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OSTT connects one of the most accurate speech-to-text models available to your hotkey, clipboard, and shell pipeline."
 ---
 
 <header class="site-header">
@@ -20,7 +20,7 @@ description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OS
 
   <section class="landing-hero">
     <h1>ElevenLabs Scribe v2 from the command line.</h1>
-    <p class="lede">ElevenLabs Scribe v2 holds the top position on the Artificial Analysis speech-to-text benchmark with a 2.2% word error rate — lower than GPT-4o-transcribe, AssemblyAI, Deepgram, and Google. It transcribes in 99 languages, detects non-speech events, and identifies entities. OSTT connects it directly to your terminal, hotkey, and shell.</p>
+    <p class="lede">ElevenLabs Scribe v2 scores a 2.2% word error rate on the Artificial Analysis speech-to-text benchmark — lower than OpenAI GPT Transcribe, AssemblyAI Universal 3.5 Pro, and Deepgram Nova-3. It transcribes in 90+ languages, tags audio events, and detects entities. OSTT connects it directly to your terminal, hotkey, and shell.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -36,8 +36,8 @@ description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OS
     <section class="landing-section split">
       <div>
         <p class="eyebrow">ElevenLabs Scribe v2</p>
-        <h2>2.2% WER. The most accurate model available.</h2>
-        <p>On the Artificial Analysis AA-WER v2 benchmark — which weights real-world audio including diverse accents and domain-specific language — Scribe v2 scores 2.2%, outperforming every major provider. It handles long-form audio with consistent accuracy across speaker changes, accents, and recording conditions. It detects non-speech events (laughter, footsteps), identifies entities across 56 categories, and supports smart speaker diarization. OSTT brings all of this to your keyboard.</p>
+        <h2>2.2% WER. Among the most accurate models available.</h2>
+        <p>On the Artificial Analysis AA-WER v2 benchmark — which weights real-world audio including diverse accents and domain-specific language — Scribe v2 scores 2.2%, ahead of AssemblyAI Universal 3.5 Pro (3.0%), OpenAI GPT Transcribe (3.3%), and Deepgram Nova-3 (5.2%). It handles long-form audio with consistent accuracy across speaker changes, accents, and recording conditions. It tags audio events such as laughter and footsteps, detects 65 entity types, and labels up to 32 speakers. OSTT brings all of this to your keyboard.</p>
       </div>
       <div class="command-card">
         <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;elevenlabs&quot;&#10;model = &quot;scribe_v2&quot;&#10;&#10;&#91;elevenlabs.scribe_v2.params&#93;&#10;# language_code = &quot;eng&quot;  # Optional: set to force language&#10;# diarize = true&#10;# keyterms = &#91;&quot;OSTT&quot;, &quot;Scribe&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Scribe v2, copy to clipboard&#10;ostt launch -c</code></pre>
@@ -47,28 +47,28 @@ description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OS
 
   <section class="landing-grid">
     <article>
-      <h3>#1 accuracy benchmark</h3>
-      <p>Scribe v2 leads the Artificial Analysis AA-WER v2 leaderboard at 2.2% WER, ahead of AssemblyAI Universal-3 Pro (3.3%), GPT-4o-transcribe (4.1%), and Deepgram Nova-3 (5.3%). For work where every word matters — legal, medical, research — this gap is significant.</p>
+      <h3>Top-tier benchmark accuracy</h3>
+      <p>Scribe v2 scores 2.2% on the Artificial Analysis AA-WER leaderboard, ahead of AssemblyAI Universal 3.5 Pro (3.0%), OpenAI GPT Transcribe (3.3%), and Deepgram Nova-3 (5.2%). For work where every word matters — legal, medical, research — this gap is significant.</p>
     </article>
     <article>
-      <h3>99 languages, auto-detected</h3>
-      <p>Scribe v2 supports 99 languages with automatic language detection. It handles mid-file language switches without configuration. Set a <code>language_code</code> in ostt.toml to lock a specific language and improve accuracy when the source is known.</p>
+      <h3>90+ languages, auto-detected</h3>
+      <p>Scribe v2 supports 90+ languages with automatic language detection. It handles mid-file language switches without configuration. Set a <code>language_code</code> in ostt.toml to lock a specific language and improve accuracy when the source is known.</p>
     </article>
     <article>
-      <h3>Non-speech event detection</h3>
-      <p>Scribe v2 detects and labels non-speech events such as laughter, applause, and background noise — useful for meeting notes, research transcription, and media workflows where context matters beyond the words spoken.</p>
+      <h3>Audio event tagging</h3>
+      <p>Turn on <code>tag_audio_events</code> and Scribe v2 labels non-speech events such as laughter, applause, and background noise — useful for meeting notes, research transcription, and media workflows where context matters beyond the words spoken.</p>
     </article>
     <article>
       <h3>Entity detection</h3>
-      <p>Built-in detection across 56 entity categories including PII, health data, and payment details, with precise timestamps. Useful for redaction workflows and structured audio analysis.</p>
+      <p>Built-in detection across 65 entity types including PII, health data, and payment details, with precise timestamps. Set <code>entity_detection</code>, or <code>entity_redaction</code> to redact them. Useful for redaction workflows and structured audio analysis.</p>
     </article>
     <article>
       <h3>Smart speaker diarization</h3>
-      <p>Identify and label multiple speakers with precise word-level timestamps. Scribe v2 handles a wide range of speaker counts with accurate attribution across accents and delivery styles.</p>
+      <p>Turn on <code>diarize</code> to identify and label up to 32 speakers with precise word-level timestamps. Set <code>num_speakers</code> when you know the count.</p>
     </article>
     <article>
       <h3>Keyterm prompting</h3>
-      <p>Provide up to 100 domain-specific terms, product names, or technical vocabulary. Scribe v2 applies them in context — not just as keyword matching — for accurate transcription of the terms that matter most.</p>
+      <p>Provide up to 1,000 domain-specific terms, product names, or technical vocabulary. Scribe v2 applies them in context — not just as keyword matching — for accurate transcription of the terms that matter most.</p>
     </article>
   </section>
 
@@ -97,7 +97,7 @@ description: "Use ElevenLabs Scribe v2 from your terminal on Linux and macOS. OS
   </section>
 
   <section class="landing-section final-cta">
-    <h2>The most accurate transcription model in your terminal.</h2>
+    <h2>Benchmark-leading transcription in your terminal.</h2>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
