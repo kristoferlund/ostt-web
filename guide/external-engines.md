@@ -6,7 +6,7 @@ description: Connect OSTT to custom local or remote transcription engines with c
 
 OSTT can call transcription engines that it does not bundle. Use this when you already run another ASR engine locally, on another machine, or behind an OpenAI-compatible API.
 
-OSTT keeps built-in local support focused on Whisper via `whisper-rs` and GGUF model files. Other engines such as faster-whisper, Parakeet/onnx-asr, Cohere Transcribe, Moonshine, SenseVoice, Paraformer, Dolphin, Omnilingual, Speaches, LocalAI, and custom wrappers all have different runtimes, model formats, GPU stacks, and setup requirements. Bundling them would make OSTT larger and harder to package. External engines keep OSTT small while still giving power users an integration path.
+OSTT's built-in local support covers Parakeet and Whisper GGUF models (see [Local Models](./local-models.md)). Other engines such as faster-whisper, Parakeet/onnx-asr, Cohere Transcribe, Moonshine, SenseVoice, Paraformer, Dolphin, Omnilingual, Speaches, LocalAI, and custom wrappers all have different runtimes, model formats, GPU stacks, and setup requirements. Bundling them would make OSTT larger and harder to package. External engines keep OSTT small while still giving power users an integration path.
 
 There are two external engine types:
 

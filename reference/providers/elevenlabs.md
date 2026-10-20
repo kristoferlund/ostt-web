@@ -1,5 +1,5 @@
 ---
-description: Configure ElevenLabs Scribe models in OSTT, including Scribe v2, Scribe v1, keyterms, diarization, language code, entity detection, and params.
+description: Configure ElevenLabs Scribe models in OSTT, including Scribe v2, Scribe v2 Medical, Scribe v1, keyterms, diarization, language code, entity detection, and params.
 ---
 
 # ElevenLabs
@@ -13,7 +13,8 @@ API documentation: [ElevenLabs speech-to-text](https://elevenlabs.io/docs/api-re
 | Model ID | Notes |
 | --- | --- |
 | `elevenlabs/scribe_v2` | Latest Scribe model. Supports v2-only options such as `no_verbatim`, entity options, and speaker role detection. |
-| `elevenlabs/scribe_v1` | Previous Scribe model. |
+| `elevenlabs/scribe_v2_medical` | Scribe v2 specialized for clinical audio and medical terminology. Same languages, API, and params as Scribe v2. |
+| `elevenlabs/scribe_v1` | Legacy Scribe model. Deprecated by ElevenLabs but still available. |
 
 ## Params
 
@@ -44,8 +45,8 @@ ostt model params elevenlabs/scribe_v2 --format json
 | `file_format` | string | Input audio format: `other` or `pcm_s16le_16`. |
 | `seed` | integer | Deterministic seed. |
 | `use_multi_channel` | boolean | Use multi-channel input handling. |
-| `detect_speaker_roles` | boolean | Scribe v2 only. Detect speaker roles. Requires `diarize = true` and cannot be combined with `use_multi_channel = true`. |
-| `no_verbatim` | boolean | Scribe v2 only. Reduce verbatim artifacts. |
-| `entity_detection` | string or string list | Scribe v2 only. Entity detection setting, such as `all`, `pii`, `phi`, `pci`, `other`, or `offensive_language`. |
-| `entity_redaction` | string or string list | Scribe v2 only. Entity redaction setting. Must be a subset of `entity_detection`. |
-| `entity_redaction_mode` | string | Scribe v2 only. Redaction mode: `redacted`, `entity_type`, or `enumerated_entity_type`. |
+| `detect_speaker_roles` | boolean | Scribe v2 models only. Detect speaker roles. Requires `diarize = true` and cannot be combined with `use_multi_channel = true`. |
+| `no_verbatim` | boolean | Scribe v2 models only. Reduce verbatim artifacts. |
+| `entity_detection` | string or string list | Scribe v2 models only. Entity detection setting, such as `all`, `pii`, `phi`, `pci`, `other`, or `offensive_language`. |
+| `entity_redaction` | string or string list | Scribe v2 models only. Entity redaction setting. Must be a subset of `entity_detection`. |
+| `entity_redaction_mode` | string | Scribe v2 models only. Redaction mode: `redacted`, `entity_type`, or `enumerated_entity_type`. |

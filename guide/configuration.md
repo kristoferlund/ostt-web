@@ -217,7 +217,7 @@ On macOS, paste mode uses `osascript`/System Events to send `cmd+v`. macOS may p
 
 ## Local Transcription
 
-Local models are selected and managed with `ostt model`. Built-in local Whisper uses the `whisper` provider. `[whisper.params]` controls global Whisper inference defaults; `[whisper."model".params]` overrides them for a specific model. The param meanings are the same in both places.
+Local models are selected and managed with `ostt model`. Local Whisper models use the `whisper` provider and Parakeet models the `parakeet` provider. Parakeet takes no params. `[whisper.params]` controls global Whisper inference defaults; `[whisper."model".params]` overrides them for a specific model. The param meanings are the same in both places.
 
 ```toml
 [whisper]
@@ -225,21 +225,19 @@ output_format = "pcm_s16le -ar 16000"
 
 [whisper.params]
 language = "auto"
-no_timestamps = true
 no_context = true
 temperature = 0.0
-entropy_thold = 2.4
 no_speech_thold = 0.6
 ```
 
 | Param | Default | Description |
 | --- | --- | --- |
 | `language` | `"auto"` | Language hint for local inference. Use `"auto"` or an ISO code such as `"en"` or `"sv"`. |
-| `no_timestamps` | `true` | Suppress timestamp output. |
 | `no_context` | `true` | Do not reuse text context between segments. |
 | `temperature` | `0.0` | Sampling temperature. `0.0` uses greedy deterministic decoding. |
-| `entropy_thold` | `2.4` | Entropy threshold for fallback behavior. |
 | `no_speech_thold` | `0.6` | No-speech probability threshold. |
+
+`no_timestamps` and `entropy_thold` from earlier versions no longer have any effect and are ignored if still set.
 
 See [Local Models](./local-models.md) for setup, storage, and audio-format requirements.
 

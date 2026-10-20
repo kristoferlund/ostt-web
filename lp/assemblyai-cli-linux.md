@@ -1,7 +1,7 @@
 ---
 layout: false
 title: "AssemblyAI from the Command Line"
-description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and macOS. OSTT connects the world's first promptable speech model to your hotkey, clipboard, and shell pipeline."
+description: "Use AssemblyAI Universal 3.5 Pro from your terminal on Linux and macOS. OSTT connects AssemblyAI's recommended promptable speech model to your hotkey, clipboard, and shell pipeline."
 ---
 
 <header class="site-header">
@@ -19,8 +19,8 @@ description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and mac
 <main class="landing">
 
   <section class="landing-hero">
-    <h1>AssemblyAI Universal-3 Pro from the command line.</h1>
-    <p class="lede">AssemblyAI's Universal-3 Pro is the first promptable speech model — guide transcription with natural language before it listens, not after. With a 5.6% mean WER, 30% fewer hallucinations than Whisper, and built-in speaker diarization, it's the choice when accuracy and control matter. OSTT connects it to your terminal, hotkey, and shell.</p>
+    <h1>AssemblyAI Universal 3.5 Pro from the command line.</h1>
+    <p class="lede">Universal 3.5 Pro is AssemblyAI's recommended model for recorded audio: guide transcription with a natural-language prompt before it listens, not after. It scores 3.0% on the Artificial Analysis AA-WER benchmark, switches languages mid-sentence, and labels speakers. OSTT connects it to your terminal, hotkey, and shell.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -35,12 +35,12 @@ description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and mac
   <div class="surface-band">
     <section class="landing-section split">
       <div>
-        <p class="eyebrow">AssemblyAI Universal-3 Pro</p>
+        <p class="eyebrow">AssemblyAI Universal 3.5 Pro</p>
         <h2>Prompt it. Don't post-process it.</h2>
-        <p>Universal-3 Pro accepts a natural language prompt parameter that shapes transcription during inference — not after. Tell it the domain, formatting style, or vocabulary before it listens. It delivers 5.6% WER on English benchmarks, 30% fewer hallucinations than Whisper, and language detection across 99 languages. OSTT surfaces all of this through your terminal with zero extra tooling.</p>
+        <p>Universal 3.5 Pro accepts a natural-language <code>prompt</code> that shapes transcription during inference — not after. Tell it the domain, formatting style, or vocabulary before it listens. It covers 18 languages natively, and OSTT asks AssemblyAI to fall back to Universal 2 for the rest, so language detection spans 99 languages. OSTT surfaces all of this through your terminal with zero extra tooling.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;assemblyai&quot;&#10;model = &quot;universal-3-pro&quot;&#10;&#10;&#91;assemblyai.universal-3-pro.params&#93;&#10;punctuate = true&#10;format_text = true&#10;language_detection = true&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;assemblyai&quot;&#10;model = &quot;universal-3-5-pro&quot;&#10;&#10;&#91;assemblyai.universal-3-5-pro.params&#93;&#10;punctuate = true&#10;format_text = true&#10;language_detection = true&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -48,27 +48,27 @@ description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and mac
   <section class="landing-grid">
     <article>
       <h3>Promptable transcription</h3>
-      <p>Universal-3 Pro is the first speech model that accepts natural language instructions. Describe the domain, speaker roles, formatting preferences, or vocabulary before it transcribes. The model applies them at inference — no post-processing LLM call needed.</p>
+      <p>Universal 3.5 Pro accepts natural-language instructions. Describe the domain, speaker roles, formatting preferences, or vocabulary before it transcribes. The model applies them at inference — no post-processing LLM call needed.</p>
     </article>
     <article>
-      <h3>30% fewer hallucinations than Whisper</h3>
-      <p>Whisper's hallucination problem on silent or low-quality audio is well documented. Universal-3 Pro reduces fabrications, omissions, and extended hallucinated sequences by 30% — critical for medical, legal, or compliance recordings.</p>
+      <h3>Accurate on the words that matter</h3>
+      <p>AssemblyAI describes Universal 3.5 Pro as its highest-accuracy, fastest model, with state-of-the-art accuracy on entities, rare words, and domain terms — the names, numbers, and jargon that matter in medical, legal, or compliance recordings.</p>
     </article>
     <article>
-      <h3>5.6% mean WER</h3>
-      <p>AssemblyAI benchmarks Universal-3 Pro at 5.6% mean WER across English test sets (median 4.9%). On specialist domains like financial earnings calls, it has outperformed GPT-4o-transcribe in independent evaluations.</p>
+      <h3>3.0% AA-WER</h3>
+      <p>Universal 3.5 Pro scores 3.0% on the independent Artificial Analysis AA-WER benchmark, ahead of OpenAI GPT-4o Transcribe (4.0%) and Deepgram Nova-3 (5.2%).</p>
     </article>
     <article>
       <h3>Speaker diarization included</h3>
-      <p>Identify and label up to 30 speakers in a recording without a separate API call. Particularly strong on short files and single-word responses — the kind of audio that breaks most diarization systems.</p>
+      <p>Turn on <code>speaker_labels</code> to identify and label speakers in the same request, with <code>speakers_expected</code> when you know the count. No separate API call needed.</p>
     </article>
     <article>
       <h3>99 languages with code-switching</h3>
-      <p>Universal-3 Pro handles mixed-language audio natively, with a 19% relative WER improvement on code-switching benchmarks. Set <code>expected_languages</code> in config to restrict detection when you know the source language.</p>
+      <p>Universal 3.5 Pro handles mixed-language audio natively in its 18 languages, and Universal 2 covers the rest of the 99. Set <code>language_code</code> in config to skip detection when you know the source language.</p>
     </article>
     <article>
       <h3>Keywords vocabulary boosting</h3>
-      <p>Add technical terms, names, and domain vocabulary via OSTT's keywords feature. OSTT sends them as keyterm hints to Universal-3 Pro, reducing errors on the words that matter most in your workflow.</p>
+      <p>Add technical terms, names, and domain vocabulary via OSTT's keywords feature. OSTT sends them as keyterm hints to Universal 3.5 Pro, reducing errors on the words that matter most in your workflow.</p>
     </article>
   </section>
 
@@ -78,7 +78,7 @@ description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and mac
       <h2>From speech to useful output.</h2>
       <div class="steps">
         <div><strong>1. Record</strong><span>Press your global hotkey or run <code>ostt</code> in the terminal.</span></div>
-        <div><strong>2. Transcribe</strong><span>Universal-3 Pro processes the audio via the AssemblyAI API.</span></div>
+        <div><strong>2. Transcribe</strong><span>Universal 3.5 Pro processes the audio via the AssemblyAI API.</span></div>
         <div><strong>3. Process</strong><span>Optionally run AI prompts or shell commands on the result.</span></div>
         <div><strong>4. Send</strong><span>Print to stdout, copy to clipboard, write to a file, or pipe onward.</span></div>
       </div>
@@ -89,7 +89,7 @@ description: "Use AssemblyAI Universal-3 Pro from your terminal on Linux and mac
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>Accurate transcription inside your shell.</h2>
-      <p>OSTT routes Universal-3 Pro output to wherever your workflow needs it. Plain text on stdout, clipboard with <code>-c</code>, file with <code>-o</code>, or pipe through any CLI tool. Combine with OSTT's <code>-p</code> flag to run processing actions on the result without a separate tool.</p>
+      <p>OSTT routes Universal 3.5 Pro output to wherever your workflow needs it. Plain text on stdout, clipboard with <code>-c</code>, file with <code>-o</code>, or pipe through any CLI tool. Combine with OSTT's <code>-p</code> flag to run processing actions on the result without a separate tool.</p>
     </div>
     <div class="command-card">
       <pre><code># Transcribe a meeting recording&#10;ostt transcribe meeting.mp3 -o notes.md&#10;&#10;# Record, run &quot;clean&quot; processing action, copy&#10;ostt -p clean -c&#10;&#10;# Transcribe and pipe to downstream command&#10;ostt | my-tool.sh</code></pre>

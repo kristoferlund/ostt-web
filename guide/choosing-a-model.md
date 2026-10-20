@@ -5,7 +5,7 @@ description: Choose the right OSTT transcription model or provider for cloud qua
 
 # Choosing a Transcription Model or Provider
 
-OSTT is provider-neutral. You can use hosted cloud transcription, built-in local Whisper-compatible models, or your own external command or HTTP engine. The right choice depends on privacy, language, latency, cost, hardware, and how much setup you want to own.
+OSTT is provider-neutral. You can use hosted cloud transcription, built-in local Parakeet and Whisper models, or your own external command or HTTP engine. The right choice depends on privacy, language, latency, cost, hardware, and how much setup you want to own.
 
 If you are unsure, start with one good default and let OSTT make comparison practical: record once, then use `ostt retry -m PROVIDER/MODEL` to transcribe the same audio with another model.
 
@@ -14,12 +14,12 @@ If you are unsure, start with one good default and let OSTT make comparison prac
 | Need | Good starting point | Why |
 | --- | --- | --- |
 | Fastest setup | OpenAI `openai/gpt-4o-transcribe` or Deepgram `deepgram/nova-3` | Hosted APIs avoid local model downloads and local runtime setup. |
-| Strong general cloud quality | OpenAI `openai/gpt-4o-transcribe`, Deepgram `deepgram/nova-3`, or AssemblyAI `assemblyai/universal-3-pro` | These are current general-purpose cloud transcription models with useful params for language, formatting, prompts, or keyterms. |
+| Strong general cloud quality | OpenAI `openai/gpt-transcribe`, Deepgram `deepgram/nova-3`, or AssemblyAI `assemblyai/universal-3-5-pro` | These are current general-purpose cloud transcription models with useful params for language, formatting, prompts, or keyterms. |
 | Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` (since 0.0.27) | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting. |
 | Norwegian work | Berget `berget/NbAiLab/nb-whisper-large` | NB-Whisper is documented for Norwegian, Bokmal, Nynorsk, and English. |
-| Offline or privacy-sensitive work | Built-in local Whisper, such as `whisper/turbo` if it fits your hardware | Audio stays on your machine after the model file is downloaded. |
-| Fast local dictation | Built-in local Whisper with daemon mode, or an external hot local HTTP engine | Daemon mode avoids reloading the local model every call. External servers can keep other engines hot. |
-| Newer local ASR engines | `command/<profile>` or `http/<profile>` external engines | Run faster-whisper, Parakeet, Cohere Transcribe, Speaches, LocalAI, or your own wrapper without making OSTT bundle every runtime. |
+| Offline or privacy-sensitive work | Built-in local Parakeet, such as `parakeet/parakeet-ultra`, or Whisper such as `whisper/turbo` | Audio stays on your machine after the model file is downloaded. |
+| Fast local dictation | Built-in local Parakeet with daemon mode | Parakeet is fast even on CPU, and daemon mode avoids reloading the model every call. |
+| Other local ASR engines | `command/<profile>` or `http/<profile>` external engines | Run faster-whisper, Cohere Transcribe, Speaches, LocalAI, or your own wrapper without making OSTT bundle every runtime. |
 | Long recordings or meetings | Cloud providers with diarization/formatting params, or local batch engines if privacy matters | Long files often benefit from provider-specific params such as diarization, formatting, language hints, and prompts. |
 | Developer dictation | Any accurate model plus `ostt keyword`, `ostt replace`, and processing actions | Technical terms need vocabulary hints and deterministic cleanup as much as raw model accuracy. |
 
@@ -37,7 +37,7 @@ ostt -o first.txt
 ostt retry -m deepgram/nova-3 -o deepgram.txt
 ostt retry -m openai/gpt-4o-transcribe -o openai.txt
 ostt retry -m berget/KBLab/kb-whisper-large -o berget.txt
-ostt retry -m whisper/turbo -o local.txt
+ostt retry -m parakeet/parakeet-ultra -o local.txt
 ```
 
 Use this for real audio from your microphone, your accent, your room, and your vocabulary. That is more useful than a generic benchmark table.
@@ -48,11 +48,11 @@ Cloud providers are usually easiest when you want strong transcription without d
 
 | Provider | Good for | Watch out for |
 | --- | --- | --- |
-| [OpenAI](/reference/providers/openai) | GPT-4o transcription, GPT-4o Mini, hosted Whisper, prompt hints, diarization model | Audio leaves your machine. OSTT returns plain text even when JSON metadata is requested. |
+| [OpenAI](/reference/providers/openai) | GPT Transcribe, GPT-4o transcription, GPT-4o Mini, hosted Whisper, prompt hints, diarization model | Audio leaves your machine. OSTT returns plain text even when JSON metadata is requested. |
 | [Deepgram](/reference/providers/deepgram) | Nova models, low-latency cloud transcription, formatting, diarization, language detection, keyterms | Advanced params are provider-specific. Pick `nova-3` or `nova-2` intentionally. |
 | [Groq](/reference/providers/groq) | Very fast hosted Whisper variants and OpenAI-compatible request shape | Groq model choices differ in accuracy, cost, and translation support. |
-| [DeepInfra](/reference/providers/deepinfra) | Hosted open speech-recognition models, including Whisper and Voxtral options | Model availability and pricing can change. Check the provider docs. |
-| [AssemblyAI](/reference/providers/assemblyai) | Universal-3 Pro, promptable transcription, speaker labels, language detection, keyterms | Async-provider behavior and params differ from OpenAI-style endpoints. |
+| [DeepInfra](/reference/providers/deepinfra) | Hosted open speech-recognition models, including Whisper, Qwen3 ASR, Nemotron, and Voxtral options | Model availability and pricing can change. Check the provider docs. |
+| [AssemblyAI](/reference/providers/assemblyai) | Universal 3.5 Pro, Universal 2, promptable transcription, speaker labels, language detection, keyterms | Async-provider behavior and params differ from OpenAI-style endpoints. |
 | [Berget](/reference/providers/berget) | Swedish Pianissimo, Swedish and Norwegian optimized Whisper models, European hosting | Choose model-specific params: Pianissimo does not support Whisper prompts or hotwords. |
 | [ElevenLabs](/reference/providers/elevenlabs) | Scribe transcription and multilingual speech-to-text workflows | Advanced diarization and role params have provider-specific constraints. |
 | [Mistral](/reference/providers/mistral) | Voxtral transcription, context bias, diarization, timestamp granularity | OSTT uses the synchronous transcription endpoint, not streaming. |
@@ -64,9 +64,11 @@ ostt auth login
 ostt model
 ```
 
-## Built-In Local Whisper
+## Built-In Local Models
 
-Use local Whisper-compatible models when privacy, offline use, or predictable cost matters. OSTT's built-in local path uses `whisper-rs` with GGUF or `ggml-*.bin` model files.
+Use local models when privacy, offline use, or predictable cost matters. OSTT runs Parakeet and Whisper models on its built-in engine, [transcribe.cpp](https://github.com/handy-computer/transcribe.cpp), with GGUF or `ggml-*.bin` model files.
+
+Start with **Parakeet** when your language is English or one of the 25 European languages it covers. It adds punctuation and capitalization, detects the language itself, and in our tests transcribed about three times faster than Whisper turbo on the same hardware. Use **Whisper** for other languages, for regional fine-tunes such as KB-Whisper (Swedish) and NB-Whisper (Norwegian), or when you need Whisper params such as a fixed language.
 
 Open the model picker:
 
@@ -78,11 +80,11 @@ Choose **Local provider** to download curated models, activate a downloaded mode
 
 | Hardware | Suggested starting point | Notes |
 | --- | --- | --- |
-| Low-end CPU | tiny, base, or small | Faster, lower accuracy. Good for quick notes and testing. |
-| Modern laptop CPU | small, medium, or turbo | Balance speed and quality. Try short samples first. |
-| Apple Silicon | turbo or large if latency is acceptable | Metal acceleration is enabled on macOS builds. |
-| NVIDIA Linux GPU | turbo or large | Use the CUDA build when the NVIDIA driver and cuBLAS runtime are available. |
-| AMD/Intel Linux GPU | turbo with the Vulkan build | Vulkan support is useful but hardware-dependent. |
+| Low-end CPU | `parakeet-tdt_ctc-110m` (English), or Whisper tiny, base, or small | Faster, lower accuracy. Good for quick notes and testing. |
+| Modern laptop CPU | `parakeet-ultra`, or Whisper small, medium, or turbo | Parakeet Ultra runs well on CPU alone. |
+| Apple Silicon | `parakeet-ultra`, or Whisper turbo or large | Metal acceleration is enabled on macOS builds. |
+| NVIDIA Linux GPU | `parakeet-ultra`, or Whisper turbo or large | Use the CUDA build when the NVIDIA driver and cuBLAS runtime are available. |
+| AMD/Intel Linux GPU | `parakeet-ultra` or Whisper turbo with the Vulkan build | Vulkan support is useful but hardware-dependent. |
 | Privacy-sensitive work | Largest model that feels fast enough | No audio leaves the machine, but local performance depends on hardware. |
 
 For repeated local dictation, start [Daemon Mode](/guide/daemon):
@@ -96,7 +98,7 @@ Daemon mode keeps the active local model loaded so each transcription avoids mod
 
 ## External Local Engines
 
-Built-in local support intentionally stays focused on Whisper-compatible models. If you want faster-whisper, Parakeet, Cohere Transcribe, Speaches, LocalAI, onnx-asr, or a custom research model, run that engine yourself and let OSTT call it.
+Built-in local support covers Parakeet and Whisper models. If you want faster-whisper, Cohere Transcribe, Speaches, LocalAI, onnx-asr, or a custom research model, run that engine yourself and let OSTT call it.
 
 Use `command/<profile>` when you have a CLI or wrapper script:
 

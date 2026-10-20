@@ -49,7 +49,7 @@ chunk_seconds = 3
 
 For example, use `--param chunk_seconds=2` to change the server segmentation. This is distinct from Whisper's `chunk_size` parameter.
 
-Berget states that Pianissimo ignores prompts, temperature, and keywords. OSTT does not send saved `ostt keyword` terms to this model and rejects unsupported params, including `hotwords`, `prompt`, `temperature`, alignment, diarization, and response-format options. Keep Whisper-specific settings under `[berget."KBLab/kb-whisper-large".params]` or another Whisper model's section, rather than `[berget.params]`, because provider-wide settings also apply to Pianissimo.
+Berget states that Pianissimo ignores prompts, temperature, and keywords. OSTT does not send saved `ostt keyword` terms to this model. Unsupported params, including `hotwords`, `prompt`, `temperature`, alignment, diarization, and response-format options, are ignored with a log warning in `[berget."klang/pianissimo".params]` and rejected in `[berget.params]` or `--param`. Keep Whisper-specific settings under `[berget."KBLab/kb-whisper-large".params]` or another Whisper model's section, rather than `[berget.params]`, because provider-wide settings also apply to Pianissimo.
 
 Requires a Berget API key, network access to the WebSocket endpoint, and ffmpeg. This is cloud transcription, not local inference. Connection errors, server errors, and a connection closing before a final transcript are reported as failures rather than returning partial text.
 

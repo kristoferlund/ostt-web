@@ -1,10 +1,10 @@
 ---
-description: Configure DeepInfra-hosted speech recognition models in OSTT, including Whisper, Whisper Large V3 Turbo, Voxtral, and params.
+description: Configure DeepInfra-hosted speech recognition models in OSTT, including Whisper Large V3, Whisper Large V3 Turbo, Qwen3 ASR, Nemotron ASR, Voxtral, and params.
 ---
 
 # DeepInfra
 
-DeepInfra hosts open speech recognition models behind its inference API. OSTT supports DeepInfra-hosted Whisper models and Voxtral speech-recognition models.
+DeepInfra hosts open speech recognition models behind its inference API. OSTT supports DeepInfra-hosted Whisper, Qwen3 ASR, Nemotron, and Voxtral speech-recognition models.
 
 DeepInfra documentation:
 
@@ -17,13 +17,13 @@ DeepInfra documentation:
 | --- | --- |
 | `deepinfra/openai/whisper-large-v3` | High-accuracy multilingual Whisper Large V3 model. |
 | `deepinfra/openai/whisper-large-v3-turbo` | Faster pruned Whisper Large V3 Turbo model. DeepInfra lists this at `$0.00020 / minute`. |
-| `deepinfra/openai/whisper-large` | DeepInfra-documented best-accuracy Whisper model. |
-| `deepinfra/openai/whisper-medium` | Faster, lighter Whisper model. |
-| `deepinfra/openai/whisper-small` | Smaller Whisper model for lightweight transcription. |
-| `deepinfra/openai/whisper-base` | Smallest supported Whisper model. |
-| `deepinfra/openai/whisper-timestamped-medium` | Whisper Medium variant documented for per-word timestamp segmentation. |
+| `deepinfra/Qwen/Qwen3-ASR-0.6B` | Compact Qwen3 speech recognition model. Language identification and transcription across 30 languages and 22 Chinese dialects. |
+| `deepinfra/Qwen/Qwen3-ASR-1.7B` | Larger Qwen3 speech recognition model with multilingual transcription and optional word timestamps. |
+| `deepinfra/nvidia/Nemotron-3.5-ASR-Streaming-Multilingual-0.6b` | NVIDIA's 0.6B multilingual ASR model. OSTT uses DeepInfra's completed-file inference endpoint despite the streaming name. |
 | `deepinfra/mistralai/Voxtral-Mini-3B-2507` | Voxtral Mini speech-recognition model for transcription, translation, and audio understanding. |
 | `deepinfra/mistralai/Voxtral-Small-24B-2507` | Larger Voxtral speech-recognition model. |
+
+The older `openai/whisper-large`, `openai/whisper-medium`, `openai/whisper-small`, `openai/whisper-base`, and `openai/whisper-timestamped-medium` entries were removed in 0.0.29 because DeepInfra no longer offers them. Their config sections are ignored with a log warning; if one is your selected model, pick Whisper Large V3, Turbo, or Qwen3 ASR with `ostt model`.
 
 ## Params
 
