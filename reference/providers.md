@@ -42,13 +42,13 @@ Local Whisper params use the same provider/model format as cloud providers, for 
 
 | Provider | Models | Guide |
 | --- | --- | --- |
-| OpenAI | `openai/gpt-4o-transcribe`, `openai/gpt-4o-mini-transcribe`, `openai/gpt-4o-transcribe-diarize`, `openai/whisper-1` | [OpenAI](./providers/openai.md) |
-| Deepgram | `deepgram/nova-3`, `deepgram/nova-2` | [Deepgram](./providers/deepgram.md) |
+| OpenAI | `openai/gpt-transcribe`, `openai/gpt-4o-transcribe`, `openai/gpt-4o-mini-transcribe`, `openai/gpt-4o-transcribe-diarize`, `openai/whisper-1` | [OpenAI](./providers/openai.md) |
+| Deepgram | `deepgram/nova-3`, `deepgram/nova-3-medical`, `deepgram/nova-3-pharma`, `deepgram/nova-2` | [Deepgram](./providers/deepgram.md) |
 | Groq | `groq/whisper-large-v3`, `groq/whisper-large-v3-turbo` | [Groq](./providers/groq.md) |
-| DeepInfra | Whisper, Whisper Large V3 Turbo, and Voxtral speech-recognition models | [DeepInfra](./providers/deepinfra.md) |
-| AssemblyAI | `assemblyai/universal-3-pro` | [AssemblyAI](./providers/assemblyai.md) |
+| DeepInfra | Whisper Large V3, Whisper Large V3 Turbo, Qwen3 ASR, Nemotron, and Voxtral speech-recognition models | [DeepInfra](./providers/deepinfra.md) |
+| AssemblyAI | `assemblyai/universal-3-5-pro`, `assemblyai/universal-2` | [AssemblyAI](./providers/assemblyai.md) |
 | Berget | `berget/klang/pianissimo` (since 0.0.27), `berget/KBLab/kb-whisper-large`, `berget/NbAiLab/nb-whisper-large`, `berget/openai/whisper-large-v3` | [Berget](./providers/berget.md) |
-| ElevenLabs | `elevenlabs/scribe_v2`, `elevenlabs/scribe_v1` | [ElevenLabs](./providers/elevenlabs.md) |
+| ElevenLabs | `elevenlabs/scribe_v2`, `elevenlabs/scribe_v2_medical`, `elevenlabs/scribe_v1` | [ElevenLabs](./providers/elevenlabs.md) |
 | Mistral | `mistral/voxtral-mini-latest`, `mistral/voxtral-mini-2602` | [Mistral](./providers/mistral.md) |
 
 ## Landing Pages

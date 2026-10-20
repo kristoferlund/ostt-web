@@ -1,5 +1,5 @@
 ---
-description: Configure Deepgram Nova models in OSTT, including Nova-3, Nova-2, Deepgram params, diarization, language detection, formatting, topics, and keyword prompting.
+description: Configure Deepgram Nova models in OSTT, including Nova-3, Nova-3 Medical, Nova-3 Pharma, Nova-2, Deepgram params, diarization, language detection, formatting, topics, and keyword prompting.
 ---
 
 # Deepgram
@@ -12,7 +12,9 @@ API documentation: [Deepgram pre-recorded listen API](https://developers.deepgra
 
 | Model ID | Notes |
 | --- | --- |
-| `deepgram/nova-3` | Latest Nova model. Supports `keyterm` prompting. |
+| `deepgram/nova-3` | General-purpose Nova 3 model. Supports `keyterm` prompting. |
+| `deepgram/nova-3-medical` | Nova 3 specialized for medical terminology. English and multilingual code-switching. Supports `keyterm` prompting. |
+| `deepgram/nova-3-pharma` | Nova 3 specialized for English pharmaceutical terminology. Supports `keyterm` prompting. |
 | `deepgram/nova-2` | Previous Nova generation. Uses `keywords` prompting. |
 
 ## Select A Model
@@ -68,8 +70,8 @@ TOML lists must use TOML list syntax (`["en", "sv"]`). CLI `--param` list values
 | `utterances` | boolean | Segment speech into meaningful utterances. |
 | `utt_split` | number | Pause duration in seconds before a new utterance. |
 | `mip_opt_out` | boolean | Opt out of the Deepgram Model Improvement Program. |
-| `keyterm` | string list | Nova-3 keyterm prompting. Saved `ostt keyword` terms are used as fallback only when `keyterm` is not set. |
-| `keywords` | string list | Keyword boosting. Nova-2 uses this for saved `ostt keyword` fallback when `keywords` is not set. |
+| `keyterm` | string list | Nova 3 keyterm prompting, including Medical and Pharma. Saved `ostt keyword` terms are used as fallback only when `keyterm` is not set. |
+| `keywords` | string list | Nova 2 only. Legacy keyword boosting. Nova 2 uses this for saved `ostt keyword` fallback when `keywords` is not set. Nova 3 models use `keyterm` instead. |
 | `search` | string list | Search for terms in submitted audio. |
 | `replace` | string list | Search and replace terms or phrases. |
 | `redact` | string list | Redact sensitive information, such as `pci`, `pii`, or `numbers`. |
