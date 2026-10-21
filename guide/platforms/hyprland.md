@@ -1,5 +1,5 @@
 ---
-description: Configure OSTT on Omarchy with hotkeys for clipboard dictation and opening your default coding agent with a spoken prompt.
+description: Use OSTT as the Omarchy 4.5 dictation backend, and configure OSTT on Omarchy with hotkeys for clipboard dictation and opening your default coding agent with a spoken prompt.
 ---
 
 # Omarchy / Hyprland Setup
@@ -23,6 +23,25 @@ yay -S ostt
 ```
 
 `pacman` does not install AUR packages directly unless you build them manually.
+
+## Dictation Backend (Omarchy 4.5) {#dictation-backend}
+
+Omarchy 4.5 has its own dictation keys and lets you choose the program behind them. The [omarchy-ostt](https://github.com/kristoferlund/omarchy-ostt) plugin makes OSTT one of the choices: the keys record from your microphone, OSTT transcribes with the model you chose in `ostt model`, and the text is pasted into the focused app. No terminal opens.
+
+| Key | Action |
+| --- | --- |
+| Hold `Right Alt` or `F9` | Record while held, paste on release |
+| `Super + Ctrl + X` | Start recording, or stop and paste |
+| `Super + Ctrl + Alt + X` | Cancel without pasting |
+
+Install the plugin, which also adds a status icon to the bar:
+
+```bash
+omarchy plugin add https://github.com/kristoferlund/omarchy-ostt.git --enable
+~/.config/omarchy/plugins/ostt.dictation/install
+```
+
+Then select OSTT in **Setup > Defaults > Dictation**. The setup installs OSTT if it is missing, asks you to choose a model if none is selected, and for a local model offers to keep it loaded with the [daemon](/guide/daemon). Dictated text is saved to `ostt history`.
 
 ## Omarchy 4.x
 
