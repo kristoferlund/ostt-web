@@ -37,10 +37,10 @@ description: "Use AssemblyAI Universal 3.5 Pro from your terminal on Linux and m
       <div>
         <p class="eyebrow">AssemblyAI Universal 3.5 Pro</p>
         <h2>Prompt it. Don't post-process it.</h2>
-        <p>Universal 3.5 Pro accepts a natural-language <code>prompt</code> that shapes transcription during inference — not after. Tell it the domain, formatting style, or vocabulary before it listens. It covers 18 languages natively, and OSTT asks AssemblyAI to fall back to Universal 2 for the rest, so language detection spans 99 languages. OSTT surfaces all of this through your terminal with zero extra tooling.</p>
+        <p>Universal 3.5 Pro accepts a natural-language <code>prompt</code> that shapes transcription during inference, not after. Tell it the domain, formatting style, or vocabulary before it listens. It covers 18 languages natively, and OSTT asks AssemblyAI to fall back to Universal 2 for the rest, so language detection spans 99 languages. OSTT exposes all of this from your terminal.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;assemblyai&quot;&#10;model = &quot;universal-3-5-pro&quot;&#10;&#10;&#91;assemblyai.universal-3-5-pro.params&#93;&#10;punctuate = true&#10;format_text = true&#10;language_detection = true&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;assemblyai&quot;&#10;model = &quot;universal-3-5-pro&quot;&#10;&#10;&#91;assemblyai.universal-3-5-pro.params&#93;&#10;prompt = &quot;Developer standup about Rust and Kubernetes.&quot;&#10;speaker_labels = true&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -48,11 +48,11 @@ description: "Use AssemblyAI Universal 3.5 Pro from your terminal on Linux and m
   <section class="landing-grid">
     <article>
       <h3>Promptable transcription</h3>
-      <p>Universal 3.5 Pro accepts natural-language instructions. Describe the domain, speaker roles, formatting preferences, or vocabulary before it transcribes. The model applies them at inference — no post-processing LLM call needed.</p>
+      <p>Universal 3.5 Pro accepts natural-language instructions. Describe the domain, speaker roles, formatting preferences, or vocabulary before it transcribes. The model applies them at inference, so you need no post-processing LLM call.</p>
     </article>
     <article>
       <h3>Accurate on the words that matter</h3>
-      <p>AssemblyAI describes Universal 3.5 Pro as its highest-accuracy, fastest model, with state-of-the-art accuracy on entities, rare words, and domain terms — the names, numbers, and jargon that matter in medical, legal, or compliance recordings.</p>
+      <p>AssemblyAI describes Universal 3.5 Pro as its highest-accuracy, fastest model, with state-of-the-art accuracy on entities, rare words, and domain terms: the names, numbers, and jargon that matter in medical, legal, or compliance recordings.</p>
     </article>
     <article>
       <h3>3.0% AA-WER</h3>
@@ -68,7 +68,11 @@ description: "Use AssemblyAI Universal 3.5 Pro from your terminal on Linux and m
     </article>
     <article>
       <h3>Keywords vocabulary boosting</h3>
-      <p>Add technical terms, names, and domain vocabulary via OSTT's keywords feature. OSTT sends them as keyterm hints to Universal 3.5 Pro, reducing errors on the words that matter most in your workflow.</p>
+      <p>Add technical terms, names, and domain vocabulary via OSTT's keywords feature. OSTT sends them as <code>keyterms_prompt</code> hints when you have not set <code>prompt</code> or <code>keyterms_prompt</code> yourself. AssemblyAI does not accept <code>prompt</code> and <code>keyterms_prompt</code> together.</p>
+    </article>
+    <article>
+      <h3>Local models and paste</h3>
+      <p>OSTT also runs Parakeet and Whisper models locally, with Metal, CUDA, or Vulkan builds for GPU acceleration. Add <code>--paste</code> to send the transcript straight into the focused app.</p>
     </article>
   </section>
 

@@ -12,14 +12,14 @@
 - [Why OSTT?](https://ostt.ai/guide/why-ostt): Why OSTT exists and how it compares to GUI dictation apps.
 - [Installation](https://ostt.ai/guide/installation): Install via shell script, Homebrew, AUR, .deb, .rpm, or from source. Runtime dependency setup for each platform.
 - [Changelog](https://ostt.ai/guide/changelog): Release notes and notable changes for OSTT.
-- [Commands](https://ostt.ai/guide/commands): Full CLI reference — record, transcribe, retry, replay, process, paste output, auth, model, history, keyword, replace, config, logs, shell completions.
+- [Commands](https://ostt.ai/guide/commands): Full CLI reference: record, transcribe, retry, replay, process, paste output, auth, model, history, keyword, replace, config, logs, daemon, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions.
-- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference — audio, transcription params, paste output, text replace rules, popup, processing defaults.
-- [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Practical recommendations for choosing cloud providers, built-in local Whisper, external command/HTTP engines, Swedish/EU models, offline privacy, and retry strategies.
+- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference: audio, transcription params, paste output, text replace rules, popup, processing defaults.
+- [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Practical recommendations for choosing cloud providers, built-in local Parakeet and Whisper, external command/HTTP engines, Swedish/EU models, offline privacy, and retry strategies.
 
 ## Local Models
 
-- [Local Models](https://ostt.ai/guide/local-models): Run offline Whisper-compatible transcription. No API key required.
+- [Local Models](https://ostt.ai/guide/local-models): Run Parakeet and Whisper models offline. No API key required.
 - [External Engines](https://ostt.ai/guide/external-engines): Connect command-based ASR tools and OpenAI-compatible HTTP transcription endpoints, including local or remote custom engines.
 - [GPU Acceleration](https://ostt.ai/guide/gpu-acceleration): Metal (macOS), CUDA (NVIDIA Linux), and Vulkan (AMD/Intel Linux) GPU backends.
 - [Daemon Mode](https://ostt.ai/guide/daemon): Keep a local model loaded in a background process. Install as systemd or launchd service.
@@ -34,29 +34,28 @@
 
 ## Reference
 
-- [Providers and Models](https://ostt.ai/reference/providers): All supported cloud providers (OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral) and local Whisper models. Configuration options per provider.
+- [Providers and Models](https://ostt.ai/reference/providers): All supported cloud providers (OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral) local Parakeet and Whisper models, and pointers to external command/HTTP engines. Configuration options per provider.
 - [OpenAI](https://ostt.ai/reference/providers/openai): OpenAI transcription models and configuration options for OSTT.
 - [Deepgram](https://ostt.ai/reference/providers/deepgram): Deepgram Nova transcription models and configuration options for OSTT.
 - [Groq](https://ostt.ai/reference/providers/groq): Groq Whisper transcription models and configuration options for OSTT.
 - [DeepInfra](https://ostt.ai/reference/providers/deepinfra): DeepInfra speech-recognition models and configuration options for OSTT.
 - [AssemblyAI](https://ostt.ai/reference/providers/assemblyai): AssemblyAI Universal transcription models and configuration options for OSTT.
-- [Berget](https://ostt.ai/reference/providers/berget): Berget-hosted Whisper and Klang Pianissimo models, supported parameters, and record-then-transcribe behavior. Pianissimo requires OSTT 0.0.27 or later.
+- [Berget](https://ostt.ai/reference/providers/berget): Berget-hosted Whisper and Klang Pianissimo models, supported parameters, and record-then-transcribe behavior.
 - [ElevenLabs](https://ostt.ai/reference/providers/elevenlabs): ElevenLabs Scribe transcription models and configuration options for OSTT.
 - [Mistral](https://ostt.ai/reference/providers/mistral): Mistral Voxtral transcription models and configuration options for OSTT.
-- [Troubleshooting](https://ostt.ai/guide/troubleshooting): Solutions for common issues — audio input, transcription failures, clipboard, popup, PATH, and architecture.
+- [Troubleshooting](https://ostt.ai/guide/troubleshooting): Solutions for common issues: audio input, transcription failures, clipboard, popup, PATH, and architecture.
 
 ## Landing Pages
 
-- [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget, available since OSTT 0.0.27. Sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
-
+- [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget. Sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
 - [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, paste output, local engines, cloud providers, retry, and developer workflows.
 - [OSTT vs Hyprwhspr](https://ostt.ai/lp/ostt-vs-hyprwhspr): Compare OSTT and Hyprwhspr for Linux dictation, system-wide paste, local and cloud models, external engines, retry, and terminal-native speech-to-text.
-- [OpenAI Whisper CLI](https://ostt.ai/lp/openai-whisper-cli): Use OpenAI Whisper transcription from the terminal with OSTT.
+- [OpenAI Whisper CLI](https://ostt.ai/lp/openai-whisper-cli): Use OpenAI GPT Transcribe, GPT-4o Transcribe, and Whisper models from the terminal with OSTT.
 - [GPT-4o Transcribe Linux](https://ostt.ai/lp/gpt-4o-transcribe-linux): Use OpenAI GPT-4o transcription models from a Linux terminal workflow.
 - [Deepgram Nova 3 CLI](https://ostt.ai/lp/deepgram-nova-3-cli): Use Deepgram Nova 3 transcription from the terminal with OSTT.
 - [Groq Whisper CLI](https://ostt.ai/lp/groq-whisper-cli): Use Groq Whisper transcription from the terminal with OSTT.
 - [AssemblyAI CLI Linux](https://ostt.ai/lp/assemblyai-cli-linux): Use AssemblyAI transcription from a Linux terminal workflow.
-- [Berget Whisper Svenska](https://ostt.ai/lp/berget-whisper-svenska): Swedish Whisper transcription with Berget-hosted models and OSTT.
-- [Berget Whisper Norsk](https://ostt.ai/lp/berget-whisper-norsk): Norwegian Whisper transcription with Berget-hosted models and OSTT.
+- [Berget Whisper Svenska](https://ostt.ai/lp/berget-whisper-svenska): Swedish KB Whisper transcription with OSTT, hosted by Berget or run locally.
+- [Berget Whisper Norsk](https://ostt.ai/lp/berget-whisper-norsk): Norwegian NB Whisper transcription with OSTT, hosted by Berget or run locally.
 - [ElevenLabs Transcription CLI](https://ostt.ai/lp/elevenlabs-transcription-cli): Use ElevenLabs Scribe transcription from the terminal with OSTT.
 - [Mistral Voxtral CLI](https://ostt.ai/lp/mistral-voxtral-cli): Use Mistral Voxtral transcription from the terminal with OSTT.

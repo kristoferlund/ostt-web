@@ -4,7 +4,7 @@ description: Configure Groq Whisper models in OSTT, including whisper-large-v3, 
 
 # Groq
 
-Groq runs Whisper models on LPU infrastructure for very fast transcription. OSTT supports Groq’s OpenAI-compatible transcription endpoint.
+Groq runs Whisper models on its LPU infrastructure. OSTT supports Groq’s OpenAI-compatible transcription endpoint.
 
 API documentation: [Groq audio transcriptions](https://console.groq.com/docs/speech-to-text)
 
@@ -15,7 +15,7 @@ API documentation: [Groq audio transcriptions](https://console.groq.com/docs/spe
 | `groq/whisper-large-v3` | Full Whisper Large V3. Groq documents this as the accuracy-sensitive choice with transcription and translation support. |
 | `groq/whisper-large-v3-turbo` | Fine-tuned, pruned Whisper Large V3 Turbo variant. Groq documents this as the best price/performance choice for multilingual transcription. |
 
-Groq documents `whisper-large-v3` at 189x real-time speed with 10.3% WER, and `whisper-large-v3-turbo` at 216x real-time speed with 12% WER. Turbo does not support translation; OSTT currently uses Groq’s transcription endpoint.
+Groq documents `whisper-large-v3` at 189x real-time speed with 10.3% WER, and `whisper-large-v3-turbo` at 216x real-time speed with 12% WER. OSTT uses Groq’s transcription endpoint, not the translation endpoint.
 
 ## Params
 
@@ -45,4 +45,4 @@ OSTT always returns plain transcript text. `verbose_json` and timestamp params a
 
 ## Audio Limits
 
-Groq documents direct uploads for `flac`, `mp3`, `mp4`, `mpeg`, `mpga`, `m4a`, `ogg`, `wav`, and `webm`. Current limits are 25 MB on the free tier and 100 MB on the dev tier, with a 10-second minimum billed length. Groq downsamples audio to 16 kHz mono before transcription.
+Groq documents direct uploads for `flac`, `mp3`, `mp4`, `mpeg`, `mpga`, `m4a`, `ogg`, `wav`, and `webm`. Groq documents limits of 25 MB on the free tier and 100 MB on the dev tier, with a 10-second minimum billed length. Groq downsamples audio to 16 kHz mono before transcription.

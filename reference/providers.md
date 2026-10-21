@@ -6,7 +6,7 @@ description: Supported OSTT transcription providers, cloud models, local models,
 
 OSTT can use cloud providers or local Parakeet and Whisper models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
 
-Transcription request params are configured under `[provider.params]` or `[provider."model".params]`, or passed per invocation with `--param key=value`. Use `ostt model params PROVIDER/MODEL` to list supported params for a cloud or local model.
+Transcription request params are configured under `[provider.params]` or `[provider."model".params]`, or passed per invocation with `--param key=value`. Use `ostt model params PROVIDER/MODEL` to list supported params for a cloud or local model. Params under `[provider.params]` apply to every model of that provider, so each one must be supported by the model you select; put model-specific params under `[provider."model".params]`.
 
 For practical recommendations by use case, see [Choosing a Transcription Model or Provider](/guide/choosing-a-model).
 
