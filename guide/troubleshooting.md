@@ -1,5 +1,5 @@
 ---
-description: Fix common OSTT issues — no audio input, transcription failures, clipboard problems, popup not appearing, binary not found, and unsupported architecture.
+description: "Fix common OSTT issues: no audio input, transcription failures, clipboard problems, popup not appearing, binary not found, and unsupported architecture."
 ---
 
 # Troubleshooting
@@ -12,7 +12,7 @@ ostt logs
 
 Logs are stored at `~/.local/state/ostt/ostt.log.*` with daily rotation and 7-day retention.
 
-For more detail:
+For more detail, raise the log level. `RUST_LOG` sets the level written to the log file; read the result with `ostt logs`:
 
 ```bash
 RUST_LOG=debug ostt record
@@ -35,9 +35,9 @@ Open config and set the audio device:
 ostt config
 ```
 
-## Volume Meter Never Reaches 100%
+## Volume Meter Looks Wrong With a Fixed Reference Level
 
-Run `ostt record`, maximize your microphone gain, and note the peak dBFS value. Then set `reference_level_db` in `~/.config/ostt/ostt.toml` to match your audio card's actual maximum:
+With `reference_level_db = "auto"` (default) the meter adapts to your voice and needs no setup. If you set a number and the meter never reaches 100%, run `ostt record`, maximize your microphone gain, and note the peak dBFS value. Then set `reference_level_db` in `~/.config/ostt/ostt.toml` to match your audio card's actual maximum:
 
 ```toml
 [audio]
@@ -48,7 +48,7 @@ Common values: `-6` (very hot, near clipping), `-12` (professional standard), `-
 
 ## Clipping Indicator Never Lights Up
 
-The red clipping indicator works on the **digital** signal OSTT receives from your microphone. If your system's input/recording volume is set below 100%, the OS applies a digital attenuation *after* the audio card but *before* OSTT sees it — so even when your interface's analog stage is clipping (e.g. the card's red LED is lit), the level reaching OSTT is reduced and never registers as clipping.
+The red clipping indicator works on the **digital** signal OSTT receives from your microphone. If your system's input/recording volume is set below 100%, the OS applies a digital attenuation *after* the audio card but *before* OSTT sees it. Even when your interface's analog stage is clipping (e.g. the card's red LED is lit), the level reaching OSTT is reduced and never registers as clipping.
 
 For the indicator to reflect reality:
 
@@ -60,35 +60,17 @@ This is standard pro-audio gain staging: a system input slider below 100% is an 
 
 ## GPU Build Running on CPU
 
-If you installed a CUDA or Vulkan build but transcription is slow and CPU usage is high, the GPU backend may not have initialised. Check the logs:
+If you installed a CUDA or Vulkan build but transcription is slow and CPU usage is high, check which backend the model runs on: `ostt daemon status` with the daemon running, or the `backend active:` line in `ostt logs`. See [Verify the Backend](./gpu-acceleration#verify-the-backend) for example output and [GPU Acceleration: Troubleshooting](./gpu-acceleration#cpu-fallback) for driver fixes.
 
-```bash
-ostt logs
-```
-
-A successful GPU run looks like:
-
-```
-daemon: loading model 'whisper/large-v3' with Vulkan GPU acceleration
-daemon: backend active: Vulkan GPU acceleration using device(s): 0: AMD Radeon RX 7900 XTX (24576 MB VRAM)
-```
-
-If you see this instead:
-
-```
-daemon: backend active: Vulkan GPU acceleration requested, but no GPU devices were reported by ggml
-```
-
-The Vulkan loader is installed but the GPU driver ICD is missing. Install the Mesa Vulkan driver for your hardware — see [GPU Acceleration](/guide/gpu-acceleration#cpu-fallback) for per-distro instructions.
-
-If you see a shared library error on startup, the runtime library itself (`libvulkan.so.1` or `libcuda.so`) is missing. Install the driver packages or reinstall OSTT with `--no-gpu`.
+If you see a shared library error on startup, the runtime library (`libvulkan.so.1` or `libcuda.so`) is missing. Install the driver packages or reinstall OSTT with `--no-gpu`.
 
 ## Transcription Fails
 
-Check authentication and selected model:
+Check authentication and the selected model:
 
 ```bash
-ostt auth
+ostt auth status
+ostt model current
 ```
 
 Then retry with debug logs:
@@ -160,7 +142,7 @@ terminal = "ghostty"
 
 On GNOME Wayland, the compositor controls window placement so the `x` and `y` popup positions are ignored. The popup size (`width`, `height`) still works.
 
-On macOS, Terminal.app does not support true color. Install a preferred terminal from the auto-detection list (Ghostty, kitty, or Alacritty).
+On macOS, Terminal.app is not supported; see [Terminal Auto-Detection](./configuration#terminal-auto-detection).
 
 On Linux, install `notify-send` if you want desktop notifications when a popup launch fails before the terminal window opens.
 
@@ -175,7 +157,7 @@ Install ydotool and start ydotoold to enable auto-paste.
 
 The simplest workaround is to use `-c` (clipboard mode) and paste manually with Ctrl+V.
 
-If you want automatic paste on GNOME Wayland, install `ydotool`. OSTT will use it automatically when it is available — no configuration needed.
+If you want automatic paste on GNOME Wayland, install `ydotool`. OSTT uses it automatically when it is available.
 
 ### Ubuntu / Debian
 
@@ -183,48 +165,23 @@ If you want automatic paste on GNOME Wayland, install `ydotool`. OSTT will use i
 sudo apt install ydotool
 ```
 
-Start the daemon (required for ydotool to work):
-
-```bash
-sudo systemctl enable --now ydotoold
-```
-
 ### Arch Linux
 
 ```bash
 sudo pacman -S ydotool
-sudo systemctl enable --now ydotoold
 ```
 
 ### Fedora
 
 ```bash
 sudo dnf install ydotool
-sudo systemctl enable --now ydotoold
 ```
+
+Then start `ydotoold`, which ydotool needs to send keys. How to start it depends on your distro's ydotool package.
 
 ## Process Action Fails
 
-List configured actions:
-
-```bash
-ostt process list
-```
-
-For AI actions, check that the external tool is installed and authenticated:
-
-```bash
-opencode --version   # Requires 1.4.3 or newer
-claude --version
-gemini --version
-codex --version
-```
-
-Run with debug logs:
-
-```bash
-RUST_LOG=debug ostt process clean
-```
+See [Processing Actions: Troubleshooting](./processing#troubleshooting).
 
 ## Binary Not Found After Install
 
@@ -249,7 +206,7 @@ export PATH="$(brew --prefix)/bin:$PATH"
 ### Permission Denied
 
 ```bash
-chmod +x /usr/local/bin/ostt
+chmod +x "$(command -v ostt)"
 ```
 
 ## Unsupported Architecture

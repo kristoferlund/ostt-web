@@ -1,16 +1,18 @@
 ---
-description: Full reference for ostt.toml — audio device, visualization, transcription params, paste output, text replace rules, popup window, processing defaults, and all configuration options with examples.
+description: "Full reference for ostt.toml: audio device, transcription model and params, keywords, text replace rules, paste output, popup window, processing defaults, and file locations."
 ---
 
 # Configuration
 
-OSTT stores its main configuration at `~/.config/ostt/ostt.toml`. The default config is generated on first run with inline documentation for every option.
+OSTT stores its main configuration at `~/.config/ostt/ostt.toml`. On first run OSTT writes a minimal `ostt.toml` with the `[audio]` section. `[audio]` is the only required section; every other section is optional and uses the defaults below.
 
 Open it with:
 
 ```bash
 ostt config
 ```
+
+OSTT ignores unknown sections, keys, and params and notes them in the log (`ostt logs`). Only invalid TOML or an invalid value for a known setting stops it from starting.
 
 API keys are stored separately at `~/.local/share/ostt/credentials` with restricted permissions (0600). They are not part of `ostt.toml`.
 
@@ -19,8 +21,8 @@ API keys are stored separately at `~/.local/share/ostt/credentials` with restric
 ```toml
 [audio]
 device = "default"
+reference_level_db = "auto"
 peak_volume_threshold = 90
-reference_level_db = -20
 output_format = "mp3 -ab 16k -ar 12000"
 visualization = "spectrum"
 ```
@@ -51,13 +53,11 @@ Available audio input devices:
 | Numeric index | `device = "0"` | Device by index from `config list-devices` |
 | Device name | `device = "USB Microphone"` | Device by name from `config list-devices` |
 
-### peak_volume_threshold
-
-Peak volume threshold for the red clipping indicator (0--100, percentage of reference level). Default `90` means the indicator activates at 90% of `reference_level_db`, giving 10% headroom before clipping.
-
 ### reference_level_db
 
-Reference level in dBFS for the 100% meter display. Set this to your audio card's maximum input level for accurate metering.
+Reference level for the 100% meter display.
+
+`"auto"` (default) scales the meter to your speech level, so it works regardless of OS input gain. Set a dBFS number for a fixed reference:
 
 | Value | Description |
 | --- | --- |
@@ -66,11 +66,17 @@ Reference level in dBFS for the 100% meter display. Set this to your audio card'
 | `-18` | Moderate recording level |
 | `-20` | Conservative level, typical audio card max |
 
-If your volume meter never reaches 100%, run `ostt record`, maximize your microphone gain, note the peak dBFS value, and set `reference_level_db` to match.
+With a fixed value, if the meter never reaches 100%, run `ostt record`, maximize your microphone gain, note the peak dBFS value, and set `reference_level_db` to match.
+
+### peak_volume_threshold
+
+Only used with a numeric `reference_level_db`. The footer turns red when the peak reaches this percentage of the reference level (0 to 100, default `90`).
+
+In auto mode the footer turns red when the signal is within 3 dB of full scale.
 
 ### output_format
 
-Output audio format for API calls. All audio is saved as mono with ffmpeg handling resampling and compression. Format: `"codec [ffmpeg_options]"`.
+Audio format for recordings sent to cloud providers. All audio is saved as mono with ffmpeg handling resampling and compression. Format: `"codec [ffmpeg_options]"`.
 
 | Format string | Bitrate | Size | Use case |
 | --- | --- | --- | --- |
@@ -78,9 +84,9 @@ Output audio format for API calls. All audio is saved as mono with ffmpeg handli
 | `"libopus -ab 32k -ar 16000"` | 32 kbps | ~3.6 MB/hour | Better quality, smaller than AAC |
 | `"aac -ab 32k -ar 16000"` | 32 kbps | ~3.6 MB/hour | Good quality, wide support |
 | `"flac -ar 16000"` | Lossless | ~20 MB/hour | Lossless, no quality loss |
-| `"pcm_s16le -ar 16000"` | Uncompressed | Largest | Required for local transcription |
+| `"pcm_s16le -ar 16000"` | Uncompressed | Largest | Used automatically for local models |
 
-Local models use `output_format = "pcm_s16le -ar 16000"`. Configure it under `[whisper]` or `[whisper."model"]` when you want only local Whisper recordings to use that format.
+Local Whisper and Parakeet models record as `pcm_s16le -ar 16000` automatically, so `[audio].output_format` only affects cloud providers. To override the format for one provider or model, set `output_format` under `[provider]` or `[provider."model"]`. A model setting wins over a provider setting, which wins over `[audio]`.
 
 ### visualization
 
@@ -88,8 +94,29 @@ Display mode during recording.
 
 | Value | Description |
 | --- | --- |
-| `"spectrum"` | Frequency spectrum showing energy distribution across frequency bands, optimized for the human voice range (100--1500 Hz) |
+| `"spectrum"` | Frequency spectrum showing energy distribution across frequency bands, optimized for the human voice range (100 to 1500 Hz) |
 | `"waveform"` | Time-domain waveform showing amplitude over time, classic oscilloscope-style display |
+
+## Transcription
+
+The `[transcription]` section holds the selected model and your keywords. `ostt model` sets `provider` and `model`; `ostt keyword` edits `keywords`.
+
+```toml
+[transcription]
+provider = "deepgram"
+model = "nova-3"
+keywords = [
+    "OSTT",
+    "Kubernetes",
+    "Rödeby",
+]
+```
+
+### Keywords
+
+Keywords are names and terms the model should recognize, highest priority first. Edit the list here or with [`ostt keyword`](./commands#keyword); both change the same list. Providers that support keyword boosting receive it with each transcription, and local Whisper models use it as a glossary.
+
+A `keywords.txt` in the config directory is moved into this list on first run and renamed `keywords.txt.migrated`.
 
 ## Transcription Params
 
@@ -114,54 +141,11 @@ temperature = 0.0
 no_context = true
 ```
 
-For a single invocation, pass repeatable `--param key=value` overrides:
+Model IDs that contain `/` or `.` need quoted keys, for example `[deepinfra."openai/whisper-large-v3".params]`.
 
-```bash
-ostt record --param smart_format=true --param diarize=true
-ostt transcribe meeting.mp3 -m deepgram/nova-3 --param keyterm=OSTT,VitePress
-ostt retry 2 -m whisper/turbo --param language=en --param temperature=0.0
-```
+TOML list values use TOML list syntax, for example `keyterm = ["OSTT", "VitePress"]`. To override params for a single run, use `--param`; see [Param Overrides](./commands#param-overrides).
 
-`--param` overrides apply only to the current command. They do not change `ostt.toml` and they take precedence over persistent params for the selected model.
-
-Validation happens before transcription starts:
-
-- keys must be supported by the selected provider/model
-- duplicate `--param` keys fail
-- values must match the param type
-- provider-specific ranges and conflicts are checked
-- unknown keys show the valid param names for that model
-
-CLI list values use commas, for example `--param keyterm=OSTT,VitePress`. TOML list values must use TOML list syntax, for example `keyterm = ["OSTT", "VitePress"]`.
-
-To list supported params for a model, run:
-
-```bash
-ostt model params
-ostt model params openai/gpt-4o-transcribe
-ostt model params whisper/turbo --format json
-```
-
-See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific param tables.
-
-## Keywords
-
-Keywords are names and terms the model should recognize, highest priority first. They live in `[transcription]`, next to the selected model:
-
-```toml
-[transcription]
-provider = "deepgram"
-model = "nova-3"
-keywords = [
-    "OSTT",
-    "Kubernetes",
-    "Rödeby",
-]
-```
-
-Edit the list here or with [`ostt keyword`](./commands#keyword); both change the same list. Providers that support keyword boosting receive it with each transcription, and local Whisper models use it as a glossary.
-
-If an older `~/.config/ostt/keywords.txt` is present, OSTT moves its keywords into `ostt.toml` on first run and renames the file to `keywords.txt.migrated`. Keywords already in `ostt.toml` take precedence; the old file is then only renamed.
+List supported params for a model with `ostt model params [PROVIDER/MODEL]`. See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific param tables.
 
 ## Text Replace
 
@@ -197,16 +181,9 @@ Keywords and replace rules have different jobs. Use `ostt keyword` when the mode
 
 ## Paste Output
 
-Paste output sends the final transcript into the currently focused application. It is opt-in with `--paste`; stdout remains the default output mode.
+Paste output sends the final transcript into the currently focused application. It is opt-in with `--paste`; stdout remains the default output mode. See [Paste Output](./commands#paste-output) for the commands that accept it.
 
-```bash
-ostt --paste
-ostt launch --paste
-ostt launch --paste -p clean
-ostt transcribe voice.ogg --paste
-ostt retry 2 --paste
-ostt process clean --paste
-```
+Paste uses the clipboard as transport: OSTT saves the current clipboard when possible, copies the final text, sends the configured paste shortcut, then restores the previous clipboard when enabled.
 
 Configure paste behavior under `[output.paste]`:
 
@@ -224,50 +201,33 @@ Default `paste_key` values:
 - Omarchy: `shift+insert`
 - other Linux desktops: `ctrl+v`
 
-`restore_clipboard` controls whether OSTT restores the previous clipboard contents after pasting. Paste mode uses the clipboard as transport, so disabling restore leaves the transcript on the clipboard.
+`restore_clipboard` controls whether OSTT restores the previous clipboard contents after pasting. Disabling restore leaves the transcript on the clipboard.
 
 `restore_delay_ms` gives the focused app time to read the clipboard before OSTT restores the previous contents. Increase it if paste works intermittently or the old clipboard appears instead of the transcript.
 
 `post_popup_delay_ms` is used by `ostt launch --paste`. The popup closes first, then OSTT waits for focus to return before sending the paste shortcut on supported desktops. On desktops where focus return cannot be detected, this value is used as the fallback delay.
 
-Linux paste shortcuts differ by app and desktop. GUI apps commonly use `ctrl+v`; terminals often use `ctrl+shift+v`; Omarchy maps `SUPER+v` to `shift+insert`. OSTT cannot reliably detect whether a paste succeeded, so it does not try multiple shortcuts automatically.
+### Linux
+
+On Linux, OSTT sends the paste shortcut with a key-sending tool. On Wayland it tries `wtype`, then `ydotool`; on X11 it uses `xdotool`. Install one that works on your desktop. GNOME Wayland needs `ydotool`; see [Auto-paste Fails on GNOME Wayland](./troubleshooting#auto-paste-fails-on-gnome-wayland).
+
+Linux paste shortcuts differ by app and desktop. GUI apps commonly use `ctrl+v`; terminals often use `ctrl+shift+v`; Omarchy maps `SUPER+v` to `shift+insert`. OSTT cannot reliably detect whether a paste succeeded, so it does not try multiple shortcuts automatically. If paste works in one app class but not another, set `paste_key` for the workflow you bind to that hotkey.
+
+### macOS
 
 On macOS, paste mode uses `osascript`/System Events to send `cmd+v`. macOS may prompt for Accessibility permission for the terminal app running OSTT, such as Ghostty. If paste does not work, open System Settings > Privacy & Security > Accessibility and enable the app shown in the permission prompt.
 
 ## Local Transcription
 
-Local models are selected and managed with `ostt model`. Local Whisper models use the `whisper` provider and Parakeet models the `parakeet` provider. Parakeet takes no params. `[whisper.params]` controls global Whisper inference defaults; `[whisper."model".params]` overrides them for a specific model. The param meanings are the same in both places.
-
-```toml
-[whisper]
-output_format = "pcm_s16le -ar 16000"
-
-[whisper.params]
-language = "auto"
-no_context = true
-temperature = 0.0
-no_speech_thold = 0.6
-```
-
-| Param | Default | Description |
-| --- | --- | --- |
-| `language` | `"auto"` | Language hint for local inference. Use `"auto"` or an ISO code such as `"en"` or `"sv"`. |
-| `no_context` | `true` | Do not reuse text context between segments. |
-| `temperature` | `0.0` | Sampling temperature. `0.0` uses greedy deterministic decoding. |
-| `no_speech_thold` | `0.6` | No-speech probability threshold. |
-| `prompt` | none | Context that steers transcription. Saved keywords are also passed as a glossary. |
-
-`no_timestamps` and `entropy_thold` are not supported and are ignored if set.
-
-See [Local Models](./local-models.md) for setup, storage, and audio-format requirements.
+Local Whisper (`whisper/*`) and Parakeet (`parakeet/*`) models are configured like other providers, with `[whisper.params]` for all Whisper models and `[whisper."model".params]` for one model. Parakeet takes no params. See [Local Models](./local-models.md#whisper-params) for the Whisper params.
 
 ## External Engines
 
 External command and HTTP engines are configured as provider/model profiles. Use `command/<profile>` for shell-command wrappers and `http/<profile>` for OpenAI-compatible `/v1/audio/transcriptions` endpoints:
 
 ```toml
-[command.parakeet-fast]
-command = "~/.config/ostt/backends/parakeet-wrapper {audio_path}"
+[command.my-engine]
+command = "~/.config/ostt/backends/my-engine-wrapper {audio_path}"
 output_format = "pcm_s16le -ar 16000"
 
 [http.cohere-transcribe]
@@ -284,13 +244,7 @@ See [External Engines](./external-engines.md) for full setup examples and ration
 
 ## Processing Actions
 
-Actions are defined as named tables under `[process.actions]`. The table key becomes the action's `id` on the CLI. Each action has a `type` of either `"ai"` (runs an AI CLI tool) or `"bash"` (runs a shell command).
-
-AI actions can inherit their tool and model from `[process]` defaults. Set `tool` or `model` on an individual action only when that action should override the default.
-
-See [Processing Actions](./processing.md) for full examples and common recipes.
-
-### AI Actions
+Actions are named tables under `[process.actions]`; the table key is the action ID used on the CLI. Each action has `type = "ai"` or `type = "bash"`. AI actions inherit `tool` and `model` from `[process]` defaults:
 
 ```toml
 [process]
@@ -300,50 +254,13 @@ default_model = "anthropic/claude-sonnet-4-6"
 [process.actions.clean]
 name = "Clean up text"
 type = "ai"
-# tool_binary = "/usr/local/bin/opencode"  # Override binary path
-# tool_args = ["--quiet"]                   # Extra CLI arguments
 inputs = [
   { role = "system", content = "Clean up the transcribed text." },
   { role = "user", source = "transcription" },
 ]
 ```
 
-For every AI action, OSTT must resolve both a `tool` and a `model` from either the action itself or `[process]` defaults. If either value is missing, config validation fails.
-
-The `inputs` field is an array of inline tables. Each entry has a `role` and exactly one content source.
-
-Supported AI tools:
-
-| `tool` | Binary | Required arguments |
-| --- | --- | --- |
-| `opencode` | `opencode` | `--pure run --model <model>` |
-| `claude-code` | `claude` | `-p --model <model> --no-session-persistence --mcp-config <json> --strict-mcp-config --allowedTools ""` |
-| `gemini-cli` | `gemini` | `-p -m <model>` |
-| `codex-cli` | `codex` | `exec --model <model>` |
-
-The selected tool must be installed and authenticated outside OSTT.
-
-### Bash Actions
-
-```toml
-[process.actions.upper]
-name = "UPPERCASE"
-type = "bash"
-command = "tr '[:lower:]' '[:upper:]'"
-```
-
-Bash actions receive the transcription on stdin and return stdout as the processed result.
-
-### Input Sources
-
-Each AI input entry has a `role` (`"system"` or `"user"`) and exactly one content source. If multiple sources are specified in the same entry, precedence is: `source` > `file` > `content`.
-
-| Source | Example | Description |
-| --- | --- | --- |
-| `source = "transcription"` | `{ role = "user", source = "transcription" }` | Dynamic content: the recorded transcription |
-| `source = "keywords"` | `{ role = "user", source = "keywords" }` | Dynamic content: the keyword list |
-| `content = "..."` | `{ role = "system", content = "You are a helpful assistant." }` | Literal inline text |
-| `file = "..."` | `{ role = "system", file = "~/prompts/clean.txt" }` | Path to a file whose contents become the message |
+See [Processing Actions](./processing.md) for action types, supported AI tools, input sources, and examples.
 
 ## Popup
 
@@ -379,47 +296,22 @@ If `terminal` is unset, OSTT probes terminals in this order:
 
 On macOS, Terminal.app does not support true color. Install a preferred terminal from the supported list.
 
-## Logging
-
-OSTT logs all activity to daily-rotated log files. Logs are kept for the 7 most recent days; older logs are automatically cleaned up on startup.
-
-| Command | Description |
-| --- | --- |
-| `ostt logs` | Show the last 50 lines of the most recent log |
-| `RUST_LOG=debug ostt record` | Enable debug output for troubleshooting |
-
-Available log levels: `error`, `warn`, `info` (default), `debug`, `trace`.
-
-## Recording Controls
-
-During recording:
-
-| Key | Action |
-| --- | --- |
-| `Enter` | Stop recording and transcribe |
-| `Space` | Pause or resume recording |
-| `Esc`, `q`, `Ctrl+C` | Cancel without saving |
-
-Display elements visible during recording:
-
-- **Visualization**: Real-time audio display (spectrum or waveform)
-  - **Spectrum mode**: Frequency distribution across the voice range (100--1500 Hz focus)
-  - **Waveform mode**: Amplitude envelope over time
-- **Vol %**: Current volume level
-- **Peak %**: Maximum volume in the last 3 seconds
-- **Red indicator**: Clipping warning when volume exceeds `peak_volume_threshold`
-
 ## File Locations
 
 ```
 ~/.config/ostt/
-├── ostt.toml              # Main configuration
+├── ostt.toml                  # Main configuration
 
 ~/.local/share/ostt/
-├── credentials            # API keys (0600 permissions)
-├── recordings/            # Saved recordings
-├── models/                # Local model files and metadata
+├── credentials                # API keys (0600 permissions)
+├── transcription_history.db   # Transcription history
+├── recordings/                # Saved recordings
+├── models/                    # Local model files and metadata
+├── ostt-daemon.sock           # Local model daemon socket
+├── ostt-daemon.pid            # Local model daemon PID
 
 ~/.local/state/ostt/
-├── ostt.log.*             # Daily-rotated logs (7-day retention)
+├── ostt.log.*                 # Daily-rotated logs (7-day retention)
 ```
+
+Paths follow `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, and `XDG_STATE_HOME` when set. See [View Logs](./troubleshooting#view-logs) for reading logs.

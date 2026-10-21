@@ -27,9 +27,9 @@ ostt process 3            # History item #3, show action picker
 ostt process 3 clean -c   # History item #3, run "clean", copy to clipboard
 ```
 
-The `process` subcommand follows the same positional convention as `retry` and `replay`: the first positional argument is the history index (when numeric) or the action ID (when non-numeric). Provide both to target a specific item and action.
+The first argument is a history index when numeric, otherwise an action ID. Pass both to pick the item and the action.
 
-If you pass `-p` without an action ID, OSTT shows an action picker. If there is only one configured action, OSTT skips the picker and runs it directly.
+If you pass `-p` without an action ID, OSTT shows the action picker.
 
 ```bash
 ostt -p              # Show picker after recording
@@ -84,13 +84,13 @@ Each action type uses its own set of keys:
 | Type | Required keys | Optional keys |
 | --- | --- | --- |
 | `"ai"` | `name`, `type`, `inputs`, plus resolved `tool` and `model` | `tool`, `model`, `tool_binary`, `tool_args` |
-| `"bash"` | `name`, `type`, `command` | — |
+| `"bash"` | `name`, `type`, `command` | none |
 
 For AI actions, `tool` and `model` may come from the action itself or from `[process]` defaults. OSTT errors at startup if an AI action has no resolved tool or model.
 
 ## Bash Actions
 
-Bash actions receive the transcription on stdin and return stdout as the processed result.
+Bash actions receive the transcription on stdin and return stdout as the processed result. Commands run with `sh -c` and time out after 30 seconds.
 
 ```toml
 [process.actions.upper]
@@ -126,12 +126,12 @@ AI actions build a prompt from one or more input messages and pass it to a confi
 
 Supported `tool` values:
 
-| Tool | Binary |
-| --- | --- |
-| `opencode` | `opencode` |
-| `claude-code` | `claude` |
-| `gemini-cli` | `gemini` |
-| `codex-cli` | `codex` |
+| `tool` | Binary | Required arguments OSTT passes |
+| --- | --- | --- |
+| `opencode` | `opencode` | `--pure run --model <model>` |
+| `claude-code` | `claude` | `-p --model <model> --no-session-persistence --mcp-config <json> --strict-mcp-config --allowedTools ""` |
+| `gemini-cli` | `gemini` | `-p -m <model>` |
+| `codex-cli` | `codex` | `exec --model <model>` |
 
 The selected tool must already be installed and authenticated outside OSTT. OpenCode 1.4.3 or newer is required. AI tool invocations have a 300-second (5 minute) timeout.
 
