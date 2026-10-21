@@ -11,9 +11,9 @@ Both model families run on the same built-in engine, [transcribe.cpp](https://gi
 - **Parakeet** (`parakeet/...`) is fast and accurate, adds punctuation and capitalization, and detects the language by itself. Good default for English and the 25 European languages it covers.
 - **Whisper** (`whisper/...`) covers around 100 languages and has regional fine-tunes such as KB-Whisper for Swedish and NB-Whisper for Norwegian.
 
-Use local models when you want privacy, predictable cost, or offline transcription. Use cloud providers when you prefer hosted accuracy, lower local CPU load, or no large model downloads. See [Choosing a Transcription Model or Provider](/guide/choosing-a-model) for practical recommendations across cloud, local, and external engines.
+For when to pick local, cloud, or an external engine, see [Choosing a Transcription Model or Provider](/guide/choosing-a-model).
 
-Local transcription supports GPU acceleration on all major platforms. See [GPU Acceleration](./gpu-acceleration) for setup details. To avoid model load time on repeated use, see [Daemon Mode](./daemon).
+Local transcription can run on the GPU on macOS (Metal) and Linux x86_64 (CUDA, Vulkan). See [GPU Acceleration](./gpu-acceleration) for setup details. To avoid model load time on repeated use, see [Daemon Mode](./daemon).
 
 If you already run another local ASR engine or OpenAI-compatible transcription server, see [External Engines](./external-engines) for command and HTTP profiles.
 
@@ -25,7 +25,7 @@ Open the model picker:
 ostt model
 ```
 
-Choose **Local provider**. The local model screen can:
+In the **Local models** section of the list you can:
 
 - download curated registry models
 - activate a downloaded model
@@ -33,9 +33,7 @@ Choose **Local provider**. The local model screen can:
 - inspect model metadata
 - add a custom Hugging Face or direct model URL
 
-The curated model list comes from the [OSTT models repository](https://github.com/kristoferlund/ostt-models). If you want a model to appear by default for all OSTT users, open a pull request there with the model metadata.
-
-The active model is saved in OSTT's selected-model state. After activation, normal commands use the local model:
+Once a model is active, normal commands use it:
 
 ```bash
 ostt
@@ -73,14 +71,23 @@ The 25 languages are Bulgarian, Croatian, Czech, Danish, Dutch, English, Estonia
 
 Parakeet models take no params. They detect the language themselves, and OSTT rejects `--param` values for them. Keyword boosting is not supported; [text replacements](/guide/configuration#text-replace) still apply.
 
+## Whisper Models
+
+The curated list includes these Whisper families. Run `ostt model list --provider whisper` for the full list with sizes.
+
+| Model IDs | Languages | Notes |
+| --- | --- | --- |
+| `whisper/tiny`, `base`, `small`, `medium`, `large-v3`, `turbo` | Multilingual | OpenAI's Whisper models, 75 MB to 2.9 GB. `turbo` is a faster version of `large-v3`. |
+| `whisper/tiny.en`, `base.en`, `small.en`, `medium.en`, `distil-large-v3.5` | English | English-only variants. |
+| `whisper/small-q5_1`, `medium-q5_0`, `large-v3-q5_0`, `turbo-q5_0`, `turbo-q8_0` | Multilingual | Quantized, smaller downloads. |
+| `whisper/kb-whisper-tiny` to `kb-whisper-large`, `kb-whisper-large-q5_0` | Swedish | KBLab's Swedish fine-tunes. |
+| `whisper/nb-whisper-tiny` to `nb-whisper-large`, `nb-whisper-large-q5_0` | Norwegian | NbAiLab's Norwegian fine-tunes. |
+
 ## Whisper Params
 
 Whisper models share these inference params. Set global defaults under `[whisper.params]`, or override them for a specific model under `[whisper.<model-id>.params]`:
 
 ```toml
-[whisper]
-output_format = "pcm_s16le -ar 16000"
-
 [whisper.params]
 language = "auto"
 no_context = true
@@ -115,7 +122,7 @@ The same param meanings apply whether the param is set globally in `[whisper.par
 
 Saved [keywords](./commands#keyword) are passed to local Whisper models as a glossary, so names and terms come out spelled right. Keywords and `prompt` can be combined. They share Whisper's prompt window of about 220 tokens; if they don't fit, OSTT's engine shortens the prompt first, then drops keywords from the end of the list, and notes it in the log.
 
-`no_timestamps` and `entropy_thold` are not supported. Configs that set them keep working; OSTT ignores them and notes it in the log.
+`no_timestamps` and `entropy_thold` have no effect. If they are set, OSTT ignores them and logs a warning.
 
 ## Audio Format
 
@@ -132,10 +139,10 @@ ostt transcribe meeting.wav
 
 Press `c` in the local model screen to add a custom model. OSTT accepts:
 
-- Hugging Face model pages, for example `https://huggingface.co/Supertone/supertonic-3`
+- Hugging Face model pages, for example `https://huggingface.co/KBLab/kb-whisper-large`
 - direct model file URLs
 
-Supported files are Whisper models (`.gguf` or `ggml-*.bin`) and Parakeet models (`.gguf`). After the URL resolves, OSTT asks for the model ID and display name, downloads the file, and loads it once to check that it works and whether it is a Whisper or Parakeet model. The custom model is then listed under that provider. Other model types are refused.
+Supported files are Whisper models (`.gguf` or `ggml-*.bin`) and Parakeet models (`.gguf`). After the URL resolves, OSTT asks for the model ID and display name, downloads the file, and loads it once to check that it works and whether it is a Whisper or Parakeet model. The model is then listed under **Custom models**. Other model types are refused.
 
 Use safe model IDs containing lowercase letters, numbers, `.`, `_`, or `-`.
 

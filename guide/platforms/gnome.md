@@ -10,8 +10,10 @@ GNOME can launch OSTT from a built-in custom keyboard shortcut. No third-party h
 
 ```bash
 curl -fsSL https://ostt.ai/install | bash
-ostt auth
+ostt model
 ```
+
+`ostt model` picks a transcription model. Local models need no account; for a cloud model, run `ostt auth login` first.
 
 Prefer a native `.deb` or `.rpm` package? See [Installation](../installation.md). The install script detects your distribution and CPU architecture automatically, so it is the simplest option for most users.
 
@@ -50,7 +52,7 @@ Create multiple GNOME custom shortcuts for common workflows:
 | --- | --- | --- |
 | OSTT | `/path/to/ostt launch --paste` | `Alt+Space` |
 | OSTT Process | `/path/to/ostt launch --paste -p` | `Alt+Ctrl+Space` |
-| OSTT Copy | `/path/to/ostt launch -c` | `Ctrl+Alt+T` |
+| OSTT Copy | `/path/to/ostt launch -c` | `Ctrl+Alt+C` |
 
 Replace `/path/to/ostt` with the output of `which ostt`.
 

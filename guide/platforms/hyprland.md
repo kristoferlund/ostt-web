@@ -35,7 +35,7 @@ The recommended setup uses two hotkeys:
 - `ALT+SPACE` records and copies the raw transcript to the clipboard.
 - `ALT+SHIFT+SPACE` records, transcribes, then opens Omarchy's selected coding agent with the transcript as its initial prompt.
 
-The one-line installer adds this configuration automatically. Use the manual steps below when you installed OSTT through the AUR, opted out with `--no-omarchy-setup`, or want to inspect the setup.
+Use the manual steps below when you installed OSTT through the AUR, opted out with `--no-omarchy-setup`, or want to inspect the setup.
 
 First, choose a default agent:
 
@@ -90,8 +90,8 @@ ostt model
 Add this rule after the default imports in `~/.config/hypr/hyprland.lua`:
 
 ```lua
--- OSTT names every popup window "ostt". Keep it floating, pinned, and near
--- the bottom edge of every workspace.
+-- Keep the OSTT popup floating, pinned, and near the bottom edge of every
+-- workspace.
 o.window({ title = "^ostt$" }, {
   float = true,
   move = { "((monitor_w*0.5)-(window_w*0.5))", "(monitor_h*0.85)" },
@@ -100,6 +100,16 @@ o.window({ title = "^ostt$" }, {
 ```
 
 `pin = true` keeps the floating popup visible when switching workspaces.
+
+The title rule matches Ghostty and kitty, which OSTT opens with the window title `ostt`. Alacritty and foot get the window class `ostt-popup` instead. If your popup terminal is one of those, match the class:
+
+```lua
+o.window({ class = "^ostt-popup$" }, {
+  float = true,
+  move = { "((monitor_w*0.5)-(window_w*0.5))", "(monitor_h*0.85)" },
+  pin = true,
+})
+```
 
 ### Apply the configuration
 
@@ -194,7 +204,7 @@ If the popup appears in the wrong position, make sure the OSTT window rules are 
 
 ## Omarchy 3.x And Hyprland (`.conf`)
 
-Omarchy 3.x remains supported and uses Hyprlang `.conf` files. Use this legacy format only when your installation does not load the Lua files above. Do not configure the same hotkey in both formats.
+Omarchy 3.x uses Hyprlang `.conf` files. Use this format only when your installation does not load the Lua files above. Do not configure the same hotkey in both formats.
 
 Add a basic dictation binding to `~/.config/hypr/bindings.conf`:
 
@@ -209,6 +219,8 @@ windowrule = float on, match:title ostt
 windowrule = move ((monitor_w*0.5)-(window_w*0.5)) (monitor_h*0.85), match:title ostt
 windowrule = pin on, match:title ostt
 ```
+
+For Alacritty or foot, use `match:class ostt-popup` instead of `match:title ostt`.
 
 Apply either configuration with:
 

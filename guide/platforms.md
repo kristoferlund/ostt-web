@@ -49,13 +49,11 @@ Use Settings > Keyboard > Custom Shortcuts and bind:
 /path/to/ostt launch --paste
 ```
 
-GNOME Wayland controls window placement, so popup size works but position may be compositor-controlled.
-
 Full setup: [GNOME Setup](./platforms/gnome.md).
 
 ## KDE Plasma
 
-Use System Settings > Shortcuts > Custom Shortcuts and bind:
+Use System Settings > Keyboard > Shortcuts > Add New > Command or Script and bind:
 
 ```bash
 /path/to/ostt launch --paste
@@ -65,10 +63,10 @@ Full setup: [KDE Plasma Setup](./platforms/kde.md).
 
 ## Suggested Hotkeys
 
-The recommended default key combinations:
+Suggested key combinations for GNOME and KDE Plasma. Omarchy and macOS use their own defaults, described above.
 
-- **`Alt+Space`** — Basic popup: `/path/to/ostt launch --paste`
-- **`Alt+Ctrl+Space`** — Popup with action picker: `/path/to/ostt launch --paste -p`
+- **`Alt+Space`**: basic popup, `/path/to/ostt launch --paste`
+- **`Alt+Ctrl+Space`**: popup with action picker, `/path/to/ostt launch --paste -p`
 
 Create separate hotkeys for common workflows:
 
