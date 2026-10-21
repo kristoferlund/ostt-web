@@ -47,7 +47,7 @@ Local Whisper params use the same provider/model format as cloud providers, for 
 | Groq | `groq/whisper-large-v3`, `groq/whisper-large-v3-turbo` | [Groq](./providers/groq.md) |
 | DeepInfra | Whisper Large V3, Whisper Large V3 Turbo, Qwen3 ASR, Nemotron, and Voxtral speech-recognition models | [DeepInfra](./providers/deepinfra.md) |
 | AssemblyAI | `assemblyai/universal-3-5-pro`, `assemblyai/universal-2` | [AssemblyAI](./providers/assemblyai.md) |
-| Berget | `berget/klang/pianissimo` (since 0.0.27), `berget/KBLab/kb-whisper-large`, `berget/NbAiLab/nb-whisper-large`, `berget/openai/whisper-large-v3` | [Berget](./providers/berget.md) |
+| Berget | `berget/klang/pianissimo`, `berget/KBLab/kb-whisper-large`, `berget/NbAiLab/nb-whisper-large`, `berget/openai/whisper-large-v3` | [Berget](./providers/berget.md) |
 | ElevenLabs | `elevenlabs/scribe_v2`, `elevenlabs/scribe_v2_medical`, `elevenlabs/scribe_v1` | [ElevenLabs](./providers/elevenlabs.md) |
 | Mistral | `mistral/voxtral-mini-latest`, `mistral/voxtral-mini-2602` | [Mistral](./providers/mistral.md) |
 

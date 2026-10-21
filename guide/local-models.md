@@ -115,7 +115,7 @@ The same param meanings apply whether the param is set globally in `[whisper.par
 
 Saved [keywords](./commands#keyword) are passed to local Whisper models as a glossary, so names and terms come out spelled right. Keywords and `prompt` can be combined. They share Whisper's prompt window of about 220 tokens; if they don't fit, OSTT's engine shortens the prompt first, then drops keywords from the end of the list, and notes it in the log.
 
-`no_timestamps` and `entropy_thold` from earlier versions no longer have any effect. Configs that still set them keep working; OSTT ignores them and notes it in the log.
+`no_timestamps` and `entropy_thold` are not supported. Configs that set them keep working; OSTT ignores them and notes it in the log.
 
 ## Audio Format
 

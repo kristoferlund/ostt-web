@@ -16,7 +16,7 @@ Many popular dictation tools focus on macOS, Windows, and mobile. OSTT is built 
 
 ### Provider Choice
 
-OSTT does not force one transcription backend. You can choose from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, and ElevenLabs, then switch models when your needs change.
+OSTT does not force one transcription backend. You can choose from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, and Mistral in the cloud, or run Parakeet and Whisper models locally, then switch models when your needs change.
 
 This matters for quality, latency, price, language support, and regulatory requirements. For example, Berget provides Swedish/EU-hosted transcription options for users who care about data residency.
 
@@ -29,7 +29,7 @@ ostt retry
 ostt retry 3 -c
 ```
 
-If one model gets a term wrong, switch provider/model with `ostt auth` and retry the same recording without speaking again.
+If one model gets a term wrong, retry the same recording with another one, for example `ostt retry -m deepgram/nova-3`, without speaking again.
 
 ### Scriptable Post-Processing
 
@@ -70,8 +70,8 @@ This table is a high-level comparison against common voice-to-text tools. Capabi
 | Bash/shell post-processing | Yes | No |
 | Context/screen awareness | No | Often yes |
 | Streaming transcription | No | Often yes |
-| Direct text injection | Clipboard by default | Often yes |
-| On-device transcription | No | Sometimes |
+| Paste into the focused app | Yes | Often yes |
+| On-device transcription | Yes | Sometimes |
 
 ## What OSTT Does Not Try To Be
 

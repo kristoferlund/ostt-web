@@ -161,7 +161,7 @@ keywords = [
 
 Edit the list here or with [`ostt keyword`](./commands#keyword); both change the same list. Providers that support keyword boosting receive it with each transcription, and local Whisper models use it as a glossary.
 
-Before 0.0.30, keywords were stored in `~/.config/ostt/keywords.txt`. OSTT moves them into `ostt.toml` on first run and renames the old file to `keywords.txt.migrated`. If `ostt.toml` already has keywords, those are kept and the old file is only renamed.
+If an older `~/.config/ostt/keywords.txt` is present, OSTT moves its keywords into `ostt.toml` on first run and renames the file to `keywords.txt.migrated`. Keywords already in `ostt.toml` take precedence; the old file is then only renamed.
 
 ## Text Replace
 
@@ -257,7 +257,7 @@ no_speech_thold = 0.6
 | `no_speech_thold` | `0.6` | No-speech probability threshold. |
 | `prompt` | none | Context that steers transcription. Saved keywords are also passed as a glossary. |
 
-`no_timestamps` and `entropy_thold` from earlier versions no longer have any effect and are ignored if still set.
+`no_timestamps` and `entropy_thold` are not supported and are ignored if set.
 
 See [Local Models](./local-models.md) for setup, storage, and audio-format requirements.
 

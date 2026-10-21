@@ -6,14 +6,14 @@ description: Install OSTT, choose a transcription model, record from the termina
 
 **Open source speech-to-text for the terminal: Linux-first, provider-agnostic, and scriptable.**
 
-OSTT records from your microphone, transcribes with the provider and model you choose, keeps local history, and works from both the shell and a global hotkey popup. It does not assume one vendor, one subscription, or one app-specific workflow: bring your own API key and choose from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, or local Whisper-compatible models.
+OSTT records from your microphone, transcribes with the provider and model you choose, keeps local history, and works from both the shell and a global hotkey popup. It does not assume one vendor, one subscription, or one app-specific workflow: bring your own API key and choose from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or local Parakeet and Whisper models.
 
 OSTT is built for people who treat the terminal as a normal place for voice input to land. You can print to stdout, copy to the clipboard, write to files, retry the same recording with another model, transcribe existing audio, and post-process text with AI prompts or shell commands. Voice becomes text that can move through the same tools as everything else.
 
 ## Core Features
 
 - **Linux-first voice input** - Global hotkey setup for Omarchy/Hyprland, GNOME, KDE, and other Linux desktops, with macOS support too.
-- **Provider choice** - Bring your own API key and switch between OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, and local models.
+- **Provider choice** - Bring your own API key and switch between OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, and local models.
 - **Local transcription** - Download curated local models or add custom Hugging Face/direct model files for offline transcription.
 - **Terminal-native workflow** - Use stdout, clipboard, paste output, files, aliases, shell completions, logs, and pipes.
 - **Scriptable post-processing** - Transform transcripts with AI prompts or bash commands using `ostt -p` and `ostt process`.

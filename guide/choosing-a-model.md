@@ -15,7 +15,7 @@ If you are unsure, start with one good default and let OSTT make comparison prac
 | --- | --- | --- |
 | Fastest setup | OpenAI `openai/gpt-4o-transcribe` or Deepgram `deepgram/nova-3` | Hosted APIs avoid local model downloads and local runtime setup. |
 | Strong general cloud quality | OpenAI `openai/gpt-transcribe`, Deepgram `deepgram/nova-3`, or AssemblyAI `assemblyai/universal-3-5-pro` | These are current general-purpose cloud transcription models with useful params for language, formatting, prompts, or keyterms. |
-| Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` (since 0.0.27) | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting. |
+| Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting. |
 | Norwegian work | Berget `berget/NbAiLab/nb-whisper-large` | NB-Whisper is documented for Norwegian, Bokmal, Nynorsk, and English. |
 | Offline or privacy-sensitive work | Built-in local Parakeet, such as `parakeet/parakeet-ultra`, or Whisper such as `whisper/turbo` | Audio stays on your machine after the model file is downloaded. |
 | Fast local dictation | Built-in local Parakeet with daemon mode | Parakeet is fast even on CPU, and daemon mode avoids reloading the model every call. |
@@ -174,7 +174,7 @@ ostt transcribe meeting.mp3 -p summary -o summary.md
 
 | Path | Privacy | Setup | Latency | Cost | Maintenance |
 | --- | --- | --- | --- | --- | --- |
-| Built-in local Whisper | Best | Medium | Hardware-dependent | Free after hardware | Low |
+| Built-in local models | Best | Medium | Hardware-dependent | Free after hardware | Low |
 | Cloud STT | Audio leaves your machine | Easy once key exists | Usually good | Usage-based | Low |
 | External command engine | Local if the command is local | Advanced | Depends on engine startup | Free after hardware | User-managed |
 | External HTTP engine | Local if endpoint is local | Advanced | Good when server stays hot | Free after hardware | User-managed |
