@@ -19,7 +19,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
   <section class="landing-hero">
     <span class="logo hero-logo" aria-label="OSTT"></span>
     <h1>Open source voice-to-text for Linux. And macOS.</h1>
-    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe with your chosen cloud or local model, then paste the result into the focused app or route it to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
+    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe on your own machine with Parakeet or Whisper or with a cloud model, then paste the result into the focused app or route it to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -35,6 +35,18 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
     <video src="/ostt-demo.mp4" controls playsinline preload="none" poster="/ostt-demo-poster.png">
       Your browser does not support the video tag.
     </video>
+  </section>
+
+  <section class="landing-section split">
+    <div>
+      <p class="eyebrow">Local models</p>
+      <h2>Runs offline, on your own hardware.</h2>
+      <p>OSTT ships a built-in engine for NVIDIA Parakeet and OpenAI Whisper models. Parakeet adds punctuation and capitalization and detects the language on its own across 25 European languages, English included. Whisper covers many more languages, including regional fine-tunes such as KB-Whisper for Swedish and NB-Whisper for Norwegian.</p>
+      <p>Models run on the CPU or the GPU, with Metal on macOS and CUDA or Vulkan builds on Linux. Daemon mode keeps the model loaded between recordings, and once a model is downloaded, no audio leaves your machine. See <a href="/guide/local-models">Local Models</a>.</p>
+    </div>
+    <div class="command-card">
+      <pre><code># Download and select a local model&#10;ostt model local download parakeet-ultra&#10;ostt model select parakeet/parakeet-ultra&#10;&#10;# Keep it loaded between recordings&#10;ostt daemon start&#10;&#10;# Dictate into the focused app, fully offline&#10;ostt launch --paste</code></pre>
+    </div>
   </section>
 
   <section class="landing-grid">
