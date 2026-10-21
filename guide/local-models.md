@@ -119,16 +119,14 @@ Saved [keywords](./commands#keyword) are passed to local Whisper models as a glo
 
 ## Audio Format
 
-Local transcription requires WAV audio in signed 16-bit PCM, 16 kHz, mono. OSTT records mono automatically, and ffmpeg handles resampling through this audio config:
+Local models need WAV audio in signed 16-bit PCM, 16 kHz, mono. When the active model is local, OSTT records in that format automatically, so `[audio].output_format` can stay on the cloud-friendly MP3 default. To override the local format, set `output_format` under `[whisper]` or `[parakeet]`.
 
-```toml
-[audio]
-output_format = "pcm_s16le -ar 16000"
+Other audio is not converted. Recordings made while a cloud model was active are MP3, so `ostt retry -m whisper/turbo` on one of them fails, and `ostt transcribe` needs a compatible WAV file. Convert a file with ffmpeg first:
+
+```bash
+ffmpeg -i meeting.mp3 -ac 1 -ar 16000 -c:a pcm_s16le meeting.wav
+ostt transcribe meeting.wav
 ```
-
-For recordings, OSTT uses this format automatically when the active model is local, so a cloud-friendly global `[audio].output_format` can remain unchanged. To override it, set `output_format` under `[whisper]` or `[parakeet]`.
-
-The default cloud-friendly MP3 setting still works for cloud providers. Switch to the WAV/PCM setting when using local models.
 
 ## Custom Models
 
@@ -157,6 +155,6 @@ OSTT's built-in local model list is maintained outside the CLI in the [kristofer
 
 To suggest a model for everyone, open a pull request in that repository. Include the model URL, display name, size, language coverage, and any useful hardware or accuracy notes.
 
-## Current Limitations
+## Limitations
 
-Local transcription currently expects already-compatible WAV/PCM input. For `ostt transcribe <FILE>`, use a compatible `.wav` file when the active model is local.
+Local models accept only 16 kHz mono WAV input; see [Audio Format](#audio-format).

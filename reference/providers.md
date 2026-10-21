@@ -27,14 +27,9 @@ Local transcription supports GPU acceleration through Metal on macOS and CUDA or
 | Provider | Models | Params |
 | --- | --- | --- |
 | `parakeet` | `parakeet/parakeet-ultra`, `parakeet/parakeet-tdt-0.6b-v3`, `parakeet/parakeet-tdt-0.6b-v2`, `parakeet/parakeet-tdt_ctc-110m` | None; the language is detected automatically |
-| `whisper` | `whisper/turbo`, `whisper/large-v3`, regional KB-Whisper and NB-Whisper models, and more | `language`, `no_context`, `temperature`, `no_speech_thold` |
+| `whisper` | `whisper/turbo`, `whisper/large-v3`, regional KB-Whisper and NB-Whisper models, and more | `language`, `no_context`, `temperature`, `no_speech_thold`, `prompt` |
 
-Local transcription requires WAV signed 16-bit PCM, 16 kHz, mono audio:
-
-```toml
-[audio]
-output_format = "pcm_s16le -ar 16000"
-```
+Local models need 16 kHz mono 16-bit WAV. OSTT records in that format automatically when a local model is active; files you pass to `ostt transcribe` must already be in it. See [Local Models](../guide/local-models.md#audio-format).
 
 Local Whisper params use the same provider/model format as cloud providers, for example `[whisper.params]`, `[whisper.turbo.params]`, or `--param language=sv`. Use model IDs such as `whisper/turbo` or `parakeet/parakeet-ultra`. See [Local Models](../guide/local-models.md) for setup details and local param descriptions.
 
@@ -50,6 +45,8 @@ Local Whisper params use the same provider/model format as cloud providers, for 
 | Berget | `berget/klang/pianissimo`, `berget/KBLab/kb-whisper-large`, `berget/NbAiLab/nb-whisper-large`, `berget/openai/whisper-large-v3` | [Berget](./providers/berget.md) |
 | ElevenLabs | `elevenlabs/scribe_v2`, `elevenlabs/scribe_v2_medical`, `elevenlabs/scribe_v1` | [ElevenLabs](./providers/elevenlabs.md) |
 | Mistral | `mistral/voxtral-mini-latest`, `mistral/voxtral-mini-2602` | [Mistral](./providers/mistral.md) |
+
+To run another engine yourself, such as faster-whisper or an OpenAI-compatible server, use the `command` and `http` providers described in [External Engines](../guide/external-engines.md).
 
 ## Landing Pages
 
