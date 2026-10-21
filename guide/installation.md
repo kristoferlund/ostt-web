@@ -16,15 +16,17 @@ curl -fsSL https://ostt.ai/install | bash
 
 Use this unless you specifically prefer a platform package manager. It detects your platform, installs missing runtime dependencies (ffmpeg, clipboard tools) where supported, selects the right CPU/GPU build, downloads the latest release, verifies its checksum, and installs the `ostt` CLI. On Omarchy 4, it also configures `ALT+SPACE` for clipboard dictation, `ALT+SHIFT+SPACE` for spoken prompts to the default agent, and the floating OSTT popup. In most cases you do not need to install dependencies or desktop integration manually.
 
-The installer runs non-interactively. When no transcription model is active at the end of the install, it offers to download the local Whisper base model (142 MB) so you can start transcribing immediately -- accepting the offer leaves a fully working setup with nothing else to configure.
+The installer runs non-interactively. If no transcription model is active when it finishes, it offers to download one (see [First Run](#first-run)).
 
 It uses native `.deb` or `.rpm` packages on supported Linux distributions when possible. Otherwise, including macOS, it installs the binary to `~/.local/bin` by default. If that directory is not already on your `PATH`, the installer adds it to your shell profile (`.bashrc`, `.zshrc`, or `config.fish`) so `ostt` works in your next shell with no manual steps. Pass `--no-modify-path` to opt out and get printed instructions instead.
 
 Shell completions are installed to user-owned directories -- no `sudo` required. For zsh, the installer also adds the completions directory to `fpath` in your `.zshrc`, since zsh's default `fpath` contains no directory under `$HOME`.
 
-Download URLs and checksums come from a release manifest at [ostt.ai/latest.json](https://ostt.ai/latest.json), so the installer never guesses filenames. If the manifest is unreachable the install fails with an explicit error rather than falling back to a guess. Installing a pinned release with `--version` bypasses the manifest, since it only ever describes the latest release.
+::: details Where the installer gets releases
+Download URLs and checksums come from the release manifest at [ostt.ai/latest.json](https://ostt.ai/latest.json), so the installer never guesses filenames. If the manifest is unreachable, the install stops with an error. `--version` installs a pinned release straight from GitHub, since the manifest only describes the latest one.
+:::
 
-On macOS, the installer uses the Metal-enabled build. On Linux x86_64 it installs a CUDA build when a usable NVIDIA CUDA runtime is detected — `cuda` for a CUDA 12 toolkit, `cuda13` for CUDA 13 — the Vulkan build when Vulkan support is detected, and the CPU build otherwise. An NVIDIA GPU with no usable CUDA toolkit gets the Vulkan build rather than the CPU build. See [GPU Acceleration](/guide/gpu-acceleration) for how the choice is made. To force the CPU build:
+On macOS, the installer uses the Metal-enabled build. On Linux x86_64 it installs a CUDA build when a usable NVIDIA CUDA runtime is detected (`cuda` for a CUDA 12 toolkit, `cuda13` for CUDA 13), the Vulkan build when Vulkan support is detected, and the CPU build otherwise. An NVIDIA GPU with no usable CUDA toolkit gets the Vulkan build rather than the CPU build. See [GPU Acceleration](/guide/gpu-acceleration) for how the choice is made. To force the CPU build:
 
 ```bash
 curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu
@@ -56,7 +58,7 @@ The install directory can also be set with the `OSTT_INSTALL_DIR` environment va
 
 ### First Run
 
-OSTT requires an active transcription model before recording. When none is active, the installer ends by offering to download the local Whisper base model (142 MB) and selecting it for you. If the base model is already on disk from an earlier install, it is selected without asking. Accept the offer and OSTT is ready to transcribe -- no further setup needed.
+OSTT requires an active transcription model before recording. When none is active, the installer ends by offering to download the local Whisper base model (142 MB) and selecting it for you. If the base model is already on disk from an earlier install, it is selected without asking. Accept it and OSTT is ready to transcribe.
 
 If you decline (or ran the installer with `--no-model-download` or without a terminal), pick a model yourself:
 
@@ -131,7 +133,7 @@ curl -sLO ${BASE}/ostt-vulkan_${VERSION}-1_amd64.deb && sudo apt install ./ostt-
 curl -sLO ${BASE}/ostt_${VERSION}-1_arm64.deb && sudo apt install ./ostt_${VERSION}-1_arm64.deb
 ```
 
-### Fedora / RHEL -- .rpm
+### Fedora / RHEL / openSUSE -- .rpm
 
 ```bash
 VERSION=<VERSION>
@@ -153,27 +155,7 @@ sudo dnf install ${BASE}/ostt-vulkan-${VERSION}-1.x86_64.rpm
 sudo dnf install ${BASE}/ostt-${VERSION}-1.aarch64.rpm
 ```
 
-### openSUSE -- .rpm
-
-```bash
-VERSION=<VERSION>
-BASE=https://github.com/kristoferlund/ostt/releases/download/v${VERSION}
-
-# x86_64 CPU build
-sudo zypper install ${BASE}/ostt-${VERSION}-1.x86_64.rpm
-
-# x86_64 NVIDIA, CUDA 12 toolkit
-sudo zypper install ${BASE}/ostt-cuda-${VERSION}-1.x86_64.rpm
-
-# x86_64 NVIDIA, CUDA 13 toolkit
-sudo zypper install ${BASE}/ostt-cuda13-${VERSION}-1.x86_64.rpm
-
-# x86_64 AMD/Intel/NVIDIA Vulkan build
-sudo zypper install ${BASE}/ostt-vulkan-${VERSION}-1.x86_64.rpm
-
-# ARM64
-sudo zypper install ${BASE}/ostt-${VERSION}-1.aarch64.rpm
-```
+On openSUSE, use `sudo zypper install` in place of `sudo dnf install`.
 
 Find the current `<VERSION>` on the [releases page](https://github.com/kristoferlund/ostt/releases/latest). Run `uname -m` to check your architecture (`x86_64` or `aarch64`). CUDA and Vulkan packages are currently only published for Linux x86_64. Use the CPU package on ARM64.
 
