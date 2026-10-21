@@ -220,7 +220,7 @@ Alias: `ostt h`.
 
 ## Keyword
 
-Manage keywords for improved transcription accuracy. Add technical terms, names, or domain-specific vocabulary.
+Manage keywords for improved transcription accuracy. Add technical terms, names, or domain-specific vocabulary. Keywords are stored in `ostt.toml` under [`[transcription].keywords`](./configuration#keywords), so you can also edit them there.
 
 ```bash
 ostt keyword                 # Interactive keyword manager
