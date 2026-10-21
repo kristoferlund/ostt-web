@@ -26,7 +26,7 @@ yay -S ostt
 
 ## Dictation Backend (Omarchy 4.5) {#dictation-backend}
 
-Omarchy 4.5 has its own dictation keys and lets you choose the program behind them. The [omarchy-ostt](https://github.com/kristoferlund/omarchy-ostt) plugin makes OSTT one of the choices: the keys record from your microphone, OSTT transcribes with the model you chose in `ostt model`, and the text is pasted into the focused app. No terminal opens.
+Omarchy 4.5 has its own dictation keys and lets you choose the program behind them. The [ostt-omarchy](https://github.com/kristoferlund/ostt-omarchy) plugin makes OSTT one of the choices: the keys record from your microphone, OSTT transcribes with the model you chose in `ostt model`, and the text is pasted into the focused app. No terminal opens.
 
 | Key | Action |
 | --- | --- |
@@ -37,7 +37,7 @@ Omarchy 4.5 has its own dictation keys and lets you choose the program behind th
 Install the plugin. It also shows a recording popup with a live level meter, and a status icon in the bar:
 
 ```bash
-omarchy plugin add https://github.com/kristoferlund/omarchy-ostt.git --enable
+omarchy plugin add https://github.com/kristoferlund/ostt-omarchy.git --enable
 ~/.config/omarchy/plugins/ostt.dictation/install
 ```
 
