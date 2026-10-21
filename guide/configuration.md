@@ -236,6 +236,7 @@ no_speech_thold = 0.6
 | `no_context` | `true` | Do not reuse text context between segments. |
 | `temperature` | `0.0` | Sampling temperature. `0.0` uses greedy deterministic decoding. |
 | `no_speech_thold` | `0.6` | No-speech probability threshold. |
+| `prompt` | none | Context that steers transcription. Saved keywords are also passed as a glossary. |
 
 `no_timestamps` and `entropy_thold` from earlier versions no longer have any effect and are ignored if still set.
 
