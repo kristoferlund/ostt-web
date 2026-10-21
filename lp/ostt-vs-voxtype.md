@@ -79,19 +79,19 @@ description: "Compare OSTT and Voxtype for open source speech-to-text, Linux dic
   <section class="landing-grid compact">
     <article>
       <h3>Provider choice is the big difference</h3>
-      <p>OSTT is not tied to one engine family. Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, built-in local Whisper, or a custom command/HTTP engine.</p>
+      <p>OSTT is not tied to one engine family. Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, built-in local Parakeet and Whisper, or a custom command/HTTP engine.</p>
     </article>
     <article>
       <h3>Retry makes model choice testable</h3>
       <p>If one transcription is wrong, run <code>ostt retry -m openai/gpt-4o-transcribe</code> or <code>ostt retry -m deepgram/nova-3</code> on the same saved recording.</p>
     </article>
     <article>
-      <h3>Paste is now first-class</h3>
+      <h3>Paste into the focused app</h3>
       <p><code>ostt launch --paste</code> records from a popup, closes it, waits for focus to return, pastes into the focused app, and restores the previous clipboard when configured.</p>
     </article>
     <article>
       <h3>External engines without bundling bloat</h3>
-      <p>Run faster-whisper, Parakeet, Speaches, LocalAI, Cohere Transcribe, or your own ASR wrapper separately, then connect OSTT with <code>command/*</code> or <code>http/*</code>.</p>
+      <p>Run faster-whisper, Speaches, LocalAI, Cohere Transcribe, or your own ASR wrapper separately, then connect OSTT with <code>command/*</code> or <code>http/*</code>.</p>
     </article>
     <article>
       <h3>Developer text cleanup</h3>

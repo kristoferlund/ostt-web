@@ -49,7 +49,7 @@ curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu --no-modify-path
 | `--no-model-download` | Do not offer to download the Whisper base model when none is active. |
 | `--version VERSION` | Install a specific release, for example `--version v0.0.20`. |
 | `--install-dir DIR` | Install `ostt` to `DIR` instead of `~/.local/bin`. |
-| `-y`, `--yes` | Accepted for compatibility; non-interactive is now the default. |
+| `-y`, `--yes` | Accepted and ignored; the installer is non-interactive by default. |
 | `-h`, `--help` | Show usage and exit. |
 
 The install directory can also be set with the `OSTT_INSTALL_DIR` environment variable. When `--install-dir` is left at the default and a native `.deb`/`.rpm` package is available for your system, the installer uses that package (installing to `/usr/bin`) instead of the release archive.

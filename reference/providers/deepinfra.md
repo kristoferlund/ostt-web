@@ -23,8 +23,6 @@ DeepInfra documentation:
 | `deepinfra/mistralai/Voxtral-Mini-3B-2507` | Voxtral Mini speech-recognition model for transcription, translation, and audio understanding. |
 | `deepinfra/mistralai/Voxtral-Small-24B-2507` | Larger Voxtral speech-recognition model. |
 
-The older `openai/whisper-large`, `openai/whisper-medium`, `openai/whisper-small`, `openai/whisper-base`, and `openai/whisper-timestamped-medium` entries were removed in 0.0.29 because DeepInfra no longer offers them. Their config sections are ignored with a log warning; if one is your selected model, pick Whisper Large V3, Turbo, or Qwen3 ASR with `ostt model`.
-
 ## Params
 
 ```toml
