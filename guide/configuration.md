@@ -144,6 +144,25 @@ ostt model params whisper/turbo --format json
 
 See [Providers and Models](../reference/providers.md) for supported model IDs and provider-specific param tables.
 
+## Keywords
+
+Keywords are names and terms the model should recognize, highest priority first. They live in `[transcription]`, next to the selected model:
+
+```toml
+[transcription]
+provider = "deepgram"
+model = "nova-3"
+keywords = [
+    "OSTT",
+    "Kubernetes",
+    "Rödeby",
+]
+```
+
+Edit the list here or with [`ostt keyword`](./commands#keyword); both change the same list. Providers that support keyword boosting receive it with each transcription, and local Whisper models use it as a glossary.
+
+Before 0.0.30, keywords were stored in `~/.config/ostt/keywords.txt`. OSTT moves them into `ostt.toml` on first run and renames the old file to `keywords.txt.migrated`. If `ostt.toml` already has keywords, those are kept and the old file is only renamed.
+
 ## Text Replace
 
 Text replace rules are deterministic, provider-neutral post-transcription find-and-replace rules. They fix final text casing, acronyms, project names, and common misrecognitions without using AI.
