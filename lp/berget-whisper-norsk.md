@@ -1,7 +1,7 @@
 ---
 layout: false
 title: "NB Whisper på kommandolinjen"
-description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsmodell — direkte fra terminalen. OSTT kobler modellen til et globalt hurtigtast, utklippstavlen og skallkommandoer på Linux og macOS."
+description: "Bruk NB Whisper, Nasjonalbibliotekets norske talegjenkjenningsmodell, direkte fra terminalen. OSTT kobler modellen til et globalt hurtigtast, utklippstavlen og skallkommandoer på Linux og macOS."
 ---
 
 <header class="site-header">
@@ -20,7 +20,7 @@ description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsm
 
   <section class="landing-hero">
     <h1>NB Whisper på kommandolinjen.</h1>
-    <p class="lede">NB Whisper er Nasjonalbibliotekets talegjenkjenningsmodell for norsk — trent på 66 000 timers norsk tale fra NRK-sendinger, Stortingets taler, lydbøker og dialektopptak. Modellen forstår bokmål, nynorsk og norske dialekter, og er utviklet spesielt for å håndtere norskens store dialektmangfold. OSTT kobler den til ditt hurtigtast og ditt skall på Linux og macOS, via Bergets norgesbaserte infrastruktur.</p>
+    <p class="lede">NB Whisper er Nasjonalbibliotekets talegjenkjenningsmodell for norsk, trent på 66 000 timers norsk tale fra NRK-sendinger, Stortingets taler, lydbøker og dialektopptak. Modellen forstår bokmål, nynorsk og norske dialekter, og er utviklet spesielt for å håndtere norskens store dialektmangfold. OSTT kobler den til ditt hurtigtast og ditt skall på Linux og macOS, via Bergets europeiske infrastruktur eller lokalt på din maskin.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -37,10 +37,10 @@ description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsm
       <div>
         <p class="eyebrow">NB Whisper</p>
         <h2>Trent på 66 000 timers norsk tale. Forstår dialekter.</h2>
-        <p>NB Whisper er utviklet av NB AI-Lab ved Nasjonalbiblioteket og trent på et unikt datasett: NRK-undertekster, Stortingskorpuset (over 5 200 timers transkribert parlamentstale), NST-databasen, og lydbøker fra Nasjonalbibliotekets digitale samling. Resultatet er en modell som forstår norsk som faktisk snakkes — med dialekter, nynorsk og bokmål. Modellen kjører på Bergets infrastruktur, noe som gir GDPR-kompatibel databehandling uten ekstra konfigurasjon.</p>
+        <p>NB Whisper er utviklet av NB AI-Lab ved Nasjonalbiblioteket og trent på et unikt datasett: NRK-undertekster, Stortingskorpuset (over 5 200 timers transkribert parlamentstale), NST-databasen, og lydbøker fra Nasjonalbibliotekets digitale samling. Resultatet er en modell som forstår norsk som faktisk snakkes, med dialekter, nynorsk og bokmål. Via Berget kjører modellen på europeisk infrastruktur.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml — velg NB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;NbAiLab/nb-whisper-large&quot;&#10;&#10;&#91;berget.&quot;NbAiLab/nb-whisper-large&quot;.params&#93;&#10;language = &quot;no&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;Språkbanken&quot;&#93;&#10;align = true&#10;&#10;# Velg interaktivt&#10;ostt model&#10;&#10;# Ta opp med hurtigtast, transkriber med NB Whisper, kopier&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml: velg NB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;NbAiLab/nb-whisper-large&quot;&#10;&#10;&#91;berget.&quot;NbAiLab/nb-whisper-large&quot;.params&#93;&#10;language = &quot;no&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;Språkbanken&quot;&#93;&#10;align = true&#10;&#10;# Velg interaktivt&#10;ostt model&#10;&#10;# Ta opp med hurtigtast, transkriber med NB Whisper, kopier&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -48,7 +48,7 @@ description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsm
   <section class="landing-grid">
     <article>
       <h3>Støtter bokmål og nynorsk</h3>
-      <p>NB Whisper er trent til å transkribere til normalisert bokmål og nynorsk. Den håndterer begge målformene og produserer korrekt ortografi uavhengig av hvilken dialekt taleren bruker — noe generelle Whisper-modeller konsekvent sliter med på norsk.</p>
+      <p>NB Whisper er trent til å transkribere til normalisert bokmål og nynorsk. Den håndterer begge målformene og produserer korrekt ortografi uavhengig av hvilken dialekt taleren bruker. Generelle Whisper-modeller sliter oftere med dette på norsk.</p>
     </article>
     <article>
       <h3>Forstår norske dialekter</h3>
@@ -56,7 +56,7 @@ description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsm
     </article>
     <article>
       <h3>Data forblir i Europa</h3>
-      <p>Berget er en europeisk skyleverandør. Alle transkripsjoner behandles på servere i Europa, noe som gir GDPR-kompatibel databehandling uten ekstra oppsett. Velg Berget der personvern og datasuverenitet er et krav.</p>
+      <p>Berget er en svensk skyleverandør. Transkripsjonene behandles på europeisk infrastruktur, uten ekstra oppsett. Et godt valg der personvern og GDPR er et krav.</p>
     </article>
     <article>
       <h3>Validerte Berget-valg</h3>
@@ -68,7 +68,11 @@ description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsm
     </article>
     <article>
       <h3>Retranskripsjon uten nytt opptak</h3>
-      <p>OSTT lagrer alle opptak lokalt. Kjør <code>ostt retry</code> for å transkribere samme lyd med NB Whisper på nytt, eller bytt til en annen modell — uten å snakke igjen.</p>
+      <p>OSTT lagrer de 10 siste opptakene dine. Kjør <code>ostt retry</code> for å transkribere samme lyd på nytt med NB Whisper eller en annen modell, uten å snakke igjen.</p>
+    </article>
+    <article>
+      <h3>NB Whisper lokalt</h3>
+      <p>OSTT kjører også NB Whisper på din egen maskin, uten API-nøkkel: <code>ostt model local download whisper/nb-whisper-large</code> og deretter <code>ostt model select whisper/nb-whisper-large</code>. Med <code>--paste</code> limes teksten rett inn i appen du jobber i.</p>
     </article>
   </section>
 
@@ -89,7 +93,7 @@ description: "Bruk NB Whisper — Nasjonalbibliotekets norske talegjenkjenningsm
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>Beste norske talegjenkjenning i skallet ditt.</h2>
-      <p>OSTT gjør NB Whisper til et vanlig Unix-verktøy. Transkripsjonresultatet havner på stdout — rør det gjennom <code>jq</code>, <code>sed</code> eller et hvilket som helst CLI-verktøy. Bruk <code>-p</code> for å kjede behandlingshandlinger. Legg til tekniske termer og egennavn i OSTT keywords én gang og forbedre treffsikkerheten i alle fremtidige opptak.</p>
+      <p>OSTT gjør NB Whisper til et vanlig Unix-verktøy. Transkripsjonsresultatet havner på stdout, så du kan røre det gjennom <code>jq</code>, <code>sed</code> eller et hvilket som helst CLI-verktøy. Bruk <code>-p</code> for å kjede behandlingshandlinger. Legg til tekniske termer og egennavn i OSTT keywords én gang, så brukes de i alle kommende opptak.</p>
     </div>
     <div class="command-card">
       <pre><code># Transkriber et lydklipp&#10;ostt transcribe meeting.mp3 -o notater.md&#10;&#10;# Ta opp, behandle med AI-handling, kopier til utklippstavle&#10;ostt -p clean -c&#10;&#10;# Transkriber og rør videre&#10;ostt | mitt-skript.sh</code></pre>

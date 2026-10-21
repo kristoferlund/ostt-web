@@ -20,7 +20,7 @@ description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT co
 
   <section class="landing-hero">
     <h1>Deepgram Nova-3 from the command line.</h1>
-    <p class="lede">OSTT gives you direct access to Deepgram Nova-3 from your terminal. Bind it to a global hotkey, pipe the transcript to your clipboard, a file, or an AI tool — on Linux and macOS.</p>
+    <p class="lede">OSTT gives you direct access to Deepgram Nova-3 from your terminal. Bind it to a global hotkey, and send the transcript to your clipboard, a file, or an AI tool on Linux and macOS.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -36,8 +36,8 @@ description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT co
     <section class="landing-section split">
       <div>
         <p class="eyebrow">Deepgram Nova-3</p>
-        <h2>Fast, accurate, affordable transcription.</h2>
-        <p>Nova-3 is Deepgram's flagship general-purpose speech model. It delivers low latency and high accuracy across a wide range of accents and audio conditions — at a fraction of the cost of comparable cloud models. OSTT connects it directly to your keyboard and shell.</p>
+        <h2>Fast, accurate transcription.</h2>
+        <p>Nova-3 is Deepgram's flagship general-purpose speech model. It delivers low latency and high accuracy across a wide range of accents and audio conditions. OSTT connects it directly to your keyboard and shell, and sends your saved <code>ostt keyword</code> terms as Nova-3 <code>keyterm</code> hints.</p>
       </div>
       <div class="command-card">
         <pre><code># Set Nova-3 as your default in ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;deepgram&quot;&#10;model = &quot;nova-3&quot;&#10;&#10;&#91;deepgram.nova-3.params&#93;&#10;smart_format = true&#10;diarize = true&#10;&#10;# Or pick it interactively&#10;ostt model&#10;&#10;# Record with a hotkey, transcribe with Nova-3, copy to clipboard&#10;ostt launch -c</code></pre>
@@ -48,7 +48,7 @@ description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT co
   <section class="landing-grid">
     <article>
       <h3>Global hotkey</h3>
-      <p>Bind OSTT to a system-wide shortcut. Press to open the recorder, speak, press again to stop. Nova-3 transcribes and the result lands in your clipboard or stdout — without touching the mouse.</p>
+      <p>Bind OSTT to a system-wide shortcut. Press to open the recorder, speak, press again to stop. Nova-3 transcribes and the result lands in your clipboard or stdout without touching the mouse.</p>
     </article>
     <article>
       <h3>Any output target</h3>
@@ -64,11 +64,11 @@ description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT co
     </article>
     <article>
       <h3>Retry without re-recording</h3>
-      <p>OSTT saves every recording locally. Run <code>ostt retry</code> to re-transcribe the same audio with Nova-3, or switch to any other provider — no need to speak again.</p>
+      <p>OSTT keeps your last 10 recordings. Run <code>ostt retry</code> to re-transcribe the same audio with Nova-3 or another provider, without speaking again.</p>
     </article>
     <article>
       <h3>Switch providers freely</h3>
-      <p>OSTT is provider-agnostic. Use Nova-3 as your default and override per-call when you need a different model or want to compare accuracy. One config file covers all providers.</p>
+      <p>OSTT is provider-agnostic. Use Nova-3 as your default and override per-call when you need a different model or want to compare accuracy. One config file covers all providers, including local Parakeet and Whisper models. Add <code>--paste</code> to paste the result into the focused app.</p>
     </article>
   </section>
 
@@ -89,7 +89,7 @@ description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT co
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>Nova-3 inside your shell.</h2>
-      <p>OSTT is a standard Unix tool. Nova-3 transcription is just text on stdout — pipe it through <code>jq</code>, <code>sed</code>, or any CLI tool. Use the <code>-p</code> flag to chain processing actions without leaving the terminal.</p>
+      <p>OSTT is a standard Unix tool. Nova-3 transcription is plain text on stdout, so you can pipe it through <code>jq</code>, <code>sed</code>, or any CLI tool. Use the <code>-p</code> flag to chain processing actions without leaving the terminal.</p>
     </div>
     <div class="command-card">
       <pre><code># Transcribe and pipe to a custom script&#10;ostt | my-script.sh&#10;&#10;# Transcribe mp3, summarize with AI, write to file&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Record, run &quot;clean&quot; processing action, copy to clipboard&#10;ostt -p clean -c</code></pre>

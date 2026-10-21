@@ -19,8 +19,6 @@ AssemblyAI documentation:
 | `assemblyai/universal-3-5-pro` | Recommended. Native code-switching and contextual prompting in 18 languages. OSTT sends `speech_models = ["universal-3-5-pro", "universal-2"]`, so other languages fall back to Universal 2. |
 | `assemblyai/universal-2` | 99 languages with keyterm prompting. Does not support `prompt` or `temperature`. |
 
-`assemblyai/universal-3-pro` was removed in 0.0.29. Its config section is ignored with a log warning; if it is your selected model, pick `assemblyai/universal-3-5-pro` with `ostt model` and rename `[assemblyai.universal-3-pro.params]` to `[assemblyai.universal-3-5-pro.params]`.
-
 ## Params
 
 ```toml
@@ -44,10 +42,10 @@ Do not set `prompt` and `keyterms_prompt` together. AssemblyAI documents them as
 | `keyterms_prompt` | string list | Terms to bias recognition. Saved `ostt keyword` terms are used as fallback only when `keyterms_prompt` and `prompt` are not set. |
 | `language_code` | string | Known source language code. Setting it turns off language detection unless `language_detection` is set. |
 | `language_detection` | boolean | Detect language automatically. Defaults to `true` when `language_code` is not set. |
-| `format_text` | boolean | Apply punctuation, casing, and numeric formatting. |
-| `punctuate` | boolean | Add punctuation. |
-| `disfluencies` | boolean | Include filler words and false starts. |
-| `filter_profanity` | boolean | Mask profanity. |
+| `format_text` | boolean | Apply punctuation, casing, and numeric formatting. OSTT sends `true` by default. |
+| `punctuate` | boolean | Add punctuation. OSTT sends `true` by default. |
+| `disfluencies` | boolean | Include filler words and false starts. OSTT sends `false` by default. |
+| `filter_profanity` | boolean | Mask profanity. OSTT sends `false` by default. |
 | `speaker_labels` | boolean | Enable speaker labels. |
 | `speakers_expected` | integer | Expected speaker count. |
 | `speech_threshold` | number | Threshold for speech detection. |

@@ -50,14 +50,14 @@ ostt model params deepgram/nova-3 --format json
 
 TOML lists must use TOML list syntax (`["en", "sv"]`). CLI `--param` list values use commas (`--param detect_language=en,sv`).
 
-## Params
+## Param Reference
 
 | Param | Type | Description |
 | --- | --- | --- |
 | `detect_language` | boolean or string list | `true` detects the dominant language. A list restricts detection to given BCP-47 language codes, e.g. `["en", "sv"]`. |
 | `language` | string | Primary language hint. Use when the language is known instead of detection. |
 | `diarize` | boolean | Assign speaker numbers to words. |
-| `diarize_model` | string | Select a batch diarization model: `latest`, `v1`, or `v2`. Do not combine with `diarize=true` unless Deepgram documents support for that combination. |
+| `diarize_model` | string | Select a batch diarization model: `latest`, `v1`, or `v2`. Use either `diarize` or `diarize_model`. |
 | `dictation` | boolean | Enable spoken formatting commands. |
 | `filler_words` | boolean | Include filler words such as “uh” and “um”. |
 | `measurements` | boolean | Convert spoken measurements to abbreviations. |

@@ -1,7 +1,7 @@
 ---
 layout: false
 title: "GPT-4o Transcribe on Linux"
-description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects OpenAI's most accurate transcription model to a global hotkey, clipboard, and shell pipeline."
+description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects OpenAI's GPT-4o transcription model to a global hotkey, clipboard, and shell pipeline."
 ---
 
 <header class="site-header">
@@ -20,7 +20,7 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
 
   <section class="landing-hero">
     <h1>GPT-4o Transcribe on Linux.</h1>
-    <p class="lede">gpt-4o-transcribe is OpenAI's most accurate transcription model — built on GPT-4o rather than Whisper, with a 4.1% word error rate and substantially fewer hallucinations on long recordings. OSTT is the fastest way to use it from a Linux or macOS terminal, bound to a hotkey and wired into your shell.</p>
+    <p class="lede">gpt-4o-transcribe is OpenAI's GPT-4o-based transcription model, built on GPT-4o rather than Whisper, with a 4.1% word error rate and fewer hallucinations on long recordings. OSTT lets you use it from a Linux or macOS terminal, bound to a hotkey and wired into your shell.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -37,7 +37,7 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
       <div>
         <p class="eyebrow">GPT-4o Transcribe</p>
         <h2>More accurate. Fewer hallucinations. Same price.</h2>
-        <p>gpt-4o-transcribe delivers a 4.1% WER — a meaningful improvement over whisper-1's 5.3%, especially on noisy audio, accented speech, and long recordings. Whisper's documented hallucination problem on silence is eliminated. At $0.006/min — identical to whisper-1 — there is no cost reason to stay on the legacy model for standard transcription work.</p>
+        <p>gpt-4o-transcribe delivers a 4.1% WER, compared with whisper-1's 5.3%, with the largest gains on noisy audio, accented speech, and long recordings. It is less prone to Whisper's habit of inventing text during silence. At $0.006/min, the same as whisper-1, there is no cost reason to stay on the legacy model for standard transcription work.</p>
       </div>
       <div class="command-card">
         <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;&#91;openai.gpt-4o-transcribe.params&#93;&#10;language = &quot;en&quot;&#10;prompt = &quot;Technical dictation with project names.&quot;&#10;include = &#91;&quot;logprobs&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record, transcribe with gpt-4o-transcribe, copy result&#10;ostt launch -c</code></pre>
@@ -47,12 +47,12 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
 
   <section class="landing-grid">
     <article>
-      <h3>No more hallucinations</h3>
-      <p>Whisper-1 has a documented problem generating text that was never spoken on silent or low-quality audio. gpt-4o-transcribe eliminates this. Long meeting recordings that previously hallucinated filler text now return accurate output.</p>
+      <h3>Fewer hallucinations</h3>
+      <p>Whisper-1 can generate text that was never spoken on silent or low-quality audio. gpt-4o-transcribe is less prone to this, which matters most on long meeting recordings.</p>
     </article>
     <article>
       <h3>Better formatting out of the box</h3>
-      <p>gpt-4o-transcribe auto-inserts punctuation, sentence casing, and handles code-switching between languages — output that previously required a post-processing step with an LLM.</p>
+      <p>gpt-4o-transcribe auto-inserts punctuation, sentence casing, and handles code-switching between languages, so you often need no separate LLM cleanup step.</p>
     </article>
     <article>
       <h3>Promptable transcription</h3>
@@ -68,11 +68,11 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
     </article>
     <article>
       <h3>Any output target</h3>
-      <p>Send transcription to the clipboard with <code>-c</code>, write to a file with <code>-o</code>, print to stdout and pipe it wherever you like.</p>
+      <p>Send transcription to the clipboard with <code>-c</code>, write to a file with <code>-o</code>, paste into the focused app with <code>--paste</code>, or print to stdout. OSTT also runs Parakeet and Whisper models locally when you want to stay offline.</p>
     </article>
     <article>
       <h3>Switch models anytime</h3>
-      <p>Run <code>ostt model</code> to switch between gpt-4o-transcribe, gpt-4o-mini-transcribe, and whisper-1. One command, no config file editing required.</p>
+      <p>Run <code>ostt model</code> to switch between gpt-transcribe, gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize, and whisper-1. One command, no config file editing required.</p>
     </article>
   </section>
 

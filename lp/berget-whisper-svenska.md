@@ -1,7 +1,7 @@
 ---
 layout: false
 title: "KB Whisper på kommandoraden"
-description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänningsmodell — direkt från terminalen. OSTT kopplar modellen till ett globalt kortkommando, urklipp och skalkommandon på Linux och macOS."
+description: "Använd KB Whisper, Kungliga bibliotekets svenska taligenkänningsmodell, direkt från terminalen. OSTT kopplar modellen till ett globalt kortkommando, urklipp och skalkommandon på Linux och macOS."
 ---
 
 <header class="site-header">
@@ -21,7 +21,7 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
   <section class="landing-hero">
     <h1>KB Whisper på kommandoraden.</h1>
     <p class="lede">KB Whisper är Kungliga bibliotekets taligenkänningsmodell för svenska, tränad på över 50 000 timmars svenskt tal och optimerad för svenska dialekter, rikssvenska och parlamentsspråk. Den ger 47% lägre ordfelsnivå (WER) jämfört med OpenAIs whisper-large-v3 på svenska.</p>
-    <p class="lede">OSTT hjälper dig transkribera i alla appar, kopplat till en snabbtangent, eller direkt via terminalen. Linux och macOS, via <a href="https://berget.ai" target="_blank" rel="noopener">Berget AI</a> svenska molninfrastruktur eller 100% lokalt på din dator.</p>
+    <p class="lede">OSTT hjälper dig transkribera i alla appar, kopplat till en snabbtangent, eller direkt via terminalen. Linux och macOS, via <a href="https://berget.ai" target="_blank" rel="noopener">Berget AI</a>:s europeiska molninfrastruktur eller lokalt på din dator.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -38,10 +38,10 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
       <div>
         <p class="eyebrow">KB Whisper</p>
         <h2>Tränad på 50 000 timmar svenska. 47% lägre WER.</h2>
-        <p>KB Whisper är utvecklad av KBLab vid Kungliga biblioteket och tränad på ett unikt dataset: SVT-undertexter, riksdagsprotokoll, dialektinspelningar från Institutet för språk och folkminnen samt YouTube-kanaler med svenskt innehåll. Resultatet är en modell som förstår hela bredden av talad svenska — från formellt riksdagsspråk till regionala dialekter — och presterar långt bättre än generella Whisper-modeller på svenska. Modellen körs på Bergets infrastruktur i Sverige, vilket innebär att datan stannar i EU.</p>
+        <p>KB Whisper är utvecklad av KBLab vid Kungliga biblioteket och tränad på ett unikt dataset: SVT-undertexter, riksdagsprotokoll, dialektinspelningar från Institutet för språk och folkminnen samt YouTube-kanaler med svenskt innehåll. Resultatet är en modell som förstår hela bredden av talad svenska, från formellt riksdagsspråk till regionala dialekter, och presterar bättre än generella Whisper-modeller på svenska. Via Berget körs modellen på europeisk infrastruktur.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml — välj KB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;KBLab/kb-whisper-large&quot;&#10;&#10;&#91;berget.&quot;KBLab/kb-whisper-large&quot;.params&#93;&#10;language = &quot;sv&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;KBLab&quot;&#93;&#10;align = true&#10;&#10;# Välj interaktivt&#10;ostt model&#10;&#10;# Spela in med kortkommando, transkribera med KB Whisper, kopiera&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml: välj KB Whisper som standardmodell&#10;&#91;transcription&#93;&#10;provider = &quot;berget&quot;&#10;model = &quot;KBLab/kb-whisper-large&quot;&#10;&#10;&#91;berget.&quot;KBLab/kb-whisper-large&quot;.params&#93;&#10;language = &quot;sv&quot;&#10;hotwords = &#91;&quot;OSTT&quot;, &quot;KBLab&quot;&#93;&#10;align = true&#10;&#10;# Välj interaktivt&#10;ostt model&#10;&#10;# Spela in med kortkommando, transkribera med KB Whisper, kopiera&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -49,15 +49,15 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
   <section class="landing-grid">
     <article>
       <h3>Bäst på svenska</h3>
-      <p>KB Whisper Large-v3 uppnår 5,4% WER på FLEURS och 4,1% på CommonVoice — jämfört med OpenAIs whisper-large-v3 som ger 7,8% respektive 9,5%. Det är en förbättring som märks tydligt i vardaglig diktamen, mötesanteckningar och röstkommandon.</p>
+      <p>KB Whisper Large-v3 uppnår 5,4% WER på FLEURS och 4,1% på CommonVoice, jämfört med OpenAIs whisper-large-v3 som ger 7,8% respektive 9,5%. Det är en förbättring som märks tydligt i vardaglig diktamen, mötesanteckningar och röstkommandon.</p>
     </article>
     <article>
       <h3>Förstår svenska dialekter</h3>
-      <p>Träningsdatan täcker dialektinspelningar från hela Sverige, riksdagstal, SVT-sändningar och ljudböcker. Modellen hanterar regional variation som generella Whisper-modeller konsekvent missar.</p>
+      <p>Träningsdatan täcker dialektinspelningar från hela Sverige, riksdagstal, SVT-sändningar och ljudböcker. Modellen hanterar regional variation bättre än generella Whisper-modeller.</p>
     </article>
     <article>
-      <h3>Data stannar i Sverige</h3>
-      <p><a href="https://berget.ai" target="_blank" rel="noopener">Berget</a> är en svensk molnleverantör. Alla transkriptioner behandlas på servrar i Sverige, vilket ger EU-lagstiftningsenlig datahantering utan att du behöver konfigurera något extra. Välj Berget när dataskydd och GDPR är krav.</p>
+      <h3>Data stannar i Europa</h3>
+      <p><a href="https://berget.ai" target="_blank" rel="noopener">Berget</a> är en svensk molnleverantör. Transkriptionerna behandlas på europeisk infrastruktur, utan att du behöver konfigurera något extra. Ett bra val när dataskydd och GDPR är krav.</p>
     </article>
     <article>
       <h3>Validerade Berget-optioner</h3>
@@ -69,7 +69,11 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
     </article>
     <article>
       <h3>Återtranskribera utan ny inspelning</h3>
-      <p>OSTT sparar alla inspelningar lokalt. Kör <code>ostt retry</code> för att transkribera om samma ljud med KB Whisper eller byt till en annan modell — utan att tala igen.</p>
+      <p>OSTT sparar dina 10 senaste inspelningar. Kör <code>ostt retry</code> för att transkribera om samma ljud med KB Whisper eller en annan modell, utan att tala igen.</p>
+    </article>
+    <article>
+      <h3>KB Whisper lokalt</h3>
+      <p>OSTT kör också KB Whisper på din egen dator, utan API-nyckel: <code>ostt model local download whisper/kb-whisper-large</code> och sedan <code>ostt model select whisper/kb-whisper-large</code>. Med <code>--paste</code> klistras texten in direkt i appen du står i.</p>
     </article>
   </section>
 
@@ -79,7 +83,7 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
       <h2>Från tal till användbar output.</h2>
       <div class="steps">
         <div><strong>1. Spela in</strong><span>Tryck på ditt globala kortkommando eller kör <code>ostt</code> i terminalen.</span></div>
-        <div><strong>2. Transkribera</strong><span>KB Whisper transkriberar ljudet via Bergets API i Sverige.</span></div>
+        <div><strong>2. Transkribera</strong><span>KB Whisper transkriberar ljudet via Bergets API.</span></div>
         <div><strong>3. Bearbeta</strong><span>Kör valfritt AI-prompt eller skalkommando på resultatet.</span></div>
         <div><strong>4. Skicka</strong><span>Skriv till stdout, kopiera till urklipp, skriv till fil eller pipa vidare.</span></div>
       </div>
@@ -90,7 +94,7 @@ description: "Använd KB Whisper — Kungliga bibliotekets svenska taligenkänni
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>Bästa svenska taligenkänningen i ditt skal.</h2>
-      <p>OSTT gör KB Whisper till ett vanligt Unix-verktyg. Transkriptionsresultatet hamnar på stdout — pipa det genom <code>jq</code>, <code>sed</code> eller vilket CLI-verktyg som helst. Använd <code>-p</code> för att kedja bearbetningsåtgärder. Lägg till tekniska termer och egennamn i OSTT keywords en gång och förbättra träffsäkerheten i alla framtida inspelningar.</p>
+      <p>OSTT gör KB Whisper till ett vanligt Unix-verktyg. Transkriptionsresultatet hamnar på stdout, så du kan pipa det genom <code>jq</code>, <code>sed</code> eller vilket CLI-verktyg som helst. Använd <code>-p</code> för att kedja bearbetningsåtgärder. Lägg till tekniska termer och egennamn i OSTT keywords en gång, så används de i alla kommande inspelningar.</p>
     </div>
     <div class="command-card">
       <pre><code># Transkribera ett ljudklipp&#10;ostt transcribe meeting.mp3 -o anteckningar.md&#10;&#10;# Spela in, bearbeta med AI-åtgärd, kopiera till urklipp&#10;ostt -p clean -c&#10;&#10;# Transkribera och pipa vidare&#10;ostt | mitt-skript.sh</code></pre>

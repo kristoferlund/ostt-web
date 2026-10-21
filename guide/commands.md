@@ -1,5 +1,5 @@
 ---
-description: "Complete reference for all OSTT CLI commands and output modes: record, transcribe, retry, replay, process, paste, auth, model, history, keyword, replace, config, logs, and shell completions."
+description: "Complete reference for all OSTT CLI commands and output modes: record, launch, transcribe, retry, replay, process, auth, model, daemon, history, keyword, replace, config, logs, and shell completions, plus stdout, clipboard, file, and paste output."
 ---
 
 # Commands
@@ -32,6 +32,16 @@ Alias: `ostt r`.
 | `-p [ACTION]` / `--process [ACTION]` | Enable processing. Optionally specify action ID to skip picker. |
 | `-m PROVIDER/MODEL` / `--model PROVIDER/MODEL` | Override transcription model for this run. |
 | `--param KEY=VALUE` | Override one supported transcription param for this run. Repeat for multiple params. |
+
+### Recording Controls
+
+| Key | Action |
+| --- | --- |
+| `Enter` | Stop recording and transcribe |
+| `Space` | Pause or resume recording |
+| `Esc`, `q`, `Ctrl+C` | Cancel without saving |
+
+The screen shows the live visualization (spectrum or waveform, see [`visualization`](./configuration#visualization)) and a footer with the duration and peak level (the highest in the last 3 seconds). The footer turns red when the signal clips in auto mode, or passes `peak_volume_threshold` with a fixed reference level. See [`reference_level_db`](./configuration#reference-level-db).
 
 ## Launch (Popup)
 
@@ -111,7 +121,7 @@ ostt replay             # Play most recent recording
 ostt replay 2           # Play recording #2
 ```
 
-Uses `mpv` if available, with fallbacks to `vlc`, `ffplay`, `paplay` (Linux), or `afplay` (macOS).
+On Linux, uses the first available of `mpv`, `cvlc`, `ffplay`, or `paplay`, falling back to `xdg-open`. On macOS, uses `afplay`.
 
 Alias: `ostt rp`.
 
@@ -200,9 +210,26 @@ Rules:
 - Values are validated against the selected provider/model, including type, ranges, and provider-specific conflicts.
 - For list params on the CLI, separate values with commas, for example `--param keyterm=OSTT,VitePress`.
 
-Use `ostt model params PROVIDER/MODEL` to list supported keys, and use persistent `[provider.params]` or `[provider."model".params]` config for defaults that should apply every run.
+`--param` overrides apply only to the current command. They do not change `ostt.toml` and they take precedence over persistent params for the selected model.
+
+Use `ostt model params PROVIDER/MODEL` to list supported keys, and use persistent [`[provider.params]` or `[provider."model".params]`](./configuration#transcription-params) config for defaults that should apply every run. Unlike `--param`, an unknown param in `ostt.toml` does not fail: OSTT skips it and notes it in the log.
 
 See [Local Models](./local-models.md) for offline model setup.
+
+## Daemon
+
+Keep the active local model (Whisper or Parakeet) loaded in memory so transcriptions start without loading the model each time.
+
+```bash
+ostt daemon start      # Start the daemon for the active local model
+ostt daemon stop       # Stop the running daemon
+ostt daemon restart    # Restart with the current active local model
+ostt daemon status     # Show status, model, PID, backend, and service
+ostt daemon install    # Install as a login service (auto-start)
+ostt daemon uninstall  # Remove the login service
+```
+
+See [Daemon Mode](./daemon.md). Alias: `ostt d`.
 
 ## History
 
@@ -212,6 +239,7 @@ Browse previous transcriptions. Use arrow keys to navigate, Enter to copy, Esc t
 ostt history                 # Interactive history browser
 ostt history list            # List history
 ostt history list --limit 10 # List recent entries
+ostt history list --format json # List history as JSON
 ostt history show 3          # Print history item #3
 ostt history copy 3          # Copy history item #3
 ```
@@ -225,8 +253,9 @@ Manage keywords for improved transcription accuracy. Add technical terms, names,
 ```bash
 ostt keyword                 # Interactive keyword manager
 ostt keyword list            # List keywords
-ostt keyword add Kubernetes  # Add a keyword
-ostt keyword remove Kubernetes # Remove a keyword
+ostt keyword list --format json # List keywords as JSON
+ostt keyword add Kubernetes Rödeby # Add one or more keywords
+ostt keyword remove Kubernetes # Remove one or more keywords
 ```
 
 Alias: `ostt k`.
@@ -239,22 +268,7 @@ Manage deterministic, non-AI text replace rules for final transcript cleanup. Us
 ostt replace # Interactive replace manager
 ```
 
-Replace rules are configured under `[text.replace]` in `~/.config/ostt/ostt.toml`:
-
-```toml
-[text.replace]
-"ostt" = "OSTT"
-"api" = "API"
-"typescript" = "TypeScript"
-"open ai" = "OpenAI"
-```
-
-Rules are literal, case-insensitive, word-boundary aware, provider-neutral, and applied before processing actions, output, and history saves.
-
-Keywords and replace rules solve different problems:
-
-- `ostt keyword` helps providers recognize terms during transcription.
-- `ostt replace` fixes final text after transcription, provider-independently.
+Rules live under `[text.replace]` in `ostt.toml` and are applied before processing actions, output, and history saves. `ostt keyword` helps the model recognize terms; `ostt replace` fixes the final text. See [Text Replace](./configuration#text-replace) for matching rules.
 
 ## Paste Output
 
@@ -276,27 +290,7 @@ ostt --paste -c           # error: choose one output mode
 ostt --paste -o notes.txt # error: choose one output mode
 ```
 
-Paste uses the clipboard as transport: OSTT saves the current clipboard when possible, copies the final text, sends the configured paste shortcut, then restores the previous clipboard when enabled.
-
-Defaults:
-
-- macOS: `cmd+v`
-- Omarchy: `shift+insert`
-- other Linux desktops: `ctrl+v`
-
-Configure paste under `[output.paste]`:
-
-```toml
-[output.paste]
-paste_key = "ctrl+v"
-restore_clipboard = true
-restore_delay_ms = 750
-post_popup_delay_ms = 1000
-```
-
-Linux does not have one universal paste shortcut. GUI apps usually accept `ctrl+v`; terminals often use `ctrl+shift+v`; Omarchy's `SUPER+v` binding sends `shift+insert` to the focused app. If paste works in one app class but not another, set `paste_key` for the workflow you bind to that hotkey.
-
-On macOS, paste mode sends `cmd+v` with system automation. macOS may ask for Accessibility permission for the terminal app running OSTT, such as Ghostty. Approve it in System Settings > Privacy & Security > Accessibility.
+Paste uses the clipboard as transport and sends the configured paste shortcut. See [Paste Output](./configuration#paste-output) for `[output.paste]` settings, default shortcuts, and the Linux and macOS requirements.
 
 ## Config
 
@@ -308,7 +302,7 @@ ostt config path         # Print config file path
 ostt config list-devices # List audio input devices
 ```
 
-Uses `$EDITOR` environment variable or falls back to nano/vim.
+Uses `$EDITOR`, falling back to `nano`, then `vi`.
 
 Alias: `ostt c`.
 
@@ -329,9 +323,10 @@ Generate shell completion scripts for tab completion of commands and options.
 Install directly to the standard location for your shell:
 
 ```bash
-ostt completions install bash            # requires sudo
-ostt completions install zsh             # requires sudo
-ostt completions install fish            # no sudo needed, uses ~/.config/fish
+sudo ostt completions install bash       # writes /etc/bash_completion.d/ostt
+sudo ostt completions install zsh        # writes _ostt to /usr/share/zsh/site-functions (Linux)
+                                         # or /usr/local/share/zsh/site-functions (macOS)
+ostt completions install fish            # writes ~/.config/fish/completions/ostt.fish
 ```
 
 Or generate and place the file manually:
@@ -392,6 +387,7 @@ ostt -h               # Quick help
 | `k` | keyword |
 | `c` | config |
 | `rp` | replay |
+| `d` | daemon |
 
 ```bash
 ostt r -c            # Same as: ostt record -c

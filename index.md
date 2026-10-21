@@ -44,7 +44,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
     </article>
     <article>
       <h3>Paste into any focused app</h3>
-      <p>Use <code>ostt launch --paste</code> to dictate into editors, browsers, chats, issue trackers, AI apps, and terminals. OSTT closes the popup, waits for focus to return, then sends the configured paste shortcut.</p>
+      <p>Bind <code>ostt launch --paste</code> to a global hotkey and dictate into editors, browsers, chats, issue trackers, AI apps, and terminals. OSTT closes the popup, waits for focus to return, then sends the configured paste shortcut.</p>
     </article>
     <article>
       <h3>Cloud or local models</h3>
@@ -56,7 +56,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
     </article>
     <article>
       <h3>Daemon mode</h3>
-      <p>Keep a local model loaded in the background between calls. After the first load, transcription starts instantly with no model loading overhead. Install as a login service and the model is always ready.</p>
+      <p>Keep a local model loaded in the background, so each transcription starts without loading the model first. Install it as a login service and the model is ready whenever you are.</p>
     </article>
     <article>
       <h3>Process with AI or bash</h3>
@@ -67,8 +67,8 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
       <p>Recordings are saved locally, so you can re-transcribe the same audio with a different provider or model.</p>
     </article>
     <article>
-      <h3>Bind it to a hotkey</h3>
-      <p>Launch OSTT from anywhere. Press your global hotkey to open the recorder, speak in any application, then stop and paste the transcription back into the app that regains focus.</p>
+      <h3>Keywords and replace rules</h3>
+      <p>Give the model the names and terms you use with <code>ostt keyword</code>, then fix casing and product names with deterministic <code>ostt replace</code> rules.</p>
     </article>
     <article>
       <h3>Open source, no subscription</h3>
@@ -105,7 +105,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
       <div>
         <p class="eyebrow">AI agent skill</p>
         <h2>Let your AI agent install it.</h2>
-        <p>OSTT ships an official <a href="/guide/ai-skill">agent skill</a> for Claude Code and other skill-aware tools. Add it once and your agent knows how to install, configure, and troubleshoot OSTT for you &mdash; no need to read the docs by hand. It uses the open <a href="https://skills.sh">skills</a> ecosystem, and <code>npx</code> runs the CLI on demand, so there is nothing to install first.</p>
+        <p>OSTT ships an official <a href="/guide/ai-skill">agent skill</a> for Claude Code and other skill-aware tools. Add it once and your agent knows how to install, configure, and troubleshoot OSTT for you. It uses the open <a href="https://skills.sh">skills</a> ecosystem, and <code>npx</code> runs the CLI on demand, so there is nothing to install first.</p>
       </div>
       <div class="command-card">
         <pre><code># Add the OSTT skill to your AI agent&#10;npx skills add https://github.com/kristoferlund/ostt-skill&#10;&#10;# Then just ask, for example:&#10;#   "Install OSTT and set up Deepgram."&#10;#   "Bind OSTT to Alt+Space on Hyprland with paste."</code></pre>

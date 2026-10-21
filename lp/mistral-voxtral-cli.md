@@ -20,7 +20,7 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
 
   <section class="landing-hero">
     <h1>Mistral Voxtral from the command line.</h1>
-    <p class="lede">Voxtral Mini Transcribe is Mistral's speech-to-text model — open weights under Apache 2.0, best price-to-accuracy of any transcription API at $0.003/min, and built on a language model backbone that understands audio rather than just transcribing it. OSTT connects it to your terminal, hotkey, and shell on Linux and macOS.</p>
+    <p class="lede">Voxtral Mini Transcribe is Mistral's speech-to-text model: open weights under Apache 2.0, $0.003/min through the API, and built on a language model backbone. OSTT connects it to your terminal, hotkey, and shell on Linux and macOS.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -36,8 +36,8 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
     <section class="landing-section split">
       <div>
         <p class="eyebrow">Mistral Voxtral</p>
-        <h2>Open weights. Best price-performance. Built on a language model.</h2>
-        <p>Voxtral Mini Transcribe V2 delivers ~4% WER at $0.003/min — outperforming GPT-4o-mini-transcribe, Gemini 2.5 Flash, AssemblyAI Universal, and Deepgram Nova on accuracy, while processing audio roughly 3x faster than ElevenLabs Scribe v2. It's open-weight (Apache 2.0), supports 13 languages, speaker diarization, context biasing for technical vocabulary, and processes recordings up to 3 hours in a single request.</p>
+        <h2>Open weights. Low price. Built on a language model.</h2>
+        <p>Voxtral Mini Transcribe V2 delivers ~4% WER at $0.003/min, outperforming GPT-4o-mini-transcribe, Gemini 2.5 Flash, AssemblyAI Universal, and Deepgram Nova on accuracy, while processing audio roughly 3x faster than ElevenLabs Scribe v2. It's open-weight (Apache 2.0), supports 13 languages, speaker diarization, context biasing for technical vocabulary, and processes recordings up to 3 hours in a single request.</p>
       </div>
       <div class="command-card">
         <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;mistral&quot;&#10;model = &quot;voxtral-mini-latest&quot;&#10;&#10;&#91;mistral.voxtral-mini-latest.params&#93;&#10;# language = &quot;en&quot;  # Optional: improves accuracy when known&#10;# context_bias = &#91;&quot;OSTT&quot;, &quot;Voxtral&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Voxtral, copy to clipboard&#10;ostt launch -c</code></pre>
@@ -48,11 +48,11 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
   <section class="landing-grid">
     <article>
       <h3>Open weights, Apache 2.0</h3>
-      <p>Voxtral is open-source. The 3B and 24B model weights are available on Hugging Face for self-hosting, private deployment, or on-premise use. The API routes to a transcription-optimised version of the mini model when you don't want to manage infrastructure.</p>
+      <p>Voxtral is open-weight. The 3B and 24B model weights are available on Hugging Face for self-hosting, private deployment, or on-premise use. The API routes to a transcription-optimised version of the mini model when you don't want to manage infrastructure.</p>
     </article>
     <article>
-      <h3>Best price-performance</h3>
-      <p>At $0.003/min, Voxtral Mini Transcribe V2 costs half of GPT-4o-mini-transcribe and one-fifth of ElevenLabs Scribe v2, while matching or beating both on accuracy benchmarks. For high-volume transcription work, no other API comes close on this ratio.</p>
+      <h3>Price</h3>
+      <p>At $0.003/min, Voxtral Mini Transcribe V2 costs half of GPT-4o-mini-transcribe and one-fifth of ElevenLabs Scribe v2, while matching or beating both on accuracy benchmarks.</p>
     </article>
     <article>
       <h3>Context biasing for technical vocabulary</h3>
@@ -60,15 +60,15 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
     </article>
     <article>
       <h3>13 languages with speaker diarization</h3>
-      <p>Voxtral Mini Transcribe V2 supports English, Chinese, Hindi, Spanish, Arabic, French, Portuguese, Russian, German, Japanese, Korean, Italian, and Dutch — with speaker diarization and word-level timestamps in all 13.</p>
+      <p>Voxtral Mini Transcribe V2 supports English, Chinese, Hindi, Spanish, Arabic, French, Portuguese, Russian, German, Japanese, Korean, Italian, and Dutch, with speaker diarization and word-level timestamps in all 13.</p>
     </article>
     <article>
       <h3>3-hour recordings in a single request</h3>
-      <p>Unlike most transcription APIs that require chunking at 25MB or 25 minutes, Voxtral processes recordings up to 3 hours in one request. Transcribe a full workday of audio without writing chunking logic.</p>
+      <p>Unlike most transcription APIs that require chunking at 25MB or 25 minutes, Voxtral processes recordings up to 3 hours in one request, so long meetings need no chunking logic.</p>
     </article>
     <article>
       <h3>Global hotkey</h3>
-      <p>Bind OSTT to a system-wide shortcut. Press to open the recorder, speak, press again to stop. Voxtral transcribes and the result lands in your clipboard or stdout — without touching the mouse.</p>
+      <p>Bind OSTT to a system-wide shortcut. Press to open the recorder, speak, press again to stop. Voxtral transcribes and the result lands in your clipboard or stdout, or in the focused app with <code>--paste</code>. OSTT also runs Parakeet and Whisper models locally when you want to stay offline.</p>
     </article>
   </section>
 
@@ -89,7 +89,7 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>Open-source accuracy in your shell.</h2>
-      <p>OSTT routes Voxtral output to wherever your workflow needs it — stdout, clipboard, file, or piped to any CLI tool. Use the <code>-p</code> flag to chain processing actions. OSTT keywords map directly to Voxtral <code>context_bias</code>, so domain vocabulary you add once improves every recording automatically.</p>
+      <p>OSTT routes Voxtral output to wherever your workflow needs it: stdout, clipboard, file, or piped to any CLI tool. Use the <code>-p</code> flag to chain processing actions. OSTT keywords map directly to Voxtral <code>context_bias</code>, so vocabulary you add once applies to every recording.</p>
     </div>
     <div class="command-card">
       <pre><code># Transcribe a 2-hour recording in one call&#10;ostt transcribe lecture.mp3 -o notes.md&#10;&#10;# Record, run processing action, copy result&#10;ostt -p clean -c&#10;&#10;# Transcribe and pipe to downstream command&#10;ostt | my-tool.sh</code></pre>
@@ -97,7 +97,7 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
   </section>
 
   <section class="landing-section final-cta">
-    <h2>Voxtral accuracy at half the cost of the alternatives.</h2>
+    <h2>Voxtral in your terminal.</h2>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>

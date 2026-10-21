@@ -70,7 +70,7 @@ List supported params for any model:
 ostt model params openai/gpt-transcribe --format json
 ```
 
-OSTT always returns plain transcript text. Params that require a JSON response are supported only when the response still contains a top-level `text` field.
+OSTT always returns plain transcript text. Params that require a JSON response are supported only when the response still contains a top-level `text` field. OSTT does not expose `stream=true`.
 
 ## GPT Transcribe Params
 
@@ -115,7 +115,3 @@ Use `openai/gpt-4o-transcribe-diarize` for diarization. OSTT sends `response_for
 | `temperature` | number | Sampling temperature, `0.0` to `1.0`. |
 | `response_format` | string | Supported values in OSTT: `json`, `verbose_json`. `text`, `srt`, and `vtt` are not exposed because OSTT's OpenAI path parses JSON. |
 | `timestamp_granularities` | string list | Supported values: `word`, `segment`. Requires `response_format = "verbose_json"`; OSTT sets `verbose_json` automatically if timestamps are set without an explicit response format. |
-
-## Not Exposed
-
-OSTT does not expose OpenAI `stream=true` because this provider path expects a single JSON response. It also does not expose non-JSON response formats (`text`, `srt`, `vtt`) because they would bypass OSTT's JSON parsing path.

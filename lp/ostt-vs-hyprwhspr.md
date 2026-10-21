@@ -20,7 +20,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
 
   <section class="landing-hero">
     <h1>OSTT vs Hyprwhspr: Linux dictation or terminal-native speech-to-text?</h1>
-    <p class="lede">Hyprwhspr is a polished Linux system-wide dictation project with Wayland-focused setup, visual feedback, local backends, model controls, and automatic paste into the active buffer. OSTT is the better fit when you want open speech-to-text that works as a developer tool: choose any provider, use local or cloud models, paste into apps, retry saved recordings, transcribe files, and process text with AI prompts or shell commands.</p>
+    <p class="lede">Hyprwhspr is a polished Linux system-wide dictation project with Wayland-focused setup, visual feedback, local backends, model controls, and automatic paste into the active buffer. OSTT fits when you want open speech-to-text that works as a developer tool: choose any provider, use local or cloud models, paste into apps, retry saved recordings, transcribe files, and process text with AI prompts or shell commands.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -44,7 +44,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
         <p>Hyprwhspr is designed around fast Linux dictation: press a hotkey, speak, stop, and text appears in the active buffer. OSTT can also paste into the focused app, but its bigger advantage is what happens around the transcript: model switching, retry, history, file transcription, stdout, clipboard, custom engines, provider params, deterministic replace rules, and AI or bash processing.</p>
       </div>
       <div class="command-card">
-        <pre><code># Hotkey-friendly dictation into the focused app&#10;ostt launch --paste&#10;&#10;# Use a different model for one recording&#10;ostt launch --paste -m openai/gpt-4o-transcribe&#10;&#10;# Retry the same recording with a local model&#10;ostt retry -m whisper/turbo&#10;&#10;# Send transcript through an action before paste&#10;ostt launch --paste -p clean</code></pre>
+        <pre><code># Hotkey-friendly dictation into the focused app&#10;ostt launch --paste&#10;&#10;# Use a different model for one recording&#10;ostt launch --paste -m openai/gpt-4o-transcribe&#10;&#10;# Retry the same recording with another model&#10;ostt retry -m deepgram/nova-3&#10;&#10;# Send transcript through an action before paste&#10;ostt launch --paste -p clean</code></pre>
       </div>
     </section>
   </div>
@@ -63,14 +63,14 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
           <tr><td>macOS support</td><td>✅ macOS supported</td><td>❌ Public docs describe Linux support</td></tr>
           <tr><td>Focused app insertion</td><td>✅ <code>--paste</code> sends text to the focused app and can restore the previous clipboard</td><td>✅ Auto-paste into the active buffer is a core documented workflow</td></tr>
           <tr><td>Cloud transcription providers</td><td>✅ OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral</td><td>✅ REST API and realtime WebSocket backends are documented for cloud-style integrations</td></tr>
-          <tr><td>Built-in local transcription</td><td>✅ Built-in local Parakeet and Whisper models</td><td>✅ Public docs describe Cohere Transcribe, Parakeet, Whisper, onnx-asr, and related local backends</td></tr>
+          <tr><td>Built-in local transcription</td><td>✅ Built-in local Parakeet and Whisper models, with Metal, CUDA, and Vulkan GPU builds and an optional daemon that keeps the model loaded</td><td>✅ Public docs describe Cohere Transcribe, Parakeet, Whisper, onnx-asr, and related local backends</td></tr>
           <tr><td>External local engines</td><td>✅ <code>command/&lt;profile&gt;</code> and <code>http/&lt;profile&gt;</code> integrations for user-managed engines</td><td>✅ Broad backend setup is a core Hyprwhspr feature</td></tr>
           <tr><td>Retry same recording with another model</td><td>✅ First-class <code>ostt retry -m PROVIDER/MODEL</code></td><td>⚠️ Not the main documented workflow</td></tr>
           <tr><td>File/stdout/shell workflows</td><td>✅ Core workflow: stdout, files, clipboard, paste, scripts, and processing actions</td><td>⚠️ Dictation-oriented, with command controls and capture workflows documented</td></tr>
           <tr><td>Recording modes</td><td>⚠️ Terminal recorder, popup launcher, pause/resume, file transcription, retry, replay</td><td>✅ Public docs describe toggle, push-to-talk, auto, and long-form modes</td></tr>
           <tr><td>Visual/audio feedback</td><td>⚠️ Terminal visualization and popup workflow</td><td>✅ Themed visualizer, notifications, audio cues, Waybar integration, and audio ducking are documented</td></tr>
           <tr><td>Text cleanup</td><td>✅ Keywords, deterministic replace rules, AI actions, and bash actions</td><td>✅ Word overrides, prompts, filler handling, and symbol replacement are documented</td></tr>
-          <tr><td>Provider-neutral params</td><td>✅ <code>--param</code> validation and per-model config across cloud, local, command, and HTTP providers</td><td>⚠️ Backend-specific configuration rather than OSTT-style provider/model IDs</td></tr>
+          <tr><td>Provider-neutral params</td><td>✅ <code>--param</code> validation and per-model config across cloud, local Whisper, and HTTP providers</td><td>⚠️ Backend-specific configuration rather than OSTT-style provider/model IDs</td></tr>
         </tbody>
       </table>
     </div>
@@ -79,7 +79,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
   <section class="landing-grid compact">
     <article>
       <h3>Use OSTT for provider choice</h3>
-      <p>Switch between OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, local Whisper, command engines, and HTTP endpoints.</p>
+      <p>Switch between OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, local Parakeet and Whisper, command engines, and HTTP endpoints.</p>
     </article>
     <article>
       <h3>Use OSTT for retry</h3>
@@ -91,7 +91,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
     </article>
     <article>
       <h3>Use OSTT for custom engines</h3>
-      <p>Keep OSTT lean while calling your own Parakeet, faster-whisper, Speaches, LocalAI, Cohere Transcribe, or research-model wrapper.</p>
+      <p>Keep OSTT lean while calling your own faster-whisper, Speaches, LocalAI, Cohere Transcribe, or research-model wrapper.</p>
     </article>
     <article>
       <h3>Use OSTT for developer cleanup</h3>
@@ -99,7 +99,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
     </article>
     <article>
       <h3>Use Hyprwhspr for pure Linux dictation</h3>
-      <p>If your priority is a Linux-only dictation daemon with visualizer, Waybar integration, long-form modes, and broad local backend setup, Hyprwhspr is strong.</p>
+      <p>If your priority is Linux-only dictation with a visualizer, Waybar integration, long-form modes, and broad local backend setup, Hyprwhspr is strong.</p>
     </article>
   </section>
 
@@ -109,7 +109,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
       <h2>OSTT turns dictation into reusable text operations.</h2>
       <div class="steps">
         <div><strong>1. Record</strong><span>Use the terminal, a popup hotkey, or an existing audio file.</span></div>
-        <div><strong>2. Choose</strong><span>Select a cloud model, local Whisper model, command engine, or HTTP endpoint.</span></div>
+        <div><strong>2. Choose</strong><span>Select a cloud model, local Parakeet or Whisper model, command engine, or HTTP endpoint.</span></div>
         <div><strong>3. Transform</strong><span>Apply replace rules, AI processing, or bash commands.</span></div>
         <div><strong>4. Route</strong><span>Paste into the app, copy, write a file, print stdout, or retry with another model.</span></div>
       </div>
@@ -120,7 +120,7 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
     <div>
       <p class="eyebrow">Model Choice</p>
       <h2>Local when you need privacy. Cloud when you need hosted quality. External when you want experiments.</h2>
-      <p>OSTT does not ask you to bet everything on one backend. Start with a hosted model, use local Whisper for sensitive work, add Berget for Swedish and EU-focused transcription, or connect a custom local HTTP endpoint when you want newer ASR engines.</p>
+      <p>OSTT does not ask you to bet everything on one backend. Start with a hosted model, use local Parakeet or Whisper for sensitive work, add Berget for Swedish and EU-focused transcription, or connect a custom local HTTP endpoint when you want newer ASR engines.</p>
     </div>
     <div class="command-card">
       <pre><code># Pick a provider interactively&#10;ostt model&#10;&#10;# Use OpenAI for one run&#10;ostt -m openai/gpt-4o-transcribe --paste&#10;&#10;# Use Berget for Swedish&#10;ostt -m berget/KBLab/kb-whisper-large --param language=sv -c&#10;&#10;# Use a custom local HTTP engine&#10;ostt -m http/speaches --paste</code></pre>

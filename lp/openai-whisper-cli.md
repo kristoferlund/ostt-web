@@ -1,7 +1,7 @@
 ---
 layout: false
 title: "OpenAI Whisper from the Command Line"
-description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT connects all three OpenAI speech models to a global hotkey, clipboard, and shell pipeline on Linux and macOS."
+description: "Run OpenAI GPT Transcribe, GPT-4o Transcribe, and Whisper from your terminal. OSTT connects all five OpenAI transcription models to a global hotkey, clipboard, and shell pipeline on Linux and macOS."
 ---
 
 <header class="site-header">
@@ -20,7 +20,7 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
 
   <section class="landing-hero">
     <h1>OpenAI Whisper from the command line.</h1>
-    <p class="lede">OpenAI offers GPT-4o transcription, GPT-4o Mini, GPT-4o diarization, and the legacy hosted Whisper model through the same transcription API. whisper-1 remains useful for timestamp metadata; gpt-4o-transcribe and gpt-4o-mini-transcribe are the newer generation with lower word error rates; gpt-4o-transcribe-diarize adds speaker-segment annotations. OSTT connects them to your terminal with a single config change.</p>
+    <p class="lede">OpenAI offers GPT Transcribe, GPT-4o Transcribe, GPT-4o Mini, GPT-4o diarization, and the legacy hosted Whisper model through the same transcription API. gpt-transcribe is OpenAI's recommended file model; gpt-4o-transcribe and gpt-4o-mini-transcribe take prompts; gpt-4o-transcribe-diarize adds speaker-segment annotations; whisper-1 returns timestamp metadata. OSTT connects them to your terminal with a single config change.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -36,8 +36,8 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
     <section class="landing-section split">
       <div>
         <p class="eyebrow">OpenAI Speech Models</p>
-        <h2>Four models, one API, one config.</h2>
-        <p>OpenAI's transcription API covers the spectrum from faster GPT-4o Mini to higher-accuracy GPT-4o transcription, diarized GPT-4o output, and legacy whisper-1 timestamp metadata. OSTT lets you switch between them through <code>ostt model</code> without touching your workflow.</p>
+        <h2>Five models, one API, one config.</h2>
+        <p>OpenAI's transcription API covers GPT Transcribe with native keyword and language hints, faster GPT-4o Mini, higher-accuracy GPT-4o transcription, diarized GPT-4o output, and legacy whisper-1 timestamp metadata. OSTT lets you switch between them through <code>ostt model</code> without touching your workflow.</p>
       </div>
       <div class="command-card">
         <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;openai&quot;&#10;model = &quot;gpt-4o-transcribe&quot;&#10;&#10;# Or use Whisper timestamps / GPT-4o diarization&#10;# model = &quot;whisper-1&quot;&#10;# model = &quot;gpt-4o-transcribe-diarize&quot;&#10;&#10;&#91;openai.gpt-4o-transcribe.params&#93;&#10;language = &quot;en&quot;&#10;include = &#91;&quot;logprobs&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with OpenAI, copy to clipboard&#10;ostt launch -c</code></pre>
@@ -46,6 +46,10 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
   </div>
 
   <section class="landing-grid">
+    <article>
+      <h3>gpt-transcribe</h3>
+      <p>OpenAI's recommended file-transcription model. Takes <code>languages</code> hints for multilingual audio and a native <code>keywords</code> list. Saved <code>ostt keyword</code> terms go to that field automatically.</p>
+    </article>
     <article>
       <h3>gpt-4o-transcribe</h3>
       <p>Built on GPT-4o, not just Whisper. Produces lower word error rates on noisy audio, better formatting, and significantly fewer hallucinations than whisper-1 on long recordings. Same price per minute as the legacy model.</p>
@@ -56,7 +60,7 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
     </article>
     <article>
       <h3>whisper-1 (legacy)</h3>
-      <p>The original OpenAI hosted Whisper model. Supports verbose_json with word-level timestamps and SRT/VTT output formats — useful for subtitle generation and pipelines that need precise timing.</p>
+      <p>The original OpenAI hosted Whisper model. Supports <code>verbose_json</code> with word or segment timestamps. OSTT reads the transcript text from the JSON response.</p>
     </article>
     <article>
       <h3>gpt-4o-transcribe-diarize</h3>
@@ -64,7 +68,7 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
     </article>
     <article>
       <h3>Validated request options</h3>
-      <p>Set OpenAI params per model with <code>--param</code> or persistent <code>openai.&lt;model&gt;.params</code>: <code>language</code>, <code>prompt</code>, <code>temperature</code>, GPT-4o <code>include=logprobs</code>, Whisper timestamp granularities, and diarization fields.</p>
+      <p>Set OpenAI params per model with <code>--param</code> or persistent <code>openai.&lt;model&gt;.params</code>: <code>language</code>, <code>prompt</code>, <code>temperature</code>, GPT Transcribe <code>languages</code> and <code>keywords</code>, GPT-4o <code>include=logprobs</code>, Whisper timestamp granularities, and diarization fields.</p>
     </article>
     <article>
       <h3>Pipe to AI tools</h3>
@@ -72,7 +76,11 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
     </article>
     <article>
       <h3>Retry without re-recording</h3>
-      <p>OSTT saves every recording locally. Run <code>ostt retry</code> to re-transcribe the same audio with a different OpenAI model, or switch to any other provider — no need to speak again.</p>
+      <p>OSTT keeps your last 10 recordings. Run <code>ostt retry</code> to re-transcribe the same audio with a different OpenAI model or another provider, without speaking again.</p>
+    </article>
+    <article>
+      <h3>Local models and paste</h3>
+      <p>OSTT also runs Parakeet and Whisper models locally, with Metal, CUDA, or Vulkan builds for GPU acceleration. Add <code>--paste</code> to send the transcript straight into the focused app.</p>
     </article>
   </section>
 
@@ -93,7 +101,7 @@ description: "Run OpenAI Whisper and gpt-4o-transcribe from your terminal. OSTT 
     <div>
       <p class="eyebrow">Pipeline</p>
       <h2>OpenAI quality inside your shell.</h2>
-      <p>OSTT turns OpenAI transcription into a standard Unix primitive. The output is plain text on stdout — pipe it through <code>jq</code>, <code>sed</code>, or any CLI tool. Use <code>-p</code> to chain processing actions. Switch between whisper-1, gpt-4o-transcribe, and gpt-4o-mini-transcribe via <code>ostt model</code> without changing your shell aliases.</p>
+      <p>OSTT turns OpenAI transcription into a standard Unix primitive. The output is plain text on stdout, so you can pipe it through <code>jq</code>, <code>sed</code>, or any CLI tool. Use <code>-p</code> to chain processing actions. Switch between OpenAI models via <code>ostt model</code> without changing your shell aliases.</p>
     </div>
     <div class="command-card">
       <pre><code># Transcribe a file with gpt-4o-transcribe&#10;ostt transcribe interview.mp3 -o transcript.txt&#10;&#10;# Record, clean with AI processing action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Transcribe and pipe straight to your editor&#10;ostt | nvim -</code></pre>

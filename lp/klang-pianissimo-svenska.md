@@ -1,7 +1,7 @@
 ---
 layout: false
 title: "Klang Pianissimo i terminalen"
-description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för svenska, direkt från terminalen. OSTT kopplar modellen till ett kortkommando, urklipp, filer och dina egna skript på Linux och macOS, via Berget AI i Sverige."
+description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för svenska, direkt från terminalen. OSTT kopplar modellen till ett kortkommando, urklipp, filer och dina egna skript på Linux och macOS, via svenska Berget AI."
 ---
 
 <header class="site-header">
@@ -21,7 +21,7 @@ description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för sven
   <section class="landing-hero">
     <h1>Klang Pianissimo i terminalen.</h1>
     <p class="lede">Pianissimo är Klangs öppna taligenkänningsmodell för svenska. Den bygger på Nvidia Parakeet, är tränad på svenska och svenska dialekter och är lika träffsäker som KB Whisper Large, men ungefär 60 gånger snabbare.</p>
-    <p class="lede">Med OSTT pratar du in text i vilken app som helst med ett kortkommando, eller transkriberar direkt i terminalen. Modellen körs hos <a href="https://berget.ai" target="_blank" rel="noopener">Berget AI</a>, och ljudet lämnar aldrig Sverige. Fungerar på Linux och macOS.</p>
+    <p class="lede">Med OSTT pratar du in text i vilken app som helst med ett kortkommando, eller transkriberar direkt i terminalen. Modellen körs hos <a href="https://berget.ai" target="_blank" rel="noopener">Berget AI</a> på europeisk infrastruktur. Fungerar på Linux och macOS.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Kopiera installationskommandot">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -56,8 +56,8 @@ description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för sven
       <p>Klang mäter omkring 3600 gånger realtid. Det betyder att ett långt möte eller en intervju är transkriberad nästan direkt efter att ljudet har laddats upp.</p>
     </article>
     <article>
-      <h3>Ljudet stannar i Sverige</h3>
-      <p>Berget är en svensk molnleverantör. Allt ljud behandlas på servrar i Sverige och Berget sparar ingenting. Ett bra val när dataskydd och GDPR är viktigt.</p>
+      <h3>Ljudet stannar i Europa</h3>
+      <p>Berget är en svensk molnleverantör. Ljudet behandlas på europeisk infrastruktur. Ett bra val när dataskydd och GDPR är viktigt.</p>
     </article>
     <article>
       <h3>Hela texten när du är klar</h3>
@@ -69,7 +69,7 @@ description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för sven
     </article>
     <article>
       <h3>Jämför utan att prata in igen</h3>
-      <p>OSTT sparar alla inspelningar lokalt. Kör <code>ostt retry -m berget/KBLab/kb-whisper-large</code> för att transkribera samma ljud med KB Whisper och se vilken modell som passar dig bäst.</p>
+      <p>OSTT sparar dina 10 senaste inspelningar. Kör <code>ostt retry -m berget/KBLab/kb-whisper-large</code> för att transkribera samma ljud med KB Whisper och se vilken modell som passar dig bäst. Vill du köra helt lokalt finns Parakeet- och Whisper-modeller, till exempel <code>whisper/kb-whisper-large</code>, under <code>ostt model</code>.</p>
     </article>
   </section>
 
@@ -79,7 +79,7 @@ description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för sven
       <h2>Från tal till färdig text.</h2>
       <div class="steps">
         <div><strong>1. Spela in</strong><span>Tryck på ditt kortkommando eller kör <code>ostt</code> i terminalen.</span></div>
-        <div><strong>2. Transkribera</strong><span>Pianissimo gör om ljudet till text hos Berget i Sverige.</span></div>
+        <div><strong>2. Transkribera</strong><span>Pianissimo gör om ljudet till text hos Berget.</span></div>
         <div><strong>3. Bearbeta</strong><span>Låt en AI-prompt eller ett eget skript putsa texten, om du vill.</span></div>
         <div><strong>4. Använd</strong><span>Kopiera till urklipp, spara till fil eller skicka vidare till nästa program.</span></div>
       </div>
