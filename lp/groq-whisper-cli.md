@@ -20,7 +20,7 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
 
   <section class="landing-hero">
     <h1>Groq Whisper from the command line.</h1>
-    <p class="lede">Groq runs OpenAI's Whisper models on its LPU hardware — purpose-built inference chips that transcribe a 10-minute recording in about 4 seconds, 4–5x faster than the OpenAI Whisper API at a fraction of the cost. OSTT connects Groq to your terminal, hotkey, and shell pipeline on Linux and macOS.</p>
+    <p class="lede">Groq runs OpenAI's Whisper models on its LPU hardware, purpose-built inference chips that transcribe a 10-minute recording in about 4 seconds, 4–5x faster than the OpenAI Whisper API. OSTT connects Groq to your terminal, hotkey, and shell pipeline on Linux and macOS.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -37,10 +37,10 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
       <div>
         <p class="eyebrow">Groq Whisper</p>
         <h2>216x real-time speed. $0.04 per hour.</h2>
-        <p>Groq's LPU (Language Processing Unit) infrastructure runs Whisper Large v3 Turbo at 216x real-time speed — a 10-minute recording returns in roughly 4 seconds. Independent benchmarks put Groq at 4–5x lower latency than the OpenAI Whisper endpoint, at about 9x lower cost. Two models: whisper-large-v3-turbo for speed and cost, whisper-large-v3 for maximum accuracy and translation support.</p>
+        <p>Groq's LPU (Language Processing Unit) infrastructure runs Whisper Large v3 Turbo at 216x real-time speed: a 10-minute recording returns in roughly 4 seconds. Independent benchmarks put Groq at 4–5x lower latency than the OpenAI Whisper endpoint, at about 9x lower cost. Two models: whisper-large-v3-turbo for speed and cost, whisper-large-v3 for higher accuracy.</p>
       </div>
       <div class="command-card">
-        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;groq&quot;&#10;model = &quot;whisper-large-v3-turbo&quot;&#10;&#10;# For maximum accuracy or audio translation support&#10;# model = &quot;whisper-large-v3&quot;&#10;&#10;&#91;groq.whisper-large-v3-turbo.params&#93;&#10;language = &quot;en&quot;&#10;response_format = &quot;verbose_json&quot;&#10;timestamp_granularities = &#91;&quot;word&quot;, &quot;segment&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Groq, copy to clipboard&#10;ostt launch -c</code></pre>
+        <pre><code># ~/.config/ostt/ostt.toml&#10;&#91;transcription&#93;&#10;provider = &quot;groq&quot;&#10;model = &quot;whisper-large-v3-turbo&quot;&#10;&#10;# For higher accuracy&#10;# model = &quot;whisper-large-v3&quot;&#10;&#10;&#91;groq.whisper-large-v3-turbo.params&#93;&#10;language = &quot;en&quot;&#10;response_format = &quot;verbose_json&quot;&#10;timestamp_granularities = &#91;&quot;word&quot;, &quot;segment&quot;&#93;&#10;&#10;# Pick interactively&#10;ostt model&#10;&#10;# Record with hotkey, transcribe with Groq, copy to clipboard&#10;ostt launch -c</code></pre>
       </div>
     </section>
   </div>
@@ -48,19 +48,19 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
   <section class="landing-grid">
     <article>
       <h3>216x real-time transcription</h3>
-      <p>Groq's LPU hardware processes audio dramatically faster than GPU-based providers. A 10-minute recording returns in ~4 seconds. For a hotkey dictation workflow, that means text in your clipboard before your hand reaches the keyboard.</p>
+      <p>A 10-minute recording returns in about 4 seconds. For hotkey dictation, short recordings come back with little wait.</p>
     </article>
     <article>
-      <h3>Best cost/performance ratio</h3>
-      <p>Whisper Large v3 Turbo costs $0.04/hr ($0.00067/min) — roughly 9x cheaper than OpenAI at the same price point. At high volume, that difference compounds quickly. Whisper Large v3 is available at $0.111/hr for translation and accuracy-critical work.</p>
+      <h3>Low cost per hour</h3>
+      <p>Whisper Large v3 Turbo costs $0.04/hr ($0.00067/min), roughly 9x cheaper than OpenAI. Whisper Large v3 is available at $0.111/hr for accuracy-critical work.</p>
     </article>
     <article>
       <h3>Two models, one decision</h3>
-      <p>Groq documents <code>whisper-large-v3-turbo</code> as the best price/performance choice for multilingual transcription and <code>whisper-large-v3</code> as the accuracy-sensitive model with translation support. Switch between them via <code>ostt model</code>.</p>
+      <p>Groq documents <code>whisper-large-v3-turbo</code> as the best price/performance choice for multilingual transcription and <code>whisper-large-v3</code> as the accuracy-sensitive model. Switch between them via <code>ostt model</code>.</p>
     </article>
     <article>
       <h3>99+ languages</h3>
-      <p>Groq Whisper supports the same 99+ language breadth as the base Whisper model. Turbo handles multilingual audio; Large v3 adds translation to English for non-English source audio.</p>
+      <p>Groq Whisper supports the same 99+ language breadth as the base Whisper model. Both models handle multilingual audio. OSTT uses Groq's transcription endpoint, so output stays in the source language.</p>
     </article>
     <article>
       <h3>Validated Groq options</h3>
@@ -68,7 +68,7 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
     </article>
     <article>
       <h3>Retry without re-recording</h3>
-      <p>OSTT saves every recording locally. Run <code>ostt retry</code> to re-transcribe with Groq, or switch to any other provider — without speaking again.</p>
+      <p>OSTT keeps your last 10 recordings. Run <code>ostt retry</code> to re-transcribe with Groq or another provider, without speaking again.</p>
     </article>
   </section>
 
@@ -88,11 +88,11 @@ description: "Run Groq Whisper Large v3 and Turbo from the terminal on Linux and
   <section class="landing-section split pipeline-section">
     <div>
       <p class="eyebrow">Pipeline</p>
-      <h2>The fastest path from voice to shell.</h2>
-      <p>Groq's throughput makes OSTT feel instant. Press your hotkey, speak, and the transcript is in your clipboard before you've switched windows. Pipe the output through any CLI tool. Use <code>ostt model params groq/whisper-large-v3-turbo</code> to list supported Groq <code>--param</code> keys.</p>
+      <h2>Voice to shell.</h2>
+      <p>Press your hotkey, speak, and the transcript goes to your clipboard, or straight into the focused app with <code>--paste</code>. Pipe the output through any CLI tool. When you need to stay offline, OSTT also runs Parakeet and Whisper models locally. Use <code>ostt model params groq/whisper-large-v3-turbo</code> to list supported Groq <code>--param</code> keys.</p>
     </div>
     <div class="command-card">
-      <pre><code># Transcribe a 10-minute recording — returns in ~4 seconds&#10;ostt transcribe meeting.mp3 -o notes.md&#10;&#10;# Record, process with AI action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Pipe directly to another command&#10;ostt | xargs -I{} notify-send &quot;Transcribed&quot; &quot;{}&quot;</code></pre>
+      <pre><code># Transcribe a 10-minute recording (about 4 seconds)&#10;ostt transcribe meeting.mp3 -o notes.md&#10;&#10;# Record, process with AI action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Pipe directly to another command&#10;ostt | xargs -I{} notify-send &quot;Transcribed&quot; &quot;{}&quot;</code></pre>
     </div>
   </section>
 

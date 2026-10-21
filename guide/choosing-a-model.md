@@ -18,7 +18,7 @@ If you are unsure, start with one good default and let OSTT make comparison prac
 | Swedish or EU-focused work | Berget `berget/KBLab/kb-whisper-large`; `berget/klang/pianissimo` | Swedish-focused cloud options. Pianissimo transcribes after recording stops and does not support keyword boosting. |
 | Norwegian work | Berget `berget/NbAiLab/nb-whisper-large` | NB-Whisper is documented for Norwegian, Bokmal, Nynorsk, and English. |
 | Offline or privacy-sensitive work | Built-in local Parakeet, such as `parakeet/parakeet-ultra`, or Whisper such as `whisper/turbo` | Audio stays on your machine after the model file is downloaded. |
-| Fast local dictation | Built-in local Parakeet with daemon mode | Parakeet is fast even on CPU, and daemon mode avoids reloading the model every call. |
+| Fast local dictation | Built-in local Parakeet with daemon mode | Parakeet adds punctuation and detects the language itself, and daemon mode avoids reloading the model every call. |
 | Other local ASR engines | `command/<profile>` or `http/<profile>` external engines | Run faster-whisper, Cohere Transcribe, Speaches, LocalAI, or your own wrapper without making OSTT bundle every runtime. |
 | Long recordings or meetings | Cloud providers with diarization/formatting params, or local batch engines if privacy matters | Long files often benefit from provider-specific params such as diarization, formatting, language hints, and prompts. |
 | Developer dictation | Any accurate model plus `ostt keyword`, `ostt replace`, and processing actions | Technical terms need vocabulary hints and deterministic cleanup as much as raw model accuracy. |
@@ -27,7 +27,7 @@ These are starting points, not benchmark rankings. Hardware, microphone quality,
 
 ## Compare Models With Retry
 
-Most dictation tools hide model choice behind a global setting. OSTT saves recordings locally, so model choice becomes testable instead of theoretical.
+OSTT saves recordings, so you can compare models on your own audio.
 
 ```bash
 # Record once with your current default
@@ -37,8 +37,9 @@ ostt -o first.txt
 ostt retry -m deepgram/nova-3 -o deepgram.txt
 ostt retry -m openai/gpt-4o-transcribe -o openai.txt
 ostt retry -m berget/KBLab/kb-whisper-large -o berget.txt
-ostt retry -m parakeet/parakeet-ultra -o local.txt
 ```
+
+Local models only accept 16 kHz mono WAV, so a recording made with a cloud model active (MP3 by default) cannot be retried locally. See [Audio Format](/guide/local-models#audio-format).
 
 Use this for real audio from your microphone, your accent, your room, and your vocabulary. That is more useful than a generic benchmark table.
 
@@ -68,79 +69,24 @@ ostt model
 
 Use local models when privacy, offline use, or predictable cost matters. OSTT runs Parakeet and Whisper models on its built-in engine, [transcribe.cpp](https://github.com/handy-computer/transcribe.cpp), with GGUF or `ggml-*.bin` model files.
 
-Start with **Parakeet** when your language is English or one of the 25 European languages it covers. It adds punctuation and capitalization, detects the language itself, and in our tests transcribed about three times faster than Whisper turbo on the same hardware. Use **Whisper** for other languages, for regional fine-tunes such as KB-Whisper (Swedish) and NB-Whisper (Norwegian), or when you need Whisper params such as a fixed language.
+Start with **Parakeet** when your language is English or one of the 25 European languages it covers. It adds punctuation and capitalization and detects the language itself. Use **Whisper** for other languages, for regional fine-tunes such as KB-Whisper (Swedish) and NB-Whisper (Norwegian), or when you need Whisper params such as a fixed language.
 
-Open the model picker:
-
-```bash
-ostt model
-```
-
-Choose **Local provider** to download curated models, activate a downloaded model, inspect metadata, delete model files, or add a custom Hugging Face/direct model URL.
+Download and activate models with `ostt model`. See [Local Models](/guide/local-models) for the model list and commands.
 
 | Hardware | Suggested starting point | Notes |
 | --- | --- | --- |
-| Low-end CPU | `parakeet-tdt_ctc-110m` (English), or Whisper tiny, base, or small | Faster, lower accuracy. Good for quick notes and testing. |
-| Modern laptop CPU | `parakeet-ultra`, or Whisper small, medium, or turbo | Parakeet Ultra runs well on CPU alone. |
-| Apple Silicon | `parakeet-ultra`, or Whisper turbo or large | Metal acceleration is enabled on macOS builds. |
-| NVIDIA Linux GPU | `parakeet-ultra`, or Whisper turbo or large | Use the CUDA build when the NVIDIA driver and cuBLAS runtime are available. |
+| Low-end CPU | `parakeet-tdt_ctc-110m` (English), or Whisper tiny, base, or small | Smaller models, lower accuracy. |
+| Modern laptop CPU | `parakeet-ultra`, or Whisper small, medium, or turbo | Try a model and use `ostt retry` to compare. |
+| Apple Silicon | `parakeet-ultra`, or Whisper turbo or large-v3 | Metal acceleration is enabled on macOS builds. |
+| NVIDIA Linux GPU | `parakeet-ultra`, or Whisper turbo or large-v3 | Use the CUDA build when the NVIDIA driver and cuBLAS runtime are available. |
 | AMD/Intel Linux GPU | `parakeet-ultra` or Whisper turbo with the Vulkan build | Vulkan support is useful but hardware-dependent. |
 | Privacy-sensitive work | Largest model that feels fast enough | No audio leaves the machine, but local performance depends on hardware. |
 
-For repeated local dictation, start [Daemon Mode](/guide/daemon):
-
-```bash
-ostt daemon start
-ostt launch --paste
-```
-
-Daemon mode keeps the active local model loaded so each transcription avoids model load time.
+For repeated local dictation, [Daemon Mode](/guide/daemon) keeps the active model loaded. See [GPU Acceleration](/guide/gpu-acceleration) for GPU builds.
 
 ## External Local Engines
 
-Built-in local support covers Parakeet and Whisper models. If you want faster-whisper, Cohere Transcribe, Speaches, LocalAI, onnx-asr, or a custom research model, run that engine yourself and let OSTT call it.
-
-Use `command/<profile>` when you have a CLI or wrapper script:
-
-```toml
-[transcription]
-provider = "command"
-model = "parakeet"
-
-[command.parakeet]
-display_name = "Parakeet"
-command = "/home/you/asr/parakeet-transcribe.sh {audio_path}"
-output_format = "pcm_s16le -ar 16000"
-timeout_secs = 300
-```
-
-Use `http/<profile>` when your engine exposes an OpenAI-compatible `/v1/audio/transcriptions` endpoint:
-
-```toml
-[transcription]
-provider = "http"
-model = "speaches"
-
-[http.speaches]
-display_name = "Speaches"
-endpoint = "http://127.0.0.1:8000/v1/audio/transcriptions"
-output_format = "pcm_s16le -ar 16000"
-timeout_secs = 300
-
-[http.speaches.params]
-model = "Systran/faster-whisper-large-v3"
-response_format = "json"
-```
-
-Then select or use it like any other model:
-
-```bash
-ostt model select http/speaches
-ostt -m http/speaches --paste
-ostt retry -m command/parakeet
-```
-
-See [External Engines](/guide/external-engines) for the full contract.
+Built-in local support covers Parakeet and Whisper. For faster-whisper, Cohere Transcribe, Speaches, LocalAI, onnx-asr, or your own wrapper, run that engine yourself and connect it as a `command/<profile>` or `http/<profile>` engine. See [External Engines](/guide/external-engines) for setup.
 
 ## Developer Dictation Needs More Than a Model
 

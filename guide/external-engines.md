@@ -6,7 +6,7 @@ description: Connect OSTT to custom local or remote transcription engines with c
 
 OSTT can call transcription engines that it does not bundle. Use this when you already run another ASR engine locally, on another machine, or behind an OpenAI-compatible API.
 
-OSTT's built-in local support covers Parakeet and Whisper GGUF models (see [Local Models](./local-models.md)). Other engines such as faster-whisper, Parakeet/onnx-asr, Cohere Transcribe, Moonshine, SenseVoice, Paraformer, Dolphin, Omnilingual, Speaches, LocalAI, and custom wrappers all have different runtimes, model formats, GPU stacks, and setup requirements. Bundling them would make OSTT larger and harder to package. External engines keep OSTT small while still giving power users an integration path.
+OSTT's built-in local support covers Parakeet and Whisper GGUF models (see [Local Models](./local-models.md)). Other engines such as faster-whisper, onnx-asr, Cohere Transcribe, Moonshine, SenseVoice, Paraformer, Dolphin, Omnilingual, Speaches, LocalAI, and custom wrappers each have their own runtime and setup. OSTT calls them instead of bundling them.
 
 There are two external engine types:
 
@@ -20,16 +20,16 @@ Use command engines when the ASR tool has a CLI, Python API, wrapper script, or 
 ```toml
 [transcription]
 provider = "command"
-model = "parakeet"
+model = "faster-whisper"
 
-[command.parakeet]
-display_name = "Parakeet"
-command = "/Users/you/models/parakeet-transcribe/transcribe.sh {audio_path}"
+[command.faster-whisper]
+display_name = "faster-whisper"
+command = "/home/you/asr/faster-whisper.sh {audio_path}"
 output_format = "pcm_s16le -ar 16000"
 timeout_secs = 300
 ```
 
-`{audio_path}` is the only command template value. OSTT shell-escapes it before running the command. Unknown `{...}` placeholders fail config validation.
+`{audio_path}` is the only command template value. OSTT shell-escapes it before running the command. Any other `{...}` in the command fails config validation, including shell variables such as `${HOME}`. Put those in a wrapper script.
 
 For tools that need virtualenv activation, model paths, GPU flags, or environment variables, put that setup in your wrapper script:
 
@@ -37,13 +37,11 @@ For tools that need virtualenv activation, model paths, GPU flags, or environmen
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "$HOME/.venvs/parakeet/bin/activate"
-python "$HOME/asr/parakeet.py" "$1"
+source "$HOME/.venvs/faster-whisper/bin/activate"
+python "$HOME/asr/transcribe.py" "$1"
 ```
 
 The wrapper should print only the transcript to stdout. Error details should go to stderr.
-
-[kristoferlund/parakeet-transcribe](https://github.com/kristoferlund/parakeet-transcribe) is an example repository that exposes NVIDIA Parakeet both as a shell script and as an OpenAI-compatible HTTP server. After following that repository's setup instructions, the command profile can call its `transcribe.sh` entrypoint directly.
 
 ## HTTP Engines
 
@@ -54,20 +52,20 @@ Backend settings live under `[http.<profile>]`. OpenAI request fields live under
 ```toml
 [transcription]
 provider = "http"
-model = "parakeet"
+model = "speaches"
 
-[http.parakeet]
-display_name = "Parakeet HTTP"
+[http.speaches]
+display_name = "Speaches"
 endpoint = "http://127.0.0.1:8000/v1/audio/transcriptions"
 output_format = "pcm_s16le -ar 16000"
 timeout_secs = 300
 
-[http.parakeet.params]
-model = "nvidia/parakeet-tdt-0.6b-v3"
+[http.speaches.params]
+model = "Systran/faster-whisper-large-v3"
 response_format = "json"
 ```
 
-Supported v1 request params:
+Supported request params:
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -75,7 +73,7 @@ Supported v1 request params:
 | `language` | string | Optional language hint, such as `en` or `sv`. |
 | `prompt` | string | Optional prompt/context if the server supports it. |
 | `temperature` | number | Optional sampling temperature. |
-| `response_format` | string | Currently `json` only. |
+| `response_format` | string | `json` only. |
 
 If `api_key` is omitted, OSTT sends no `Authorization` header. If `api_key = ""` is configured, OSTT sends an empty bearer header. Set a real key only when your endpoint requires it:
 
@@ -126,22 +124,22 @@ External profiles use the same provider/model identity format as built-in provid
 ```bash
 ostt model list --provider command
 ostt model list --provider http
-ostt model select command/parakeet
-ostt model select http/parakeet
-ostt -m http/parakeet -c
+ostt model select command/faster-whisper
+ostt model select http/speaches
+ostt -m http/speaches -c
 ```
 
-Configured command and HTTP profiles also appear in `ostt model`.
+Configured command and HTTP profiles also appear in `ostt model`, under **Custom models**.
 
 ## Audio Format
 
-External engines can request their own recording format with `output_format`. This only applies when that profile is selected for recording. For example:
+External engines can request their own recording format with `output_format`. This only applies when that profile is selected for recording. Without it, the profile records with `[audio].output_format` (MP3 by default). For example:
 
 ```toml
-[command.parakeet-fast]
+[command.faster-whisper]
 output_format = "pcm_s16le -ar 16000"
 
-[http.parakeet]
+[http.remote-asr]
 output_format = "mp3 -ab 16k -ar 12000"
 ```
 

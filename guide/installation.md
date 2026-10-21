@@ -20,7 +20,7 @@ The installer runs non-interactively. If no transcription model is active when i
 
 It uses native `.deb` or `.rpm` packages on supported Linux distributions when possible. Otherwise, including macOS, it installs the binary to `~/.local/bin` by default. If that directory is not already on your `PATH`, the installer adds it to your shell profile (`.bashrc`, `.zshrc`, or `config.fish`) so `ostt` works in your next shell with no manual steps. Pass `--no-modify-path` to opt out and get printed instructions instead.
 
-Shell completions are installed to user-owned directories -- no `sudo` required. For zsh, the installer also adds the completions directory to `fpath` in your `.zshrc`, since zsh's default `fpath` contains no directory under `$HOME`.
+Shell completions are installed to user-owned directories, so no `sudo` is needed. For zsh, the installer also adds the completions directory to `fpath` in your `.zshrc`, since zsh's default `fpath` contains no directory under `$HOME`.
 
 ::: details Where the installer gets releases
 Download URLs and checksums come from the release manifest at [ostt.ai/latest.json](https://ostt.ai/latest.json), so the installer never guesses filenames. If the manifest is unreachable, the install stops with an error. `--version` installs a pinned release straight from GitHub, since the manifest only describes the latest one.
@@ -83,16 +83,16 @@ The Omarchy installer changes are append-only and idempotent. Existing bindings,
 
 ## Native Package Options
 
-### macOS -- Homebrew
+### macOS: Homebrew
 
 ```bash
 brew tap kristoferlund/ostt
 brew install ostt
 ```
 
-### Arch / Omarchy -- AUR
+### Arch / Omarchy: AUR
 
-Prebuilt binary packages (recommended -- no compilation, no Rust toolchain). Pick the one that matches your hardware:
+Prebuilt binary packages (recommended: no compilation, no Rust toolchain). Pick the one that matches your hardware:
 
 ```bash
 yay -S ostt-bin          # CPU build (x86_64, aarch64)
@@ -110,7 +110,7 @@ yay -S ostt
 
 `paru` works in place of `yay` for any of the above.
 
-### Debian / Ubuntu / Mint -- .deb
+### Debian / Ubuntu / Mint: .deb
 
 ```bash
 # Set this to the release you want, for example 0.0.25
@@ -133,7 +133,7 @@ curl -sLO ${BASE}/ostt-vulkan_${VERSION}-1_amd64.deb && sudo apt install ./ostt-
 curl -sLO ${BASE}/ostt_${VERSION}-1_arm64.deb && sudo apt install ./ostt_${VERSION}-1_arm64.deb
 ```
 
-### Fedora / RHEL / openSUSE -- .rpm
+### Fedora / RHEL / openSUSE: .rpm
 
 ```bash
 VERSION=<VERSION>

@@ -10,7 +10,7 @@ The recommended macOS setup uses Shortcuts.app. It is built into macOS and does 
 
 ```bash
 curl -fsSL https://ostt.ai/install | bash
-ostt auth
+ostt model
 ```
 
 Prefer Homebrew?
@@ -18,8 +18,10 @@ Prefer Homebrew?
 ```bash
 brew tap kristoferlund/ostt
 brew install ostt
-ostt auth
+ostt model
 ```
+
+`ostt model` picks a transcription model. Local models need no account; for a cloud model, run `ostt auth login` first.
 
 Homebrew installs OSTT as a managed package and supports normal uninstall with `brew uninstall ostt`. The install script (`curl -fsSL https://ostt.ai/install | bash`) detects your platform and architecture automatically and is the simplest option.
 
@@ -69,7 +71,7 @@ Use the path from `which ostt` if yours differs.
 6. Open the shortcut details (click the info button, the encircled `i`) and select **Add Keyboard Shortcut**.
 7. Press `Control+Space`.
 
-> **Note:** `Control+Space` is the suggested default for macOS because many other key combinations are reserved by the system. If you choose a different shortcut, verify it does not collide with an existing system or application hotkey.
+> **Note:** `Control+Space` is the suggested default for macOS because many other key combinations are reserved by the system. If you use more than one input source, macOS binds `Control+Space` to "Select the previous input source"; pick another combination or change that shortcut under System Settings > Keyboard > Keyboard Shortcuts > Input Sources. If you choose a different shortcut, verify it does not collide with an existing system or application hotkey.
 
 The suggested hotkey differs from the one used on Linux platforms because macOS reserves more keyboard shortcuts at the system level.
 

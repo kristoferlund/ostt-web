@@ -4,7 +4,7 @@ description: Configure Berget-hosted Klang Pianissimo and Whisper models in OSTT
 
 # Berget
 
-Berget is a Swedish cloud provider. OSTT uses Berget for Klang Pianissimo, Swedish and Norwegian optimized Whisper models, and general-purpose Whisper Large V3, with processing hosted on European infrastructure.
+Berget is a Swedish cloud provider. OSTT uses Berget for Klang Pianissimo, Swedish and Norwegian optimized Whisper models, and general-purpose Whisper Large V3, hosted on European infrastructure.
 
 Berget documentation:
 
@@ -17,7 +17,7 @@ Berget documentation:
 
 | Model ID | Notes |
 | --- | --- |
-| `berget/klang/pianissimo` | Swedish Parakeet-based model by Klang AI, published as `KlangAI/pianissimo-sv` on Hugging Face. Uses Berget's realtime API. Available since OSTT 0.0.27. |
+| `berget/klang/pianissimo` | Swedish Parakeet-based model by Klang AI, published as `KlangAI/pianissimo-sv` on Hugging Face. Uses Berget's realtime API. |
 | `berget/KBLab/kb-whisper-large` | Swedish-optimized KB Whisper Large. KBLab reports 50,000+ hours of Swedish speech training and 47% average WER reduction versus OpenAI Whisper Large V3 across FLEURS, CommonVoice, and NST. |
 | `berget/NbAiLab/nb-whisper-large` | Norwegian-optimized NB-Whisper Large. NbAiLab reports 66,000 hours of training data and support for Norwegian, Bokmal, Nynorsk, and English. |
 | `berget/openai/whisper-large-v3` | General-purpose multilingual Whisper Large V3. |
@@ -26,7 +26,7 @@ Check [Berget's pricing](https://berget.ai/en/pricing) for current model-specifi
 
 ## Pianissimo params
 
-Pianissimo requires OSTT 0.0.27 or later; older releases will report an unknown model. Authenticate with `ostt auth login`, choose Berget, then use `ostt model` to select Pianissimo.
+Authenticate with `ostt auth login`, choose Berget, then select Pianissimo with `ostt model`.
 
 ```bash
 ostt transcribe recording.mp3 -m berget/klang/pianissimo

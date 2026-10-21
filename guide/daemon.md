@@ -4,24 +4,13 @@ description: Keep a local model loaded in a background process to eliminate per-
 
 # Daemon Mode
 
-When OSTT transcribes with a local model, it loads the model from disk on every call and releases it when done. For small models this adds half a second or so. For large models it can add 5–15 seconds — a noticeable pause before every transcription.
+When OSTT transcribes with a local model, it loads the model from disk on every call and releases it when done. Loading takes from under a second for small models to several seconds for large ones.
 
-Daemon mode keeps the model loaded in a background process. Start it manually, or install it as a login service, when you want local transcriptions to avoid loading the model each time.
+Daemon mode keeps the model loaded in a background process. Start it manually, or install it as a login service.
 
-Daemon mode only applies to local models. It has no effect when using cloud providers.
+The daemon has no `ostt.toml` settings. It serves the active local model selected with `ostt model`. Without a running daemon, local transcription loads the model in the OSTT process. Cloud providers are not affected.
 
-## How It Works
-
-Daemon mode is controlled with `ostt daemon` commands, not with `ostt.toml` settings:
-
-- `ostt daemon start` starts a background daemon for the active local model.
-- `ostt daemon stop` stops it.
-- `ostt daemon install` installs it as a login service.
-- If you do not start or install the daemon, local transcription runs directly in the OSTT process.
-
-## Configuration
-
-There are no daemon settings in `ostt.toml`. Daemon mode uses the currently active local model selected with `ostt model`.
+The daemon only serves the model it has loaded. A run with `-m` set to a different local model loads that model in-process.
 
 ## Daemon Commands
 
@@ -35,7 +24,7 @@ Starts the daemon for the currently active local model. If a daemon is already r
 ostt daemon start
 ```
 
-Daemons started this way have no idle timeout and run until explicitly stopped or the machine reboots.
+The daemon runs until stopped or the machine reboots.
 
 ### `ostt daemon stop`
 
@@ -85,13 +74,11 @@ To have the daemon start automatically at login and restart on crash, install it
 ostt daemon install
 ```
 
-**macOS** — writes a launchd plist to `~/Library/LaunchAgents/ai.ostt.daemon.plist` and loads it immediately.
+**macOS:** writes a launchd plist to `~/Library/LaunchAgents/ai.ostt.daemon.plist` and loads it immediately.
 
-**Linux** — writes a systemd user unit to `~/.config/systemd/user/ostt-daemon.service` and runs `systemctl --user enable --now ostt-daemon`. Logs are also available via journald:
+**Linux:** writes a systemd user unit to `~/.config/systemd/user/ostt-daemon.service`, then enables and starts it with `systemctl --user`.
 
-```bash
-journalctl --user -u ostt-daemon -f
-```
+Daemon logs go to `ostt logs`.
 
 To remove the service:
 
@@ -99,12 +86,12 @@ To remove the service:
 ostt daemon uninstall
 ```
 
-The service loads the model that is active when it starts. While it runs, it follows the local model you select with `ostt model`.
+The service loads the model that is active when it starts. Selecting another local model restarts the daemon outside the service manager, so the service takes over again at the next login.
 
 ## Model Screen
 
-Press `s` on the `ostt model` screen to start or stop the daemon. Starting needs a local model to be selected.
+Press `s` on the `ostt model` screen to start or stop the daemon. Starting needs an active local model.
 
 The footer shows the daemon's state, the model it has loaded and its backend, for example `daemon on · parakeet-ultra · CUDA0`. It updates every two seconds, so a daemon started or stopped elsewhere shows up too.
 
-A running daemon follows your selection: activating another local model reloads the daemon with it, with no restart needed. Selecting a cloud model leaves the daemon running with its local model, so switching back is instant. Press `s` to stop it and free the memory.
+A running daemon follows your selection: activating another local model, here or with `ostt model select`, reloads the daemon with it. Selecting a cloud model leaves the daemon running with its local model, so switching back is instant. Press `s` to stop it and free the memory. Deleting the model the daemon has loaded also stops the daemon.
