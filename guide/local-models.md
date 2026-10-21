@@ -111,6 +111,9 @@ The same param meanings apply whether the param is set globally in `[whisper.par
 | `no_context` | boolean | `true` | Prevent Whisper from conditioning each segment on previously decoded text. This can reduce repetition and hallucinated carry-over between segments. |
 | `temperature` | number | `0.0` | Sampling temperature. `0.0` uses deterministic greedy decoding; higher values make decoding less deterministic. Valid range: `0.0` to `1.0`. |
 | `no_speech_thold` | number | `0.6` | No-speech probability threshold. Higher values make Whisper less likely to treat audio as silence. Valid range: `0.0` to `1.0`. |
+| `prompt` | string | none | Context that steers transcription, such as the topic or a sentence with the right spellings: `--param prompt="A Rust code review."` |
+
+Saved [keywords](./commands#keyword) are passed to local Whisper models as a glossary, so names and terms come out spelled right. Keywords and `prompt` can be combined. They share Whisper's prompt window of about 220 tokens; if they don't fit, OSTT's engine shortens the prompt first, then drops keywords from the end of the list, and notes it in the log.
 
 `no_timestamps` and `entropy_thold` from earlier versions no longer have any effect. Configs that still set them keep working; OSTT ignores them and notes it in the log.
 
