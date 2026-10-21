@@ -47,7 +47,7 @@ ostt daemon stop
 
 ### `ostt daemon restart`
 
-Stops the running daemon and starts a fresh one for the currently active model. Use this after switching models with `ostt model` if you want to pre-warm the new model.
+Stops the running daemon and starts a fresh one for the currently active model. Use this after upgrading OSTT so the daemon runs the new version.
 
 ```bash
 ostt daemon restart
@@ -62,9 +62,12 @@ Status:  running
 PID:     72233
 Socket:  /home/you/.local/share/ostt/ostt-daemon.sock
 Model:   turbo
+Backend: CUDA0 (NVIDIA GeForce RTX 4080, 16376 MB)
 Service: installed (~/.config/systemd/user/ostt-daemon.service)
 Log:     ostt logs
 ```
+
+`Backend` shows where the model runs: `CUDA0`, `Vulkan0` or `MTL0` for a GPU, `CPU` otherwise. See [GPU Acceleration](./gpu-acceleration).
 
 If the daemon is loaded with a different model than the currently active one:
 
@@ -96,8 +99,12 @@ To remove the service:
 ostt daemon uninstall
 ```
 
-The service always loads the model that is active in config at the time it runs. After switching models with `ostt model`, run `ostt daemon restart` to load the new model.
+The service loads the model that is active when it starts. While it runs, it follows the local model you select with `ostt model`.
 
 ## Model Screen
 
-The `ostt model` screen shows a `run` badge next to any model currently loaded in the daemon. The badge updates every two seconds. After switching models, run `ostt daemon restart` to load the new active model.
+Press `s` on the `ostt model` screen to start or stop the daemon. Starting needs a local model to be selected.
+
+The footer shows the daemon's state, the model it has loaded and its backend, for example `daemon on · parakeet-ultra · CUDA0`. It updates every two seconds, so a daemon started or stopped elsewhere shows up too.
+
+A running daemon follows your selection: activating another local model reloads the daemon with it, with no restart needed. Selecting a cloud model leaves the daemon running with its local model, so switching back is instant. Press `s` to stop it and free the memory.
