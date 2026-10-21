@@ -34,7 +34,7 @@ Omarchy 4.5 has its own dictation keys and lets you choose the program behind th
 | `Super + Ctrl + X` | Start recording, or stop and paste |
 | `Super + Ctrl + Alt + X` | Cancel without pasting |
 
-Install the plugin, which also adds a status icon to the bar:
+Install the plugin. It also shows a recording popup with a live level meter, and a status icon in the bar:
 
 ```bash
 omarchy plugin add https://github.com/kristoferlund/omarchy-ostt.git --enable
