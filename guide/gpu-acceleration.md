@@ -21,13 +21,13 @@ GPU acceleration has no effect on cloud providers — it only applies to local m
 
 Metal is enabled automatically on every macOS build. No setup is needed. When a local model runs, OSTT uses the GPU without any configuration.
 
-Verify it is active in the logs:
+Verify it is active. With the [daemon](./daemon) running, `ostt daemon status` shows the backend:
 
-```bash
-ostt logs
+```
+Backend: MTL0 (Apple M4 Pro, 36864 MB)
 ```
 
-Look for lines like:
+Without the daemon, transcribe once with a local model, then check `ostt logs` for lines like:
 
 ```
 local inference devices: metal (Apple M4 Pro), cpu (Apple M4 Pro)
@@ -130,13 +130,13 @@ with may not be the one detection chose. The version line reports which:
 ostt --version    # e.g. "ostt 0.0.25-vulkan"
 ```
 
-Verify CUDA is active:
+Verify CUDA is active. With the [daemon](./daemon) running, `ostt daemon status` shows the backend:
 
-```bash
-ostt logs
+```
+Backend: CUDA0 (NVIDIA GeForce RTX 4080, 16376 MB)
 ```
 
-Look for lines like:
+Without the daemon, transcribe once with a local model, then check `ostt logs` for lines like:
 
 ```
 local inference devices: cuda (NVIDIA GeForce RTX 4080), cpu (...)
@@ -159,13 +159,13 @@ To opt out of GPU detection and install the CPU build:
 curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu
 ```
 
-Verify Vulkan is active:
+Verify Vulkan is active. With the [daemon](./daemon) running, `ostt daemon status` shows the backend:
 
-```bash
-ostt logs
+```
+Backend: Vulkan0 (AMD Radeon Graphics (RADV REMBRANDT), 18009 MB)
 ```
 
-Look for lines like:
+Without the daemon, transcribe once with a local model, then check `ostt logs` for lines like:
 
 ```
 local inference devices: vulkan (AMD Radeon Graphics (RADV REMBRANDT)), cpu (...)
