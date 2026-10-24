@@ -90,10 +90,10 @@ const branches = columns.map(
 )
 
 const apps = [
-  { name: 'Ghostty', kind: 'terminal', action: 'Plain transcription', shot: false },
-  { name: 'Obsidian', kind: 'notes', action: 'Text cleanup', shot: false },
-  { name: 'Slack', kind: 'chat', action: ASSISTANT, shot: true },
-  { name: 'Typora', kind: 'writer', action: ASSISTANT, shot: true }
+  { name: 'Ghostty', icon: 'ghostty', action: 'Plain transcription', shot: false },
+  { name: 'Obsidian', icon: 'obsidian', action: 'Text cleanup', shot: false },
+  { name: 'Slack', icon: 'slack', action: ASSISTANT, shot: true },
+  { name: 'Typora', icon: 'typora', action: ASSISTANT, shot: true }
 ]
 
 // A vertical sound wave for the spine: a line that swells into a burst of
@@ -448,10 +448,16 @@ onBeforeUnmount(() => {
         </p>
       </header>
       <div class="card" data-reveal>
-        <p class="card-head"><span class="mark" aria-hidden="true"></span> Dictation</p>
+        <div class="card-head">
+          <span class="mark" role="img" aria-label="OSTT"></span>
+          <div>
+            <p class="card-title">Dictation</p>
+            <p class="card-meta">Ready</p>
+          </div>
+        </div>
         <ul>
           <li v-for="(app, n) in apps" :key="app.name" :style="{ '--n': n }">
-            <span class="app-icon" :class="app.kind" aria-hidden="true"></span>
+            <img class="app-icon" :src="`/apps/${app.icon}.png`" alt="" width="26" height="26" />
             <span class="app-name">{{ app.name }}</span>
             <span class="app-action" :class="{ strong: app.action === ASSISTANT }">
               <svg v-if="app.shot" class="cam" viewBox="0 0 16 16" aria-label="with screenshot"><rect x="1.5" y="4" width="13" height="9" rx="2" /><circle cx="8" cy="8.5" r="2.4" /><path d="M5.5 4l1-1.6h3l1 1.6" /></svg>
@@ -1349,22 +1355,37 @@ onBeforeUnmount(() => {
   background: #0f0f10;
   box-shadow: 0 30px 80px -30px rgb(0 0 0 / 90%);
 }
+/* The header, as the bar card has it: the logo, with the title and status
+   beside it, centred on it. Its left edge lines up with the app icons. */
 .card-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 0 0 14px;
-  padding-bottom: 14px;
+  gap: 14px;
+  margin: 0 0 12px;
+  padding: 4px 8px 16px;
   border-bottom: 1px solid #222225;
-  font-weight: 600;
-  color: var(--ink);
 }
 .card-head .mark {
-  width: 26px;
-  height: 19px;
+  flex: none;
+  width: 44px;
+  height: 32px;
   background: var(--ink);
-  mask: url('/logo.svg') center / contain no-repeat;
-  -webkit-mask: url('/logo.svg') center / contain no-repeat;
+  mask: url('/logo.svg') left center / contain no-repeat;
+  -webkit-mask: url('/logo.svg') left center / contain no-repeat;
+}
+.card-head p {
+  margin: 0;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.card-meta {
+  margin-top: 2px !important;
+  font-size: 12.5px;
+  color: var(--mute);
 }
 .card ul {
   margin: 0;
@@ -1392,30 +1413,11 @@ onBeforeUnmount(() => {
   background: #17171a;
 }
 .app-icon {
-  width: 22px;
-  height: 22px;
+  flex: none;
+  width: 26px;
+  height: 26px;
   border-radius: 6px;
-  background: #26262b;
-  position: relative;
-}
-.app-icon.terminal::after {
-  content: '>_';
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-code);
-  font-size: 10px;
-  color: #d9d9de;
-}
-.app-icon.notes {
-  background: #3b2d5c;
-}
-.app-icon.chat {
-  background: #4a2346;
-}
-.app-icon.writer {
-  background: #24384f;
+  object-fit: contain;
 }
 .app-name {
   flex: 1;
