@@ -74,8 +74,8 @@ const facts = [
     icon: ['M3 8V4h4M17 4h4v4M21 16v4h-4M7 20H3v-4', 'M6.5 12s2-3.5 5.5-3.5 5.5 3.5 5.5 3.5-2 3.5-5.5 3.5S6.5 12 6.5 12z', 'M12 11v2']
   },
   {
-    title: 'Open source',
-    text: 'MIT-licensed, configured in plain TOML you can read, change and keep with your dotfiles.',
+    title: 'Free and open source',
+    text: 'No price, no sign-up, no subscription. MIT-licensed, configured in plain TOML you keep with your dotfiles.',
     // angle brackets
     icon: ['M8.5 7L3.5 12l5 5', 'M15.5 7l5 5-5 5', 'M13.5 5l-3 14']
   }
@@ -249,6 +249,7 @@ onBeforeUnmount(() => {
           <code><span class="dim">omarchy plugin add https://github.com/kristoferlund/</span><b>ostt-omarchy-dictate</b><span class="dim">.git --enable</span></code>
           <span class="install-state">{{ copied ? 'Copied' : 'Copy' }}</span>
         </button>
+        <p class="free">Free and open source <span aria-hidden="true">·</span> MIT</p>
       </div>
     </section>
 
@@ -260,9 +261,10 @@ onBeforeUnmount(() => {
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Dictate</p>
         <h2>Speak into any app.</h2>
-        <p>
-          OSTT plugs into Omarchy's own dictation. Talk, and your words land where your cursor is, in any app. Parakeet and
-          Whisper run on your own machine.
+        <p>OSTT plugs into Omarchy's own dictation. Talk, and your words land where your cursor is, in any app.</p>
+        <p class="local">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v10H4zM9 20h6M12 16v4" /></svg>
+          <span><b>Transcribed on your own machine.</b> <span class="dim-inline">Parakeet or Whisper, no cloud.</span></span>
         </p>
       </header>
 
@@ -306,10 +308,11 @@ onBeforeUnmount(() => {
       </div>
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Connect</p>
-        <h2>Runs on the agent you already pay for.</h2>
+        <h2>Processing runs on the agent you already pay for.</h2>
         <p>
-          OSTT uses the coding agent you are signed in to, so there is no new account and no API key. Every agent runs with its
-          tools switched off.
+          Before your words are pasted, a <a href="/guide/processing">processing action</a> can clean them up, rewrite them or
+          turn them into a reply. OSTT runs those actions on the coding agent you are already signed in to: no new account, no
+          API key, and the agent's tools switched off.
         </p>
       </header>
       <div class="agents" data-reveal>
@@ -334,8 +337,8 @@ onBeforeUnmount(() => {
         <p class="kicker">Instruct</p>
         <h2>Say what you want written.</h2>
         <p>
-          Turn on {{ ASSISTANT }} for an app and OSTT sends your agent a screenshot along with your words. It reads the
-          conversation and writes the reply, names and dates included.
+          {{ ASSISTANT }} is the processing action that takes instructions. Turn it on for an app, and OSTT sends your agent a
+          screenshot along with your words. The agent reads the conversation and writes the reply, names and dates included.
         </p>
       </header>
 
@@ -396,7 +399,7 @@ onBeforeUnmount(() => {
       </div>
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Edit</p>
-        <h2>Change what you select.</h2>
+        <h2>Select and make changes.</h2>
         <p>Select a passage and say what to change. The agent sees the rest of the page, so the new text fits in.</p>
       </header>
 
@@ -438,10 +441,10 @@ onBeforeUnmount(() => {
       </div>
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Choose</p>
-        <h2>Each app gets its own.</h2>
+        <h2>Choose what dictation does in each app.</h2>
         <p>
-          Plain transcription in the terminal, a light cleanup in your notes, {{ ASSISTANT }} in chat. Pick per app from the
-          microphone in the bar.
+          Plain transcription in the terminal, Text cleanup in your notes, {{ ASSISTANT }} in Slack. Right-click OSTT's microphone
+          in Omarchy's top bar and pick a processing action for each app, and whether it sees the screen.
         </p>
       </header>
       <div class="card" data-reveal>
@@ -475,7 +478,8 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="get mask" data-reveal>
-        <h2>Get it.</h2>
+        <h2>Free. Get it.</h2>
+        <p class="get-sub">No price and no account. OSTT and the plugin are open source under the MIT license.</p>
         <button class="install big" type="button" :class="{ copied }" @click="copyInstall" aria-label="Copy the install command">
           <code><span class="dim">omarchy plugin add https://github.com/kristoferlund/</span><b>ostt-omarchy-dictate</b><span class="dim">.git --enable</span></code>
           <span class="install-state">{{ copied ? 'Copied' : 'Copy' }}</span>
@@ -618,6 +622,63 @@ onBeforeUnmount(() => {
 }
 .dim {
   color: var(--mute);
+}
+.free {
+  margin: 18px 0 0;
+  font-family: var(--font-code);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sig);
+}
+.local {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: none !important;
+  margin: 22px auto 0 !important;
+  padding: 9px 18px;
+  border: 1px solid rgb(165 180 255 / 30%);
+  border-radius: 99px;
+  background: rgb(165 180 255 / 8%);
+  color: var(--ink);
+  font-size: 0.95rem !important;
+  line-height: 1.4 !important;
+  text-align: left;
+}
+.local b {
+  font-weight: 600;
+}
+.dim-inline {
+  color: var(--body);
+}
+.local svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--sig);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.chapter-head a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: rgb(165 180 255 / 50%);
+  text-underline-offset: 3px;
+}
+.chapter-head a:hover {
+  text-decoration-color: var(--sig);
+}
+.get-sub {
+  max-width: 460px;
+  margin: 16px auto 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  text-wrap: balance;
 }
 
 /* Chapters */
