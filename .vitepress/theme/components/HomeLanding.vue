@@ -408,16 +408,19 @@ const offsets = [36, 8, 64, 40, 12, 72, 48, 20, 0, 56, 28, 44]
 .term .tl.cmd .prompt {
   opacity: 0;
 }
+/* The typed width is the line's own, not the animation's last frame, which
+   can land a step short. */
 .term.in .tl.cmd .tt {
-  animation: type calc(var(--n) * 0.035s) steps(var(--n), end) var(--delay) forwards;
+  width: calc(var(--n) * 1ch);
+  animation: type calc(var(--n) * 0.035s) steps(var(--n), end) var(--delay) backwards;
 }
 .term.in .tl.note,
 .term.in .tl.cmd .prompt {
   animation: appear 0.3s ease var(--delay) forwards;
 }
 @keyframes type {
-  to {
-    width: calc(var(--n) * 1ch);
+  from {
+    width: 0;
   }
 }
 @keyframes appear {
