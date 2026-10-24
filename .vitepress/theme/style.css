@@ -684,6 +684,18 @@ p code {
   color: var(--color-on-dark);
 }
 
+.footer-title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-on-dark);
+}
+
+.footer-columns {
+  grid-template-columns: 1.6fr repeat(4, 1fr);
+  gap: var(--spacing-xl);
+}
+
 /* ------------------------------------------------
    VitePress Doc Page Overrides
 ------------------------------------------------ */
@@ -781,6 +793,14 @@ html.dark .VPNavBarTitle .logo {
   .footer-inner {
     grid-template-columns: 1fr;
     gap: var(--spacing-xl);
+  }
+
+  .footer-columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-columns .footer-brand {
+    grid-column: 1 / -1;
   }
 
   .site-header .header-inner {

@@ -5,6 +5,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
 
 <script setup>
 import HomeLanding from './.vitepress/theme/components/HomeLanding.vue'
+import SiteFooter from './.vitepress/theme/components/SiteFooter.vue'
 </script>
 
 
@@ -24,22 +25,4 @@ import HomeLanding from './.vitepress/theme/components/HomeLanding.vue'
 
 <HomeLanding />
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <strong>OSTT</strong>
-      <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
-    </div>
-    <div class="footer-links">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="/guide/why-ostt">Why OSTT?</a>
-      <a href="/guide/commands">Commands</a>
-      <a href="/guide/platforms">Platforms</a>
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-      <a href="/reference/providers">Providers</a>
-      <a href="/guide/troubleshooting">Troubleshooting</a>
-    </div>
-  </div>
-</footer>
+<SiteFooter />

@@ -6,6 +6,7 @@ description: "OSTT dictation for Omarchy takes instructions: ask for a reply ins
 
 <script setup>
 import OmarchyLanding from './.vitepress/theme/components/OmarchyLanding.vue'
+import SiteFooter from './.vitepress/theme/components/SiteFooter.vue'
 </script>
 
 <header class="site-header">
@@ -24,22 +25,4 @@ import OmarchyLanding from './.vitepress/theme/components/OmarchyLanding.vue'
 
 <OmarchyLanding />
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <strong>OSTT</strong>
-      <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
-    </div>
-    <div class="footer-links">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="/guide/why-ostt">Why OSTT?</a>
-      <a href="/guide/local-models">Local models</a>
-      <a href="/guide/processing">Processing actions</a>
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/kristoferlund/ostt">OSTT on GitHub</a>
-      <a href="https://github.com/kristoferlund/ostt-omarchy-dictate">Plugin on GitHub</a>
-      <a href="/guide/troubleshooting">Troubleshooting</a>
-    </div>
-  </div>
-</footer>
+<SiteFooter />
