@@ -45,8 +45,7 @@ const columns = [
       { text: 'Plugin on GitHub', href: 'https://github.com/kristoferlund/ostt-omarchy-dictate' },
       { text: 'Report an issue', href: 'https://github.com/kristoferlund/ostt/issues' },
       { text: 'Changelog', href: '/guide/changelog' },
-      { text: 'Install with an AI agent', href: '/guide/ai-skill' },
-      { text: 'llms.txt', href: '/llms.txt' }
+      { text: 'Install with an AI agent', href: '/guide/ai-skill' }
     ]
   }
 ]
