@@ -164,10 +164,12 @@ p code {
   font-size: 14px;
   font-weight: 500;
   color: var(--color-body);
+  white-space: nowrap;
   transition: color 0.15s;
 }
 
-.header-nav a:hover {
+.header-nav a:hover,
+.header-nav a[aria-current='page'] {
   color: var(--color-ink);
 }
 
@@ -791,6 +793,19 @@ html.dark .VPNavBarTitle .logo {
 }
 
 @media (max-width: 600px) {
+  .header-nav {
+    gap: 14px;
+  }
+
+  .header-nav a {
+    font-size: 13px;
+  }
+
+  /* The page ends with a GitHub link; the header keeps the pages. */
+  .header-nav .header-github {
+    display: none;
+  }
+
   .landing-hero .hero-logo {
     width: min(180px, 60vw);
     height: min(132px, 44vw);

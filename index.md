@@ -14,8 +14,10 @@ import HomeLanding from './.vitepress/theme/components/HomeLanding.vue'
       <span class="logo-mark" aria-hidden="true"></span>
     </a>
     <nav class="header-nav">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
+      <a href="/" aria-current="page">Linux &amp; macOS</a>
+      <a href="/omarchy">Omarchy</a>
+      <a href="/guide/getting-started">Docs</a>
+      <a href="https://github.com/kristoferlund/ostt" class="header-github">GitHub</a>
     </nav>
   </div>
 </header>

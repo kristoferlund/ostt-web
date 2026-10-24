@@ -14,8 +14,10 @@ import OmarchyLanding from './.vitepress/theme/components/OmarchyLanding.vue'
       <span class="logo-mark" aria-hidden="true"></span>
     </a>
     <nav class="header-nav">
-      <a href="/guide/platforms/hyprland#dictation-backend">Documentation</a>
-      <a href="https://github.com/kristoferlund/ostt-omarchy-dictate">GitHub</a>
+      <a href="/">Linux &amp; macOS</a>
+      <a href="/omarchy" aria-current="page">Omarchy</a>
+      <a href="/guide/platforms/hyprland#dictation-backend">Docs</a>
+      <a href="https://github.com/kristoferlund/ostt-omarchy-dictate" class="header-github">GitHub</a>
     </nav>
   </div>
 </header>
