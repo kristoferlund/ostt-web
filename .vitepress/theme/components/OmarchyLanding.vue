@@ -486,7 +486,7 @@ onBeforeUnmount(() => {
       <div class="get mask" data-reveal>
         <h2>Try it.</h2>
         <p class="get-sub">
-          Install the plugin to make OSTT Omarchy's default dictation. OSTT is free and requires no account. The plugin is open
+          Install the plugin to make OSTT Omarchy's default dictation tool. OSTT is free and requires no account. The plugin is open
           source and MIT licensed.
         </p>
         <button class="install big" type="button" :class="{ copied }" @click="copyInstall" aria-label="Copy the install command">
