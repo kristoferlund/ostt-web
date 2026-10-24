@@ -1,5 +1,5 @@
 ---
-description: "Complete reference for all OSTT CLI commands and output modes: record, launch, transcribe, retry, replay, process, auth, model, daemon, history, keyword, replace, config, logs, and shell completions, plus stdout, clipboard, file, and paste output."
+description: "Complete reference for all OSTT CLI commands and output modes: record, launch, transcribe, retry, replay, process, agent, auth, model, daemon, history, keyword, replace, config, logs, and shell completions, plus stdout, clipboard, file, and paste output."
 ---
 
 # Commands
@@ -30,6 +30,7 @@ Alias: `ostt r`.
 | `--paste` | Paste transcription into the focused app using `[output.paste]` settings |
 | `-o FILE` / `--output FILE` | Write transcription to file |
 | `-p [ACTION]` / `--process [ACTION]` | Enable processing. Optionally specify action ID to skip picker. |
+| `--attach FILE` | Send an image to the processing action too (needs `-p`) |
 | `-m PROVIDER/MODEL` / `--model PROVIDER/MODEL` | Override transcription model for this run. |
 | `--param KEY=VALUE` | Override one supported transcription param for this run. Repeat for multiple params. |
 
@@ -80,7 +81,7 @@ ostt transcribe audio.ogg | grep keyword   # Pipe to other commands
 
 ### Flags
 
-Same as record: `-c`, `--paste`, `-o`, `-p`, `-m`, `--param`.
+Same as record: `-c`, `--paste`, `-o`, `-p`, `--attach`, `-m`, `--param`.
 
 Alias: `ostt t`.
 
@@ -109,6 +110,7 @@ Recording indexes are 1-based, with `1` being the most recent.
 | `--paste` | Paste into the focused app |
 | `-o FILE` / `--output FILE` | Write to file |
 | `-p [ACTION]` / `--process [ACTION]` | Enable processing |
+| `--attach FILE` | Send an image to the processing action too (needs `-p`) |
 | `-m PROVIDER/MODEL` / `--model PROVIDER/MODEL` | Override transcription model for this run |
 | `--param KEY=VALUE` | Override one supported transcription param for this run. Repeat for multiple params. |
 
@@ -151,7 +153,20 @@ Alias: `ostt p`.
 | `-c` / `--clipboard` | Copy result to clipboard |
 | `--paste` | Paste result into the focused app |
 | `-o FILE` / `--output FILE` | Write result to file |
+| `--attach FILE` | Send an image to the action too |
 | `--format table\|json` | Output format for `ostt process list` |
+
+If a processing action fails while recording (`ostt`, `launch`), transcribing or retrying, the unprocessed transcription is output instead. `ostt`, `transcribe` and `retry` then exit with status 3; `ostt launch` exits as soon as the popup opens. `ostt process` reports the failure and outputs nothing.
+
+## Agent
+
+List the agents AI processing actions can run, whether each is installed, and whether it takes images. See [Agents](./processing#agents).
+
+```bash
+ostt agent list                 # Agents, installed or not
+ostt agent list --format json   # The same as JSON
+ostt agent models claude-code   # Models an agent offers, one per line
+```
 
 ## Auth
 

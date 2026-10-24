@@ -12,9 +12,9 @@
 - [Why OSTT?](https://ostt.ai/guide/why-ostt): Why OSTT exists and how it compares to GUI dictation apps.
 - [Installation](https://ostt.ai/guide/installation): Install via shell script, Homebrew, AUR, .deb, .rpm, or from source. Runtime dependency setup for each platform.
 - [Changelog](https://ostt.ai/guide/changelog): Release notes and notable changes for OSTT.
-- [Commands](https://ostt.ai/guide/commands): Full CLI reference: record, transcribe, retry, replay, process, paste output, auth, model, history, keyword, replace, config, logs, daemon, shell completions.
-- [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions.
-- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference: audio, transcription params, paste output, text replace rules, popup, processing defaults.
+- [Commands](https://ostt.ai/guide/commands): Full CLI reference: record, transcribe, retry, replay, process (with --attach), agent list/models, paste output, auth, model, history, keyword, replace, config, logs, daemon, shell completions.
+- [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions. AI actions run an agent you already use (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot, Cursor, Grok, Pi, Oh My Pi, Hermes, OpenClaw, or one you add) with its tools switched off, and can take an attached image.
+- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference: audio, transcription params, paste output, text replace rules, popup, processing defaults and custom agents ([process.agents]).
 - [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Practical recommendations for choosing cloud providers, built-in local Parakeet and Whisper, external command/HTTP engines, Swedish/EU models, offline privacy, and retry strategies.
 
 ## Local Models
@@ -28,7 +28,7 @@
 
 - [Platform Setup Overview](https://ostt.ai/guide/platforms): Global hotkey setup overview and paste output defaults for all supported platforms.
 - [macOS Setup](https://ostt.ai/guide/platforms/macos): Shortcuts.app hotkey setup on macOS, with `cmd+v` paste output.
-- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): Automatic Omarchy 4 setup for `ALT+SPACE` clipboard dictation, `ALT+SHIFT+SPACE` voice prompts to the default coding agent, Lua popup rules, and legacy Omarchy 3 instructions.
+- [Omarchy / Hyprland Setup](https://ostt.ai/guide/platforms/hyprland): OSTT as the Omarchy 4.5 dictation backend via the ostt-omarchy-dictate plugin, with per-app context-aware dictation through your own AI agent, Automatic Omarchy 4 setup for `ALT+SPACE` clipboard dictation, `ALT+SHIFT+SPACE` voice prompts to the default coding agent, Lua popup rules, and legacy Omarchy 3 instructions.
 - [GNOME Setup](https://ostt.ai/guide/platforms/gnome): Custom Shortcuts setup on GNOME, with `ctrl+v` paste output notes.
 - [KDE Plasma Setup](https://ostt.ai/guide/platforms/kde): Custom Shortcuts setup on KDE Plasma, with `ctrl+v` paste output notes.
 
@@ -47,6 +47,7 @@
 
 ## Landing Pages
 
+- [Omarchy Dictation That Takes Instructions](https://ostt.ai/omarchy): The OSTT dictation plugin for Omarchy 4.5: speak into any app with local Parakeet and Whisper transcription, and choose a processing action per app. Ghostwriter runs on your existing Claude Code, Codex, OpenCode or other agent subscription, reads a screenshot of the window, and writes what you ask for. Free, no account; the plugin is open source and MIT licensed.
 - [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget. Sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
 - [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, paste output, local engines, cloud providers, retry, and developer workflows.
 - [OSTT vs Hyprwhspr](https://ostt.ai/lp/ostt-vs-hyprwhspr): Compare OSTT and Hyprwhspr for Linux dictation, system-wide paste, local and cloud models, external engines, retry, and terminal-native speech-to-text.

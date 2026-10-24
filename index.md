@@ -3,6 +3,11 @@ layout: false
 description: Open source, terminal-native speech-to-text for Linux and macOS. Record from a hotkey, transcribe with cloud or local models, and paste text into the focused app or route it to your clipboard, files, AI prompts, and shell commands.
 ---
 
+<script setup>
+import HomeLanding from './.vitepress/theme/components/HomeLanding.vue'
+</script>
+
+
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="header-logo" aria-label="OSTT home">
@@ -15,132 +20,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
   </div>
 </header>
 
-<main class="landing">
-  <section class="landing-hero">
-    <span class="logo hero-logo" aria-label="OSTT"></span>
-    <h1>Open source voice-to-text for Linux. And macOS.</h1>
-    <p class="lede">OSTT is a terminal-native speech-to-text tool. Record from a hotkey, transcribe on your own machine with Parakeet or Whisper or with a cloud model, then paste the result into the focused app or route it to your clipboard, a file, stdout, an AI prompt, or any shell command.</p>
-    <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
-      <code>
-        <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
-      </code>
-      <span class="copy-icons">
-        <svg class="icon-copy" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-      </span>
-    </button>
-  </section>
-
-  <section class="landing-video">
-    <video src="/ostt-demo.mp4" controls playsinline preload="none" poster="/ostt-demo-poster.png">
-      Your browser does not support the video tag.
-    </video>
-  </section>
-
-  <section class="landing-section split">
-    <div>
-      <p class="eyebrow">Local models</p>
-      <h2>Runs offline, on your own hardware.</h2>
-      <p>OSTT ships a built-in engine for NVIDIA Parakeet and OpenAI Whisper models. Parakeet adds punctuation and capitalization and detects the language on its own across 25 European languages, English included. Whisper covers many more languages, including regional fine-tunes such as KB-Whisper for Swedish and NB-Whisper for Norwegian.</p>
-      <p>Models run on the CPU or the GPU, with Metal on macOS and CUDA or Vulkan builds on Linux. Daemon mode keeps the model loaded between recordings, and once a model is downloaded, no audio leaves your machine. See <a href="/guide/local-models">Local Models</a>.</p>
-    </div>
-    <div class="command-card">
-      <pre><code># Download and select a local model&#10;ostt model local download parakeet-ultra&#10;ostt model select parakeet/parakeet-ultra&#10;&#10;# Keep it loaded between recordings&#10;ostt daemon start&#10;&#10;# Dictate into the focused app, fully offline&#10;ostt launch --paste</code></pre>
-    </div>
-  </section>
-
-  <section class="landing-grid">
-    <article>
-      <h3>Linux-first</h3>
-      <p>Global hotkey setup for Omarchy/Hyprland, GNOME, KDE, and other Linux desktops, with macOS support too.</p>
-    </article>
-    <article>
-      <h3>Paste into any focused app</h3>
-      <p>Bind <code>ostt launch --paste</code> to a global hotkey and dictate into editors, browsers, chats, issue trackers, AI apps, and terminals. OSTT closes the popup, waits for focus to return, then sends the configured paste shortcut.</p>
-    </article>
-    <article>
-      <h3>Cloud or local models</h3>
-      <p>Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or local Parakeet and Whisper models. Switch when quality, latency, price, privacy, or offline access matters.</p>
-    </article>
-    <article>
-      <h3>GPU acceleration</h3>
-      <p>Local models run on your GPU. Metal on macOS, CUDA on NVIDIA, Vulkan on AMD and Intel. The install script detects your hardware and picks the right build automatically.</p>
-    </article>
-    <article>
-      <h3>Daemon mode</h3>
-      <p>Keep a local model loaded in the background, so each transcription starts without loading the model first. Install it as a login service and the model is ready whenever you are.</p>
-    </article>
-    <article>
-      <h3>Process with AI or bash</h3>
-      <p>Run AI prompts or shell commands after transcription with <code>ostt -p</code> and <code>ostt process</code>.</p>
-    </article>
-    <article>
-      <h3>Retry without re-recording</h3>
-      <p>Recordings are saved locally, so you can re-transcribe the same audio with a different provider or model.</p>
-    </article>
-    <article>
-      <h3>Keywords and replace rules</h3>
-      <p>Give the model the names and terms you use with <code>ostt keyword</code>, then fix casing and product names with deterministic <code>ostt replace</code> rules.</p>
-    </article>
-    <article>
-      <h3>Open source, no subscription</h3>
-      <p>The code is public, the config is local, and the providers are the ones you choose.</p>
-    </article>
-  </section>
-
-  <div class="surface-band">
-    <section class="landing-section">
-      <p class="eyebrow">Workflow</p>
-      <h2>From speech to useful output.</h2>
-      <div class="steps">
-        <div><strong>1. Record</strong><span>Use the terminal or a global hotkey popup.</span></div>
-        <div><strong>2. Transcribe</strong><span>Choose the provider and model that fit the job.</span></div>
-        <div><strong>3. Process</strong><span>Optionally run AI prompts or shell commands.</span></div>
-        <div><strong>4. Send</strong><span>Paste into the focused app, print, copy, write to a file, or pipe onward.</span></div>
-      </div>
-    </section>
-  </div>
-
-  <section class="landing-section split pipeline-section">
-    <div>
-      <p class="eyebrow">Pipeline</p>
-      <h2>Transcribe once. Route anywhere.</h2>
-      <p>OSTT's pipeline plugs transcription into anything you already run. Dictate directly into the focused app with <code>--paste</code>. Process audio files from scripts and CI jobs. Wire the output to OpenCode, Claude Code, or any AI tool. Pipe through custom bash commands. The <code>-p</code> flag puts it all one flag away.</p>
-    </div>
-    <div class="command-card">
-      <pre><code># Open popup, record, clean up, paste into focused app&#10;ostt launch --paste -p clean&#10;&#10;# Record and transcribe, run &quot;clean&quot; action, copy to clipboard&#10;ostt -p clean -c&#10;&#10;# Transcribe mp3, run &quot;summary&quot; action, write to file&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Process second latest recording, run &quot;cmd&quot; action, print to stdout&#10;ostt process 2 cmd</code></pre>
-    </div>
-  </section>
-
-  <div class="surface-band">
-    <section class="landing-section split">
-      <div>
-        <p class="eyebrow">AI agent skill</p>
-        <h2>Let your AI agent install it.</h2>
-        <p>OSTT ships an official <a href="/guide/ai-skill">agent skill</a> for Claude Code and other skill-aware tools. Add it once and your agent knows how to install, configure, and troubleshoot OSTT for you. It uses the open <a href="https://skills.sh">skills</a> ecosystem, and <code>npx</code> runs the CLI on demand, so there is nothing to install first.</p>
-      </div>
-      <div class="command-card">
-        <pre><code># Add the OSTT skill to your AI agent&#10;npx skills add https://github.com/kristoferlund/ostt-skill&#10;&#10;# Then just ask, for example:&#10;#   "Install OSTT and set up Deepgram."&#10;#   "Bind OSTT to Alt+Space on Hyprland with paste."</code></pre>
-      </div>
-    </section>
-  </div>
-
-  <section class="landing-grid">
-    <article>
-      <h3>File transcription in CI</h3>
-      <p>Transcribe audio files from scripts, cron jobs, or CI pipelines without a microphone. Process meeting recordings, voicemails, or dictation files with the same provider choice and processing pipeline as live recording.</p>
-    </article>
-    <article>
-      <h3>Agent-ready transcription</h3>
-      <p>Use OSTT with OpenCode, Claude Code, Gemini CLI, Codex CLI, OpenClaw, Hermes, or other agentic harnesses when their built-in voice tools are too limited. Configure providers, models, prompts, and shell actions once, then route flexible transcription into the agents you already use.</p>
-    </article>
-    <article>
-      <h3>Terminal-native automation</h3>
-      <p>Pipe transcription through <code>jq</code>, <code>sed</code>, <code>awk</code>, or any CLI tool. Chain recording, processing, and output into a single shell pipeline. Alias your most common workflow and run it from a hotkey.</p>
-    </article>
-  </section>
-
-</main>
+<HomeLanding />
 
 <footer class="site-footer">
   <div class="footer-inner">

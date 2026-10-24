@@ -1,5 +1,5 @@
 ---
-description: "Full reference for ostt.toml: audio device, transcription model and params, keywords, text replace rules, paste output, popup window, processing defaults, and file locations."
+description: "Full reference for ostt.toml: audio device, transcription model and params, keywords, text replace rules, paste output, popup window, processing defaults and agents, and file locations."
 ---
 
 # Configuration
@@ -260,7 +260,7 @@ inputs = [
 ]
 ```
 
-See [Processing Actions](./processing.md) for action types, supported AI tools, input sources, and examples.
+`[process.agents.<id>]` adds an agent for AI actions or replaces a built-in one. See [Processing Actions](./processing.md) for action types, the built-in agents, input sources, and examples.
 
 ## Popup
 

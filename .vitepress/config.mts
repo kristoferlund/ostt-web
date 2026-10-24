@@ -141,6 +141,7 @@ export default defineConfig({
       { text: 'Models', link: '/guide/choosing-a-model' },
       { text: 'Processing', link: '/guide/processing' },
       { text: 'Platforms', link: '/guide/platforms' },
+      { text: 'Omarchy', link: '/omarchy' },
       { text: 'Reference', link: '/reference/providers' }
     ],
     sidebar: [
