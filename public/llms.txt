@@ -50,7 +50,8 @@
 
 - [Omarchy Dictation That Takes Instructions](https://ostt.ai/omarchy): The OSTT dictation plugin for Omarchy 4.5: speak into any app with local Parakeet and Whisper transcription, and choose a processing action per app. Ghostwriter runs on your existing Claude Code, Codex, OpenCode or other agent subscription, reads a screenshot of the window, and writes what you ask for. Free, no account; the plugin is open source and MIT licensed.
 - [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget. Sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
-- [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, paste output, local engines, cloud providers, retry, and developer workflows.
+- [OSTT vs Superwhisper](https://ostt.ai/lp/ostt-vs-superwhisper): What OSTT gives you free that Superwhisper puts behind Pro, including context-aware dictation on your own AI agent subscription, local Parakeet with full GPU support, cloud providers, and file transcription.
+- [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): What OSTT adds over Voxtype: dictation per app, optional screen context, spoken instructions carried out by your own AI agent, eight cloud providers, and a retryable history.
 - [OSTT vs Hyprwhspr](https://ostt.ai/lp/ostt-vs-hyprwhspr): Compare OSTT and Hyprwhspr for Linux dictation, system-wide paste, local and cloud models, external engines, retry, and terminal-native speech-to-text.
 - [OpenAI Whisper CLI](https://ostt.ai/lp/openai-whisper-cli): Use OpenAI GPT Transcribe, GPT-4o Transcribe, and Whisper models from the terminal with OSTT.
 - [GPT-4o Transcribe Linux](https://ostt.ai/lp/gpt-4o-transcribe-linux): Use OpenAI GPT-4o transcription models from a Linux terminal workflow.

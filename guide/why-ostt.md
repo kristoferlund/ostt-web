@@ -72,22 +72,23 @@ This table is a high-level comparison against common voice-to-text tools. Capabi
 | Retry same recording with another model | Yes | Rare |
 | AI post-processing | Yes | Often yes |
 | Bash/shell post-processing | Yes | No |
-| Context/screen awareness | No | Often yes |
+| Context/screen awareness | Yes, per app and opt-in, on Omarchy | Often yes, sometimes paid |
 | Streaming transcription | No | Often yes |
 | Paste into the focused app | Yes | Often yes |
 | On-device transcription | Yes | Sometimes |
 
 ## What OSTT Does Not Try To Be
 
-OSTT is not trying to be a mobile dictation app, a real-time streaming transcription overlay, or a screen-aware assistant that reads every app you use. Those are valid tools, but they pull in a different direction from a terminal-native, scriptable tool.
+OSTT is not trying to be a mobile dictation app or a real-time streaming transcription overlay. Those are valid tools, but they pull in a different direction from a terminal-native, scriptable tool. Screen context is opt-in: with the [Omarchy dictation plugin](/guide/platforms/omarchy-dictation), only the apps you choose send a screenshot to your agent.
 
 OSTT optimizes for control, composability, provider choice, and developer workflows. If you want voice input that behaves like a command-line tool, OSTT is built for that niche.
 
 ## Compared With Other Open Source Dictation Tools
 
-OSTT overlaps with Linux dictation tools such as Voxtype and Hyprwhspr, but the focus is different. Those projects are strongest when you want a dedicated system-wide dictation app. OSTT is strongest when you want speech-to-text to work as part of a developer workflow: provider switching, file transcription, retry, stdout, paste output, text replace rules, and AI or shell processing.
+OSTT overlaps with dictation tools such as Voxtype, Hyprwhspr and Superwhisper, which Omarchy also offers. What OSTT adds is dictation that takes instructions, carried out by the AI agent you already use, with optional screen context per app, plus provider switching, file transcription, retry, stdout, and shell processing.
 
 For a more detailed comparison, see:
 
+- [OSTT vs Superwhisper](/lp/ostt-vs-superwhisper)
 - [OSTT vs Voxtype](/lp/ostt-vs-voxtype)
 - [OSTT vs Hyprwhspr](/lp/ostt-vs-hyprwhspr)

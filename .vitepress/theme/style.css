@@ -604,6 +604,18 @@ p code {
   font-weight: 600;
 }
 
+/* Where a comparison's claims were checked, and when. */
+.comparison-source {
+  margin-top: var(--spacing-md);
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.comparison-source a {
+  color: var(--color-body);
+  text-decoration: underline;
+}
+
 /* Final CTA */
 
 .final-cta {

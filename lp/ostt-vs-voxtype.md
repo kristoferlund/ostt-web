@@ -1,7 +1,7 @@
 ---
 layout: false
-title: "OSTT vs Voxtype: Open Source Speech-to-Text Compared"
-description: "Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, macOS support, local models, cloud providers, paste output, custom engines, retry, and developer workflows."
+title: "OSTT vs Voxtype: A Voxtype Alternative That Takes Instructions"
+description: "What OSTT adds over Voxtype: dictation per app, optional screen context, spoken instructions carried out by your own AI agent, eight cloud providers, and a history you can retry with another model."
 ---
 
 <script setup>
@@ -14,8 +14,8 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
 <main class="landing">
 
   <section class="landing-hero">
-    <h1>OSTT vs Voxtype: which open source speech-to-text tool should you choose?</h1>
-    <p class="lede">Voxtype and OSTT are both open source speech-to-text tools for people who want voice input outside a proprietary dictation subscription. Voxtype is strongest as an integrated Linux dictation daemon with local engine setup. OSTT is strongest when you want provider choice, local or cloud models, paste output, saved recordings, retry, files, stdout, and shell or AI processing.</p>
+    <h1>OSTT vs Voxtype</h1>
+    <p class="lede">Both are free, open source and run locally on Linux. OSTT also takes instructions: in the apps you choose, your own AI agent reads the window and writes what you ask for.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -27,86 +27,80 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
     </button>
     <div class="landing-actions">
       <a href="/guide/getting-started">Try OSTT</a>
-      <a href="/guide/choosing-a-model">Choose a model</a>
+      <a href="/omarchy">OSTT on Omarchy</a>
     </div>
   </section>
 
   <div class="surface-band">
     <section class="landing-section split">
       <div>
-        <p class="eyebrow">Short Answer</p>
-        <h2>Choose OSTT when model choice and developer workflow matter.</h2>
-        <p>Voxtype is a serious Rust-native dictation project with detailed local model, daemon, hotkey, output, GPU, and packaging docs. OSTT takes a different route: it treats speech-to-text as a terminal primitive that can paste into apps, write files, stream through stdout, call local or cloud models, retry a saved recording, and post-process text through AI prompts or bash commands.</p>
+        <p class="eyebrow">The Short Answer</p>
+        <h2>Voxtype types what you say. OSTT can also do what you say.</h2>
+        <p>Voxtype is a fast, well-made local dictation daemon, and the other dictation choice in Omarchy. OSTT adds what it does not have: dictation that adapts to the app you are in, sees the window when you allow it, and carries out spoken instructions through the AI agent you already use. Around that sit eight cloud providers, a history you can retry with another model, and a CLI built for pipes.</p>
       </div>
       <div class="command-card">
-        <pre><code># Dictate into the focused app&#10;ostt launch --paste&#10;&#10;# Clean the transcript, then paste it&#10;ostt launch --paste -p clean&#10;&#10;# Transcribe a file and summarize it&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Retry the same saved audio with another model&#10;ostt retry -m deepgram/nova-3</code></pre>
+        <pre><code># In Slack, say: "reply saying I can't make it"&#10;# OSTT pastes the reply, written by your agent&#10;&#10;# Retry the last recording with another model&#10;ostt retry -m whisper/turbo&#10;&#10;# Transcribe a meeting and summarize it&#10;ostt transcribe meeting.mp3 -p summary -o notes.md</code></pre>
       </div>
     </section>
   </div>
 
   <section class="landing-section">
-    <p class="eyebrow">Feature Comparison</p>
-    <h2>OSTT and Voxtype solve overlapping but different jobs.</h2>
+    <p class="eyebrow">What OSTT Adds</p>
+    <h2>Six things you get with OSTT and not with Voxtype.</h2>
     <div class="comparison-scroll">
       <table class="comparison-table">
         <thead>
           <tr><th>Capability</th><th>OSTT</th><th>Voxtype</th></tr>
         </thead>
         <tbody>
-          <tr><td>Open source</td><td>✅ MIT, Rust</td><td>✅ MIT, Rust</td></tr>
-          <tr><td>Linux support</td><td>✅ Linux-first docs for Omarchy/Hyprland, GNOME, KDE, and other desktops</td><td>✅ Linux-first, optimized for Wayland and documented for multiple distros</td></tr>
-          <tr><td>macOS support</td><td>✅ macOS support with Homebrew and Shortcuts.app hotkeys</td><td>✅ Apple Silicon macOS support documented</td></tr>
-          <tr><td>Focused app insertion</td><td>✅ <code>--paste</code> inserts into the focused app and can restore the previous clipboard</td><td>✅ Public docs describe typing/clipboard output backends and direct dictation flow</td></tr>
-          <tr><td>Cloud transcription providers</td><td>✅ OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral</td><td>⚠️ Primarily local-engine oriented, with documented remote/OpenAI-style options</td></tr>
-          <tr><td>Built-in local transcription</td><td>✅ Parakeet and Whisper local models through <code>transcribe.cpp</code>, with Metal, CUDA, and Vulkan GPU builds</td><td>✅ Whisper and ONNX engine setup documented</td></tr>
-          <tr><td>Custom local engines</td><td>✅ <code>command/&lt;profile&gt;</code> wrappers and <code>http/&lt;profile&gt;</code> OpenAI-compatible endpoints</td><td>✅ Public docs describe multiple local engines and engine variants</td></tr>
-          <tr><td>Provider/model switching</td><td>✅ <code>ostt model</code>, <code>-m PROVIDER/MODEL</code>, and per-run <code>--param</code> overrides</td><td>✅ Engine/model configuration and setup flows</td></tr>
-          <tr><td>Retry same recording with another model</td><td>✅ First-class <code>ostt retry -m PROVIDER/MODEL</code></td><td>⚠️ Not the main documented workflow</td></tr>
-          <tr><td>File/stdout/shell pipelines</td><td>✅ Core workflow: stdout, files, clipboard, paste, scripts, and CI-friendly file transcription</td><td>⚠️ File transcription is documented, but the product focus is dictation</td></tr>
-          <tr><td>AI and shell post-processing</td><td>✅ <code>ostt -p</code> and <code>ostt process</code> for AI prompts or bash commands</td><td>✅ Public docs describe profiles and post-processing hooks/configuration</td></tr>
-          <tr><td>Text cleanup</td><td>✅ Keywords plus deterministic <code>ostt replace</code> rules for casing, acronyms, and names</td><td>✅ Public docs describe prompts, replacements, and spoken punctuation features</td></tr>
-          <tr><td>Visual desktop integration</td><td>⚠️ Popup terminal and platform hotkey guides</td><td>✅ More desktop-dictation-oriented setup, notifications, and OSD options</td></tr>
+          <tr><td>Different behavior per app</td><td>✅ Each app gets its own processing action, picked automatically from the focused window</td><td>❌ Profiles are chosen by keybinding or modifier key, not by app</td></tr>
+          <tr><td>Screen context</td><td>✅ Optional screenshot of the window, per app, sent to the agent with your words</td><td>❌ Not available; the only live context is the previous dictation</td></tr>
+          <tr><td>Spoken instructions</td><td>✅ Say "reply saying I can't make it" and get the reply</td><td>❌ Transcribes only</td></tr>
+          <tr><td>Your own AI agent</td><td>✅ Claude Code, Codex, OpenCode, Gemini CLI and more, on the subscription you already have, with their tools switched off</td><td>❌ No agent support; a post-process command can call a local LLM such as Ollama</td></tr>
+          <tr><td>Cloud transcription</td><td>✅ OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral</td><td>⚠️ Soniox, or a Whisper-compatible HTTP endpoint</td></tr>
+          <tr><td>History and retry</td><td>✅ Every dictation is saved; <code>ostt retry -m</code> transcribes it again with another model, <code>ostt process</code> runs an action on it later</td><td>❌ No dictation history (meeting mode keeps its own)</td></tr>
         </tbody>
       </table>
     </div>
+    <p class="comparison-source">Checked against Voxtype 1.1.1 and its <a href="https://github.com/peteonrails/voxtype/blob/main/docs/CONFIGURATION.md">configuration reference</a> on October 24, 2026.</p>
   </section>
 
   <section class="landing-grid compact">
     <article>
-      <h3>Provider choice is the big difference</h3>
-      <p>OSTT is not tied to one engine family. Use OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, built-in local Parakeet and Whisper, or a custom command/HTTP engine.</p>
+      <h3>Dictation that fits the app</h3>
+      <p>Plain transcription in the terminal, light cleanup in your notes, a full writing assistant in Slack and email. On Omarchy you pick it per app from the microphone in the bar.</p>
     </article>
     <article>
-      <h3>Retry makes model choice testable</h3>
-      <p>If one transcription is wrong, run <code>ostt retry -m openai/gpt-4o-transcribe</code> or <code>ostt retry -m deepgram/nova-3</code> on the same saved recording.</p>
+      <h3>It sees what you see</h3>
+      <p>Turn on the screenshot for an app, and the agent reads the conversation or document you are replying to, so names, terms and tone come out right.</p>
     </article>
     <article>
-      <h3>Paste into the focused app</h3>
-      <p><code>ostt launch --paste</code> records from a popup, closes it, waits for focus to return, pastes into the focused app, and restores the previous clipboard when configured.</p>
+      <h3>Runs on the agent you pay for</h3>
+      <p>Processing goes through Claude Code, Codex, OpenCode or another agent CLI you already use. No extra AI subscription, and no tools that text on screen could trigger.</p>
     </article>
     <article>
-      <h3>External engines without bundling bloat</h3>
-      <p>Run faster-whisper, Speaches, LocalAI, Cohere Transcribe, or your own ASR wrapper separately, then connect OSTT with <code>command/*</code> or <code>http/*</code>.</p>
+      <h3>Local first, cloud when you want it</h3>
+      <p>Parakeet and Whisper run on your machine with full GPU support. When you need a cloud model, eight providers are a <code>ostt model</code> away.</p>
     </article>
     <article>
-      <h3>Developer text cleanup</h3>
-      <p>Use keywords to help recognition, <code>ostt replace</code> to fix final casing, and processing actions to clean, translate, summarize, or reshape text for code and AI tools.</p>
+      <h3>Never lose a recording</h3>
+      <p>A misheard dictation is not gone. Retry it with a bigger model, or run a different action on it, without speaking again.</p>
     </article>
     <article>
-      <h3>Voxtype is still strong</h3>
-      <p>If your priority is a dedicated Linux dictation daemon with deep local-engine and desktop-output setup, Voxtype may fit. If you want speech as a Unix-style pipeline, choose OSTT.</p>
+      <h3>Speech as a command-line tool</h3>
+      <p>Send transcripts to stdout, files, the clipboard or any shell command, and transcribe audio files in scripts.</p>
     </article>
   </section>
 
   <div class="surface-band">
     <section class="landing-section">
-      <p class="eyebrow">Use Cases</p>
-      <h2>When OSTT is the better Voxtype alternative.</h2>
+      <p class="eyebrow">On Omarchy</p>
+      <h2>Switch Omarchy's dictation to OSTT.</h2>
       <div class="steps">
-        <div><strong>1. You use multiple providers</strong><span>Switch between cloud, local, and custom engines when quality, latency, language, or privacy changes.</span></div>
-        <div><strong>2. You work in terminals</strong><span>Send voice to stdout, files, scripts, AI prompts, or shell commands without leaving the keyboard.</span></div>
-        <div><strong>3. You compare models</strong><span>Save recordings and retry the same audio with a different provider instead of re-recording.</span></div>
-        <div><strong>4. You need cleanup</strong><span>Combine keywords, replace rules, and processing actions for developer vocabulary and consistent formatting.</span></div>
+        <div><strong>1. Add the plugin</strong><span><code>omarchy plugin add https://github.com/kristoferlund/ostt-omarchy-dictate.git --enable</code></span></div>
+        <div><strong>2. Click the microphone</strong><span>The setup installs OSTT, helps you pick a model, and makes OSTT the dictation backend.</span></div>
+        <div><strong>3. Keep your keys</strong><span>Omarchy's dictation keys stay the same. Hold Right Alt or F9 and speak.</span></div>
+        <div><strong>4. Choose per app</strong><span>Right-click the microphone to give apps their own action and screen context.</span></div>
       </div>
     </section>
   </div>
@@ -124,7 +118,7 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
     </button>
     <div class="landing-actions">
       <a href="/guide/getting-started">Read the docs</a>
-      <a href="/reference/providers">See providers</a>
+      <a href="/guide/platforms/omarchy-dictation">Omarchy setup</a>
     </div>
   </section>
 
