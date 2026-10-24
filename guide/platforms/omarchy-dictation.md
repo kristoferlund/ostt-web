@@ -94,6 +94,8 @@ Update the plugin:
 omarchy plugin update io.github.kristoferlund.ostt-dictate --yes
 ```
 
+The bar widget and the recording popup keep their old version until the shell restarts. Run `omarchy restart shell`, or log out and back in.
+
 Remove it:
 
 ```bash
