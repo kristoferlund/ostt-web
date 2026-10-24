@@ -55,6 +55,33 @@ const agents = [
   { name: 'OpenClaw' }
 ]
 
+const facts = [
+  {
+    title: 'Local and fast',
+    text: 'Parakeet and Whisper on your CPU or GPU, kept loaded so dictation starts the moment you speak.',
+    // a chip
+    icon: ['M7 7h10v10H7z', 'M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4', 'M10.5 10.5h3v3h-3z']
+  },
+  {
+    title: 'Never loses a word',
+    text: 'If the agent fails or takes too long, your words are pasted as you said them.',
+    // a speech bubble with a check
+    icon: ['M4 5h16v11H9l-5 4z', 'M8.5 10.5l2.5 2.5 4.5-4.5']
+  },
+  {
+    title: 'Screenshots on request',
+    text: 'Only in the apps you choose, sent only to your agent, deleted when the dictation is done.',
+    // a viewfinder around an eye
+    icon: ['M3 8V4h4M17 4h4v4M21 16v4h-4M7 20H3v-4', 'M6.5 12s2-3.5 5.5-3.5 5.5 3.5 5.5 3.5-2 3.5-5.5 3.5S6.5 12 6.5 12z', 'M12 11v2']
+  },
+  {
+    title: 'Open source',
+    text: 'MIT-licensed, configured in plain TOML you can read, change and keep with your dotfiles.',
+    // angle brackets
+    icon: ['M8.5 7L3.5 12l5 5', 'M15.5 7l5 5-5 5', 'M13.5 5l-3 14']
+  }
+]
+
 const apps = [
   { name: 'Ghostty', kind: 'terminal', action: 'Plain transcription', shot: false },
   { name: 'Obsidian', kind: 'notes', action: 'Text cleanup', shot: false },
@@ -134,14 +161,23 @@ function measure() {
   spineTop.value = logo.value.offsetTop + logo.value.offsetHeight + 20
 }
 
-// How far down the page the reader is, for the lit part of the spine.
+// The lit part of the spine ends at this height on screen, and each node's
+// wave is drawn as far as the lit spine has reached into it, so the two stay
+// joined scrolling down and back up.
+const TIP = 0.55
+const clamp = (x: number) => Math.min(1, Math.max(0, x))
+
 function onScroll() {
   cancelAnimationFrame(frame)
   frame = requestAnimationFrame(() => {
     if (!root.value) return
+    const tip = window.innerHeight * TIP
     const rect = root.value.getBoundingClientRect()
-    const reached = window.innerHeight * 0.55 - rect.top - spineTop.value
-    progress.value = Math.min(1, Math.max(0, reached / (rect.height - spineTop.value)))
+    progress.value = clamp((tip - rect.top - spineTop.value) / (rect.height - spineTop.value))
+    root.value.querySelectorAll<HTMLElement>('.node').forEach((node) => {
+      const box = node.getBoundingClientRect()
+      node.style.setProperty('--draw', String(clamp((tip - box.top) / box.height)))
+    })
   })
 }
 
@@ -156,6 +192,8 @@ onMounted(() => {
 
   if (reduced.value) {
     Object.assign(phase, { issue: 3, slack: 4, editor: 4 })
+    root.value?.style.setProperty('--progress', '1')
+    root.value?.querySelectorAll<HTMLElement>('.node').forEach((node) => node.style.setProperty('--draw', '1'))
     root.value?.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'))
     return
   }
@@ -205,7 +243,7 @@ onBeforeUnmount(() => {
 
     <!-- 1. Plain dictation -->
     <section class="chapter">
-      <div class="node" data-reveal>
+      <div class="node">
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <header class="chapter-head mask" data-reveal>
@@ -240,18 +278,19 @@ onBeforeUnmount(() => {
             </div>
           </div>
         </div>
-        <div class="voice">
+        <div class="speech">
+          <p class="speech-who"><span class="rec" aria-hidden="true"></span>You, speaking</p>
           <p class="said">
             <span v-for="t in issueWords" :key="t.i" class="word" :style="{ '--i': t.i }">{{ t.w }}</span>
           </p>
-          <div class="pill"><i v-for="n in 18" :key="n" :style="bar(n)"></i></div>
         </div>
+        <div class="pill"><span class="bars"><i v-for="n in 18" :key="n" :style="bar(n)"></i></span></div>
       </div>
     </section>
 
     <!-- 2. Agents -->
     <section class="chapter">
-      <div class="node" data-reveal>
+      <div class="node">
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <header class="chapter-head mask" data-reveal>
@@ -277,7 +316,7 @@ onBeforeUnmount(() => {
 
     <!-- 3. Instructions with screen context -->
     <section class="chapter">
-      <div class="node" data-reveal>
+      <div class="node">
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <header class="chapter-head mask" data-reveal>
@@ -329,18 +368,19 @@ onBeforeUnmount(() => {
           </div>
           <div class="scan" aria-hidden="true"></div>
         </div>
-        <div class="voice">
+        <div class="speech">
+          <p class="speech-who"><span class="rec" aria-hidden="true"></span>You, speaking</p>
           <p class="said">
             <span v-for="t in slackSpoken" :key="t.i" class="word" :style="{ '--i': t.i }">{{ t.w }}</span>
           </p>
-          <div class="pill"><i v-for="n in 18" :key="n" :style="bar(n)"></i><span class="pill-label">{{ ASSISTANT }}</span></div>
         </div>
+        <div class="pill"><span class="bars"><i v-for="n in 18" :key="n" :style="bar(n)"></i></span><span class="pill-label">{{ ASSISTANT }}</span></div>
       </div>
     </section>
 
     <!-- 4. Edit a selection -->
     <section class="chapter">
-      <div class="node" data-reveal>
+      <div class="node">
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <header class="chapter-head mask" data-reveal>
@@ -370,18 +410,19 @@ onBeforeUnmount(() => {
           </div>
           <div class="scan" aria-hidden="true"></div>
         </div>
-        <div class="voice">
+        <div class="speech">
+          <p class="speech-who"><span class="rec" aria-hidden="true"></span>You, speaking</p>
           <p class="said">
             <span v-for="t in editorSpoken" :key="t.i" class="word" :style="{ '--i': t.i }">{{ t.w }}</span>
           </p>
-          <div class="pill"><i v-for="n in 18" :key="n" :style="bar(n)"></i><span class="pill-label">{{ ASSISTANT }}</span></div>
         </div>
+        <div class="pill"><span class="bars"><i v-for="n in 18" :key="n" :style="bar(n)"></i></span><span class="pill-label">{{ ASSISTANT }}</span></div>
       </div>
     </section>
 
     <!-- 5. Per app -->
     <section class="chapter">
-      <div class="node" data-reveal>
+      <div class="node">
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <header class="chapter-head mask" data-reveal>
@@ -409,25 +450,24 @@ onBeforeUnmount(() => {
 
     <!-- Facts -->
     <section class="chapter end">
-      <div class="node" data-reveal>
+      <div class="node">
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <div class="facts" data-reveal>
-        <div>
-          <h3>Local and fast</h3>
-          <p>Parakeet and Whisper on your CPU or GPU, kept loaded so dictation starts the moment you speak.</p>
-        </div>
-        <div>
-          <h3>Never loses a word</h3>
-          <p>If the agent fails or takes too long, your words are pasted as you said them.</p>
-        </div>
-        <div>
-          <h3>Screenshots on request</h3>
-          <p>Only in the apps you choose, sent only to your agent, deleted when the dictation is done.</p>
-        </div>
-        <div>
-          <h3>Open source</h3>
-          <p>MIT-licensed, configured in plain TOML you can read, change and keep with your dotfiles.</p>
+        <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+          <defs>
+            <linearGradient id="fact-ink" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#c3ccff" />
+              <stop offset="1" stop-color="#8fd3b6" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div v-for="(fact, n) in facts" :key="fact.title" class="fact" :style="{ '--n': n }">
+          <span class="fact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path v-for="d in fact.icon" :key="d" :d="d" pathLength="1" /></svg>
+          </span>
+          <h3>{{ fact.title }}</h3>
+          <p>{{ fact.text }}</p>
         </div>
       </div>
 
@@ -604,12 +644,9 @@ onBeforeUnmount(() => {
   stroke-width: 1.2;
   stroke-linecap: round;
   stroke-dasharray: 1;
-  stroke-dashoffset: 1;
+  stroke-dashoffset: calc(1 - var(--draw, 0));
   filter: drop-shadow(0 0 4px rgb(165 180 255 / 50%));
-  transition: stroke-dashoffset 1.6s cubic-bezier(0.6, 0, 0.2, 1);
-}
-.node.in .node-wave path {
-  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.12s linear;
 }
 
 .chapter-head {
@@ -646,15 +683,12 @@ onBeforeUnmount(() => {
   opacity: 1;
   transform: none;
 }
-.node[data-reveal] {
-  transform: none;
-}
 
 /* A scene: an app window as Hyprland draws it, with the dictation pill below. */
 .screen {
   position: relative;
   width: min(760px, 100%);
-  padding: 34px 34px 150px;
+  padding: 34px 34px 58px;
   border-radius: 20px;
   background:
     radial-gradient(120% 90% at 50% 0%, #17181c 0%, #0c0c0d 55%),
@@ -897,46 +931,83 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 
-/* Voice: what was said, and the pill while OSTT listens. */
-.voice {
+/* What you say floats over the scene as a bubble, and OSTT's pill sits over
+   the bottom edge of the window, as Omarchy shows it. */
+.speech {
   position: absolute;
-  left: 50%;
-  bottom: 26px;
+  left: -14px;
+  bottom: 96px;
+  z-index: 2;
+  width: min(380px, 78%);
+  padding: 12px 16px 14px;
+  border: 1px solid rgb(165 180 255 / 28%);
+  border-radius: 16px 16px 16px 4px;
+  background: rgb(22 23 29 / 88%);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 24px 60px -18px rgb(0 0 0 / 90%),
+    0 0 0 1px rgb(0 0 0 / 40%);
+  text-align: left;
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  transform-origin: bottom left;
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.speech-who {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  width: min(560px, 88%);
-  transform: translateX(-50%);
+  gap: 8px;
+  margin: 0 0 6px;
+  font-family: var(--font-code);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sig);
+}
+.rec {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  box-shadow: 0 0 0 0 rgb(255 107 107 / 60%);
+  animation: rec 1.4s ease-out infinite;
 }
 .said {
   margin: 0;
-  min-height: 2.8em;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.45;
-  font-style: italic;
-  color: #b9bac4;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #ececf1;
 }
 .said .word {
   transition-delay: calc(var(--i) * 110ms);
 }
 .pill {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  z-index: 3;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  height: 34px;
+  gap: 10px;
+  height: 38px;
   padding: 0 18px;
-  border: 1px solid #2c2c31;
+  border: 1px solid #34343a;
   border-radius: 99px;
-  background: #121214;
+  background: rgb(18 18 20 / 92%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 40px -12px rgb(0 0 0 / 95%);
   opacity: 0;
-  transform: translateY(8px) scale(0.96);
+  transform: translate(-50%, 10px) scale(0.96);
   transition:
     opacity 0.3s ease,
     transform 0.3s ease;
+}
+.bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 .pill i {
   display: block;
@@ -946,19 +1017,57 @@ onBeforeUnmount(() => {
   background: #e8e8ee;
 }
 .pill-label {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 8px);
-  transform: translateX(-50%);
+  max-width: 0;
+  overflow: hidden;
   white-space: nowrap;
   font-family: var(--font-code);
   font-size: 11px;
   letter-spacing: 0.06em;
   color: var(--sig);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition:
+    max-width 0.4s ease,
+    opacity 0.3s ease;
 }
 
+/* A slow drift while they are up; `translate` leaves `transform` to the
+   fade in and out. */
+@keyframes bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -4px;
+  }
+}
+.speech {
+  animation: bob 4.2s ease-in-out infinite;
+}
+.pill {
+  animation: bob 3.6s ease-in-out infinite;
+  animation-delay: -1.2s;
+}
+
+/* After the paste they rise out of the way rather than drop back. */
+[data-scene='issue'][data-phase='3'] .speech,
+[data-scene='slack'][data-phase='4'] .speech,
+[data-scene='editor'][data-phase='4'] .speech {
+  transform: translateY(-14px) scale(0.98);
+  transition-duration: 0.5s;
+}
+[data-scene='issue'][data-phase='3'] .pill,
+[data-scene='slack'][data-phase='4'] .pill,
+[data-scene='editor'][data-phase='4'] .pill {
+  transform: translate(-50%, -12px) scale(0.96);
+  transition-duration: 0.5s;
+}
+
+@keyframes rec {
+  to {
+    box-shadow: 0 0 0 8px rgb(255 107 107 / 0%);
+  }
+}
 @keyframes talk {
   0%,
   100% {
@@ -1021,6 +1130,15 @@ onBeforeUnmount(() => {
 [data-scene='editor'][data-phase='2'] .pill,
 [data-scene='editor'][data-phase='3'] .pill {
   opacity: 1;
+  transform: translate(-50%, 0);
+}
+[data-scene='issue'][data-phase='1'] .speech,
+[data-scene='issue'][data-phase='2'] .speech,
+[data-scene='slack'][data-phase='2'] .speech,
+[data-scene='slack'][data-phase='3'] .speech,
+[data-scene='editor'][data-phase='2'] .speech,
+[data-scene='editor'][data-phase='3'] .speech {
+  opacity: 1;
   transform: none;
 }
 [data-scene='issue'][data-phase='1'] .pill i,
@@ -1037,6 +1155,7 @@ onBeforeUnmount(() => {
 }
 [data-scene='slack'][data-phase='3'] .pill-label,
 [data-scene='editor'][data-phase='3'] .pill-label {
+  max-width: 120px;
   opacity: 1;
 }
 [data-scene='issue'][data-phase='3'] .typed .word,
@@ -1248,25 +1367,96 @@ onBeforeUnmount(() => {
 .facts {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  width: min(1000px, 100%);
+  gap: 12px;
+  width: min(1040px, 100%);
   margin-top: 56px;
-  border: 1px solid #1f1f22;
+}
+.fact {
+  position: relative;
+  padding: 24px 22px 26px;
+  border: 1px solid #1f1f23;
   border-radius: 14px;
+  background:
+    radial-gradient(140% 90% at 0% 0%, rgb(165 180 255 / 7%), transparent 55%),
+    #0d0d0f;
   overflow: hidden;
-  background: #1f1f22;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease,
+    border-color 0.25s ease;
+  transition-delay: calc(var(--n) * 90ms);
 }
-.facts div {
-  padding: 26px 24px;
-  background: var(--color-canvas);
+.fact::after {
+  /* a lit top edge */
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(165 180 255 / 45%), rgb(143 211 182 / 35%), transparent);
+  opacity: 0.5;
+  transition: opacity 0.25s ease;
 }
-.facts h3 {
+.facts.in .fact {
+  opacity: 1;
+  transform: none;
+}
+.fact:hover {
+  border-color: #33333a;
+}
+.fact:hover::after {
+  opacity: 1;
+}
+.fact-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+  border: 1px solid rgb(165 180 255 / 30%);
+  border-radius: 12px;
+  background:
+    radial-gradient(100% 100% at 30% 20%, rgb(165 180 255 / 22%), rgb(143 211 182 / 6%) 70%),
+    #121318;
+  box-shadow:
+    0 0 24px -6px rgb(165 180 255 / 35%),
+    inset 0 1px 0 rgb(255 255 255 / 6%);
+  transition: box-shadow 0.25s ease;
+}
+.fact:hover .fact-icon {
+  box-shadow:
+    0 0 32px -4px rgb(165 180 255 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 8%);
+}
+.fact-icon svg {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 0 3px rgb(165 180 255 / 45%));
+}
+.fact-icon path {
+  fill: none;
+  stroke: url(#fact-ink);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.2s ease;
+  transition-delay: calc(0.3s + var(--n) * 120ms);
+}
+.facts.in .fact-icon path {
+  stroke-dashoffset: 0;
+}
+.fact h3 {
   margin: 0 0 8px;
   font-size: 15px;
   font-weight: 600;
   color: var(--ink);
 }
-.facts p {
+.fact p {
   margin: 0;
   font-size: 14px;
   line-height: 1.6;
@@ -1299,7 +1489,7 @@ onBeforeUnmount(() => {
     margin-top: 90px;
   }
   .screen {
-    padding: 16px 12px 124px;
+    padding: 16px 12px 52px;
     border-radius: 16px;
   }
   .slack {
@@ -1307,6 +1497,11 @@ onBeforeUnmount(() => {
   }
   .slack-side {
     display: none;
+  }
+  .speech {
+    left: 8px;
+    bottom: 88px;
+    width: calc(100% - 16px);
   }
   .agents ul {
     grid-template-columns: repeat(3, 1fr);
@@ -1334,14 +1529,14 @@ onBeforeUnmount(() => {
 
 /* Without motion: everything in its final state. */
 .reduced .word,
+.reduced .fact,
+.reduced .fact-icon path,
 .reduced .agents li,
 .reduced .card li,
 .reduced [data-reveal] {
   transition: none;
 }
-.reduced .said .word {
-  opacity: 1;
-}
+.reduced .speech,
 .reduced .pill {
   display: none;
 }
