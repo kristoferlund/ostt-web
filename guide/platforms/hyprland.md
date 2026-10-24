@@ -1,5 +1,5 @@
 ---
-description: Use OSTT as the Omarchy 4.5 dictation backend, and configure OSTT on Omarchy with hotkeys for clipboard dictation and opening your default coding agent with a spoken prompt.
+description: Use OSTT as the Omarchy 4.5 dictation backend, with per-app context-aware dictation through your own AI agent, and configure OSTT on Omarchy with hotkeys for clipboard dictation and opening your default coding agent with a spoken prompt.
 ---
 
 # Omarchy / Hyprland Setup
@@ -26,7 +26,7 @@ yay -S ostt
 
 ## Dictation Backend (Omarchy 4.5) {#dictation-backend}
 
-Omarchy 4.5 has its own dictation keys and lets you choose the program behind them. The [ostt-omarchy](https://github.com/kristoferlund/ostt-omarchy) plugin makes OSTT one of the choices: the keys record from your microphone, OSTT transcribes with the model you chose in `ostt model`, and the text is pasted into the focused app. No terminal opens.
+Omarchy 4.5 has its own dictation keys and lets you choose the program behind them. The [OSTT dictation plugin](https://github.com/kristoferlund/ostt-omarchy-dictate) makes OSTT one of the choices: the keys record from your microphone, OSTT transcribes with the model you chose, and the text is pasted into the focused app. No terminal opens. [What it does, in short](/omarchy).
 
 | Key | Action |
 | --- | --- |
@@ -34,14 +34,32 @@ Omarchy 4.5 has its own dictation keys and lets you choose the program behind th
 | `Super + Ctrl + X` | Start recording, or stop and paste |
 | `Super + Ctrl + Alt + X` | Cancel without pasting |
 
-Install the plugin. It also shows a recording popup with a live level meter, and a status icon in the bar:
+Add the plugin:
 
 ```bash
-omarchy plugin add https://github.com/kristoferlund/ostt-omarchy.git --enable
-~/.config/omarchy/plugins/ostt.dictation/install
+omarchy plugin add https://github.com/kristoferlund/ostt-omarchy-dictate.git --enable
 ```
 
-Then select OSTT in **Setup > Defaults > Dictation**. The setup installs OSTT if it is missing, asks you to choose a model if none is selected, and for a local model offers to keep it loaded with the [daemon](/guide/daemon). Dictated text is saved to `ostt history`.
+Then click the microphone that appears in the bar. The setup opens in a terminal. It installs OSTT if it is missing (`ostt-vulkan-bin` from the AUR where Vulkan works, `ostt-bin` otherwise), asks you to choose a transcription model if none is selected, and for a local model offers to keep it loaded with the [daemon](/guide/daemon). It then offers context-aware dictation and makes OSTT the dictation backend. Afterwards OSTT is listed in **Setup > Defaults > Dictation**, and dictated text is saved to `ostt history`.
+
+While you speak, a popup at the bottom of the screen shows your level, with buttons to cancel or finish; the bar icon shows whether OSTT is recording or transcribing.
+
+### Context-Aware Dictation
+
+In apps you choose, dictation goes through a [processing action](/guide/processing) that runs an AI agent you already use, such as Claude Code, Codex or OpenCode, with its tools switched off. The setup adds two actions to `~/.config/ostt/ostt.toml`, using the agent and model you pick:
+
+- **Text cleanup** (`clean`) fixes misheard words, punctuation and filler.
+- **Writing assistant** (`assistant`) does that too, and carries out spoken instructions such as "reply saying I can't make it".
+
+Right-click the microphone in the bar to choose, for each app, its action and whether the agent also gets a screenshot of the window. The screenshot is off unless you turn it on for that app. The choices are saved in `~/.config/ostt/dictate.toml` by Hyprland window class:
+
+```toml
+[apps]
+"Slack" = { action = "assistant", screenshot = true }
+"obsidian" = { action = "clean" }
+```
+
+Every other app gets plain transcription. If the agent fails or takes longer than a minute, OSTT pastes your words as it heard them, and a notification says why. The [plugin's README](https://github.com/kristoferlund/ostt-omarchy-dictate#readme) has the details.
 
 ## Omarchy 4.x
 

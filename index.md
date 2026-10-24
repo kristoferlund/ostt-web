@@ -52,7 +52,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
   <section class="landing-grid">
     <article>
       <h3>Linux-first</h3>
-      <p>Global hotkey setup for Omarchy/Hyprland, GNOME, KDE, and other Linux desktops, with macOS support too.</p>
+      <p>Global hotkey setup for Omarchy/Hyprland, GNOME, KDE, and other Linux desktops, with macOS support too. On Omarchy, OSTT can be the <a href="/omarchy">dictation backend</a>, with a writing assistant that runs on your own AI agent.</p>
     </article>
     <article>
       <h3>Paste into any focused app</h3>
@@ -72,7 +72,7 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
     </article>
     <article>
       <h3>Process with AI or bash</h3>
-      <p>Run AI prompts or shell commands after transcription with <code>ostt -p</code> and <code>ostt process</code>.</p>
+      <p>Run shell commands, or the Claude Code, Codex, OpenCode or other agent you already use, after transcription with <code>ostt -p</code> and <code>ostt process</code>. Agents run with their tools switched off, and can get an image too.</p>
     </article>
     <article>
       <h3>Retry without re-recording</h3>

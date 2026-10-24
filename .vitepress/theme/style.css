@@ -373,6 +373,10 @@ p code {
   color: var(--color-body);
 }
 
+.split > div > p + p {
+  margin-top: var(--spacing-md);
+}
+
 /* Surface band sections (full-width background) */
 
 .surface-band {
@@ -496,6 +500,8 @@ p code {
   border: none !important;
   color: inherit !important;
   letter-spacing: normal !important;
+  /* A long command (a plugin URL) wraps instead of widening the page. */
+  overflow-wrap: anywhere;
 }
 
 .install-block .dim {
