@@ -46,13 +46,14 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
 
   <section class="landing-section">
     <p class="eyebrow">What OSTT Adds</p>
-    <h2>Six things you get with OSTT and not with Hyprwhspr.</h2>
+    <h2>Seven things you get with OSTT and not with Hyprwhspr.</h2>
     <div class="comparison-scroll">
       <table class="comparison-table">
         <thead>
           <tr><th>Capability</th><th>OSTT</th><th>Hyprwhspr</th></tr>
         </thead>
         <tbody>
+          <tr><td>Omarchy's dictation keys</td><td>✅ The plugin makes OSTT the backend in Setup &gt; Defaults &gt; Dictation</td><td>❌ Not an Omarchy dictation backend; runs on its own hotkeys</td></tr>
           <tr><td>Different behavior per app</td><td>✅ Each app gets its own processing action, picked automatically from the focused window</td><td>❌ Per-app settings only change the paste shortcut</td></tr>
           <tr><td>Screen context</td><td>✅ Optional screenshot of the window, per app, sent to the agent with your words</td><td>❌ Not available</td></tr>
           <tr><td>Spoken instructions with context</td><td>✅ Say "reply saying I can't make it" and your agent writes the reply from what is on screen</td><td>⚠️ A converse mode sends speech to a realtime OpenAI or Gemini model and pastes its answer, without the app or screen</td></tr>
