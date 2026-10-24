@@ -112,6 +112,53 @@ function wave(height = 120, width = 28, cycles = 9): string {
 }
 const wavePath = wave()
 
+// A small isometric keyboard for the ghost to type on. Points on the
+// keyboard's top face are given as (u, v): u along its length, v across its
+// depth, projected so u runs down-right and v down-left.
+function keyboard() {
+  const scale = 6
+  const iso = (u: number, v: number, drop = 0): [number, number] => [
+    80 + (u - 6 - (v - 2.7)) * 0.866 * scale,
+    92 + (u - 6 + (v - 2.7)) * 0.5 * scale + drop
+  ]
+  const poly = (pts: [number, number][]) => 'M ' + pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(' L ') + ' Z'
+  const quad = (u0: number, v0: number, u1: number, v1: number) =>
+    poly([iso(u0, v0), iso(u1, v0), iso(u1, v1), iso(u0, v1)])
+
+  const [len, depth, thick] = [12, 5.4, 4]
+  const edge = (u: number, v: number) => {
+    const [x, y] = iso(u, v)
+    return `M ${x.toFixed(1)} ${y.toFixed(1)} l 0 ${thick}`
+  }
+  const [a, b, c] = [iso(0, depth, thick), iso(len, depth, thick), iso(len, 0, thick)]
+  const outline = [
+    quad(0, 0, len, depth),
+    edge(0, depth),
+    edge(len, depth),
+    edge(len, 0),
+    `M ${a[0].toFixed(1)} ${a[1].toFixed(1)} L ${b[0].toFixed(1)} ${b[1].toFixed(1)} L ${c[0].toFixed(1)} ${c[1].toFixed(1)}`
+  ].join(' ')
+
+  const keys: { d: string; x: number; y: number; tap: number }[] = []
+  for (let row = 0; row < 3; row++)
+    for (let col = 0; col < 10; col++) {
+      const u = 0.55 + col * 1.1
+      const v = 0.5 + row * 1.2
+      const [x, y] = iso(u + 0.47, v + 0.5)
+      keys.push({ d: quad(u, v, u + 0.94, v + 1.0), x, y, tap: -1 })
+    }
+  const [sx, sy] = iso(5.75, 4.55)
+  keys.push({ d: quad(3, 4.1, 8.5, 5.0), x: sx, y: sy, tap: -1 })
+
+  // The keys under the ghost's hands light up in turn.
+  keys
+    .filter((k) => Math.hypot(k.x - 81, k.y - 99) < 13)
+    .slice(0, 6)
+    .forEach((k, n) => (k.tap = [0, 3, 1, 4, 2, 5][n]))
+  return { outline, keys }
+}
+const board = keyboard()
+
 // One bar of the pill's level meter: its place in the wave and how high it
 // swings, varied so the bars don't move in step.
 function bar(n: number) {
@@ -334,6 +381,29 @@ onBeforeUnmount(() => {
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <header class="chapter-head mask" data-reveal>
+        <svg class="ghost-art" viewBox="0 0 160 130" aria-hidden="true">
+          <path class="kb" :d="board.outline" />
+          <path
+            v-for="(k, n) in board.keys"
+            :key="n"
+            class="key"
+            :class="{ tap: k.tap >= 0 }"
+            :style="{ '--t': k.tap }"
+            :d="k.d"
+          />
+          <g transform="translate(0 20)">
+          <g class="ghost">
+            <path
+              class="ghost-body"
+              d="M69 58 C69 36 93 36 93 58 L93 68 q-2 3 -4 0 q-2 -3 -4 0 q-2 3 -4 0 q-2 -3 -4 0 q-2 3 -4 0 q-2 -3 -4 0 Z"
+            />
+            <circle class="ghost-eye" cx="77" cy="52" r="1.5" />
+            <circle class="ghost-eye" cx="85" cy="52" r="1.5" />
+            <path class="arm left" d="M70 60 Q63 66 69 77" />
+            <path class="arm right" d="M92 60 Q99 66 93 77" />
+          </g>
+          </g>
+        </svg>
         <p class="kicker">Instruct</p>
         <h2>Say what you want written.</h2>
         <p>
@@ -1197,6 +1267,87 @@ onBeforeUnmount(() => {
   }
 }
 
+/* The ghost that writes: line art in the page's ink, typing on an
+   isometric keyboard whose keys light up under its hands. */
+.ghost-art {
+  position: absolute;
+  top: 18px;
+  right: -190px;
+  width: 170px;
+  height: auto;
+  overflow: visible;
+}
+.ghost-art .kb,
+.ghost-art .key {
+  fill: none;
+  stroke: #4a4a52;
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+.ghost-art .kb {
+  stroke: #6a6a73;
+}
+.ghost-art .key.tap {
+  animation: press 2.4s ease-out infinite;
+  animation-delay: calc(var(--t) * 0.4s);
+}
+.ghost {
+  animation: hover 3.2s ease-in-out infinite;
+}
+.ghost-body {
+  fill: var(--color-canvas);
+  stroke: #e8e8ee;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+}
+.ghost-eye {
+  fill: #e8e8ee;
+}
+.arm {
+  fill: none;
+  stroke: #e8e8ee;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: tap 0.4s ease-in-out infinite alternate;
+}
+.arm.right {
+  animation-delay: -0.4s;
+}
+@keyframes press {
+  0%,
+  100% {
+    fill: transparent;
+    stroke: #4a4a52;
+  }
+  4% {
+    fill: rgb(165 180 255 / 85%);
+    stroke: var(--sig);
+  }
+  16% {
+    fill: transparent;
+    stroke: #4a4a52;
+  }
+}
+@keyframes tap {
+  from {
+    transform: rotate(-7deg) translateY(-1.5px);
+  }
+  to {
+    transform: rotate(5deg) translateY(1px);
+  }
+}
+@keyframes hover {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
 /* Phases. Issue: 1 speaking, 2 transcribing, 3 pasted.
    Slack and editor: 1 screenshot, 2 speaking, 3 writing, 4 pasted. */
 [data-scene='issue'][data-phase='1'] .said .word,
@@ -1570,6 +1721,12 @@ onBeforeUnmount(() => {
   .slack-side {
     display: none;
   }
+  .ghost-art {
+    position: static;
+    display: block;
+    width: 130px;
+    margin: 0 auto 6px;
+  }
   .speech {
     left: 8px;
     bottom: 88px;
@@ -1609,5 +1766,10 @@ onBeforeUnmount(() => {
 .reduced .speech,
 .reduced .pill {
   display: none;
+}
+.reduced .ghost,
+.reduced .arm,
+.reduced .ghost-art .key {
+  animation: none;
 }
 </style>
