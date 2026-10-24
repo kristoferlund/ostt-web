@@ -4,17 +4,12 @@ title: "Klang Pianissimo i terminalen"
 description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för svenska, direkt från terminalen. OSTT kopplar modellen till ett kortkommando, urklipp, filer och dina egna skript på Linux och macOS, via svenska Berget AI."
 ---
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="/" class="header-logo" aria-label="OSTT home">
-      <span class="logo-mark" aria-hidden="true"></span>
-    </a>
-    <nav class="header-nav">
-      <a href="/guide/getting-started">Dokumentation</a>
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-    </nav>
-  </div>
-</header>
+<script setup>
+import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
+import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
+</script>
+
+<SiteHeader />
 
 <main class="landing" lang="sv">
 
@@ -116,21 +111,4 @@ description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för sven
 
 </main>
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <strong>OSTT</strong>
-      <span>Tal till text för utvecklare. Öppen källkod för Linux och macOS.</span>
-    </div>
-    <div class="footer-links">
-      <a href="/guide/getting-started">Dokumentation</a>
-      <a href="/guide/why-ostt">Varför OSTT?</a>
-      <a href="/guide/commands">Kommandon</a>
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-      <a href="/reference/providers">Modeller och leverantörer</a>
-      <a href="/guide/troubleshooting">Felsökning</a>
-    </div>
-  </div>
-</footer>
+<SiteFooter tagline="Tal till text för utvecklare. Öppen källkod för Linux och macOS." />

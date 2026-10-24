@@ -4,7 +4,7 @@ description: Install OSTT, choose a transcription model, record from the termina
 
 # Getting Started
 
-OSTT is an open source speech-to-text tool for the terminal. It records from your microphone, transcribes with the cloud or local model you choose, and sends the text wherever you need it: stdout, the clipboard, a file, the app you were typing in, or an AI prompt or shell command first.
+OSTT is an open source speech-to-text tool for the terminal. It records from your microphone and transcribes on your own machine with local Parakeet and Whisper models, with full GPU support and no account or API key. A cloud provider is an option when you want one. The text goes wherever you need it: stdout, the clipboard, a file, the app you were typing in, or an AI prompt or shell command first.
 
 This page takes you from install to dictating with a hotkey. [Why OSTT?](./why-ostt.md) explains how it compares with other dictation tools.
 
@@ -14,21 +14,29 @@ This page takes you from install to dictating with a hotkey. [Why OSTT?](./why-o
 curl -fsSL https://ostt.ai/install | bash
 ```
 
-The installer detects your platform and GPU, installs runtime dependencies, downloads and verifies the latest release, and installs the `ostt` CLI. If no model is active at the end, it offers to download the local Whisper base model so you can start transcribing straight away.
+The installer detects your platform and GPU, installs runtime dependencies, downloads and verifies the latest release, and installs the `ostt` CLI. If no model is active at the end, it offers to download Parakeet, a fast local model, so you can start transcribing straight away.
 
 See [Installation](./installation.md) for package managers, installer options, and per-platform dependencies.
 
 ## Choose A Model
 
-If you skipped the Whisper download, or want a different model, open the model picker:
+Parakeet is the recommended local model for English and 25 European languages. If you skipped the installer's offer, download it and select it. Then keep it loaded between recordings:
+
+```bash
+ostt model local download parakeet-ultra
+ostt model select parakeet/parakeet-ultra
+ostt daemon start
+```
+
+To browse every model, open the model picker:
 
 ```bash
 ostt model
 ```
 
-Choose **Local provider** to download and activate an offline model, or **Cloud provider** for a hosted one. [Choosing a Model](./choosing-a-model.md) helps you decide.
+The **Local models** section downloads and activates offline models. [Choosing a Model](./choosing-a-model.md) helps you pick one for your language and hardware.
 
-A cloud provider needs its API key first:
+To use a [cloud model](./cloud-models.md) instead, save the provider's API key first:
 
 ```bash
 ostt auth login
@@ -62,7 +70,7 @@ ostt -o notes.txt    # Write to file
 
 ## Use a Global Hotkey
 
-On Omarchy 4, the installer binds `ALT+SPACE` to clipboard dictation for you. Elsewhere, bind this command in your desktop environment or in macOS Shortcuts.app:
+On Omarchy 4.5 or later, the [dictation plugin](./platforms/omarchy-dictation.md) makes OSTT the program behind Omarchy's own dictation keys, with no popup. On Omarchy 4, the installer also binds `ALT+SPACE` to clipboard dictation in the popup. Elsewhere, bind this command in your desktop environment or in macOS Shortcuts.app:
 
 ```bash
 ostt launch --paste
@@ -72,7 +80,7 @@ The first hotkey press opens a popup terminal and starts recording. Pressing the
 
 With `--paste`, the popup closes and OSTT pastes the transcript into the app that regains focus. Use `ostt launch -c` instead to copy it and paste yourself.
 
-See [Platform Setup](./platforms.md) for hotkey setup on macOS, Omarchy/Hyprland, GNOME, and KDE, and for changing the paste shortcut when an app needs a different one.
+See the setup guide for [macOS](./platforms/macos.md), [Omarchy dictation](./platforms/omarchy-dictation.md), [Omarchy/Hyprland](./platforms/hyprland.md), [GNOME](./platforms/gnome.md), or [KDE Plasma](./platforms/kde.md) for hotkey setup and for changing the paste shortcut when an app needs a different one.
 
 ## Process the Result
 

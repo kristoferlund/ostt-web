@@ -59,7 +59,7 @@ Options:
       --no-omarchy-setup
                         Do not configure Omarchy hotkeys, popup rules, or agent action
       --no-model-download
-                        Do not offer to download the Whisper base model
+                        Do not offer to download the Parakeet model
       --version VERSION Install a specific version, for example v0.0.8
       --install-dir DIR Install ostt to DIR (default: ~/.local/bin)
   -y, --yes             Accepted for compatibility; this is now the default
@@ -1532,13 +1532,12 @@ print_model_hint() {
   printf '\nA transcription model is required before recording. Configure a model: \033[1;32mostt model\033[0m\n'
 }
 
-# Leaves the install ready to transcribe: when no model is active, select the
-# Whisper base model if it is already on disk (reinstall/upgrade), otherwise
-# offer to download it. Falls back to printing the `ostt model` hint.
+# Leaves the install ready to transcribe: when no model is active, select
+# Parakeet if it is already on disk (reinstall/upgrade), otherwise offer to
+# download it. Falls back to printing the `ostt model` hint.
 offer_default_model() {
   local installed_bin="$1"
   local selected_model answer
-  local base_model_file="$(xdg_data_home)/ostt/models/base.bin"
 
   selected_model="$("$installed_bin" model current 2>/dev/null || true)"
   if [ -n "$selected_model" ] && [ "$selected_model" != "No model selected." ]; then
@@ -1546,11 +1545,10 @@ offer_default_model() {
     return 0
   fi
 
-  if [ -f "$base_model_file" ]; then
-    if "$installed_bin" model select whisper/base >/dev/null 2>&1; then
-      log "Selected the already-downloaded Whisper base model (whisper/base)."
-      return 0
-    fi
+  # Selecting fails when the model file is not downloaded.
+  if "$installed_bin" model select parakeet/parakeet-ultra >/dev/null 2>&1; then
+    log "Selected the already-downloaded Parakeet model (parakeet/parakeet-ultra)."
+    return 0
   fi
 
   if [ "$DOWNLOAD_MODEL" -eq 0 ]; then
@@ -1564,7 +1562,7 @@ offer_default_model() {
     return 0
   fi
 
-  printf '\nOSTT transcribes with a cloud or local model; configure one with `ostt model`.\nOr start right away with the small Whisper base model (142 MB).\n'
+  printf '\nOSTT transcribes with a local or cloud model; configure one with `ostt model`.\nOr start right away with Parakeet, a fast local model for English and 25 European languages (707 MB).\n'
   printf 'Download it now? [Y/n] '
   if ! read -r answer 2>/dev/null </dev/tty; then
     printf '\n'
@@ -1573,11 +1571,11 @@ offer_default_model() {
   fi
   case "$answer" in
   '' | Y | y | YES | Yes | yes)
-    if "$installed_bin" model local download base &&
-      "$installed_bin" model select whisper/base >/dev/null 2>&1; then
-      log "Whisper base model downloaded and selected; OSTT is ready to transcribe."
+    if "$installed_bin" model local download parakeet-ultra &&
+      "$installed_bin" model select parakeet/parakeet-ultra >/dev/null 2>&1; then
+      log "Parakeet downloaded and selected; OSTT is ready to transcribe."
     else
-      warn "could not download or select the Whisper base model"
+      warn "could not download or select the Parakeet model"
       print_model_hint
     fi
     ;;

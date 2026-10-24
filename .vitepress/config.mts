@@ -137,11 +137,8 @@ export default defineConfig({
     nav: [
       { text: 'Start', link: '/guide/getting-started' },
       { text: 'Why OSTT?', link: '/guide/why-ostt' },
-      { text: 'AI Agent', link: '/guide/ai-skill' },
       { text: 'Models', link: '/guide/choosing-a-model' },
       { text: 'Processing', link: '/guide/processing' },
-      { text: 'Platforms', link: '/guide/platforms' },
-      { text: 'Reference', link: '/reference/providers' }
     ],
     sidebar: [
       {
@@ -167,16 +164,17 @@ export default defineConfig({
         items: [
           { text: 'Choosing a Model', link: '/guide/choosing-a-model' },
           { text: 'Local Models', link: '/guide/local-models' },
-          { text: 'External Engines', link: '/guide/external-engines' },
           { text: 'GPU Acceleration', link: '/guide/gpu-acceleration' },
-          { text: 'Daemon Mode', link: '/guide/daemon' }
+          { text: 'Daemon Mode', link: '/guide/daemon' },
+          { text: 'Cloud Models', link: '/guide/cloud-models' },
+          { text: 'External Engines', link: '/guide/external-engines' }
         ]
       },
       {
         text: 'Platform Setup',
         items: [
-          { text: 'Overview', link: '/guide/platforms' },
           { text: 'macOS', link: '/guide/platforms/macos' },
+          { text: 'Omarchy Dictation', link: '/guide/platforms/omarchy-dictation' },
           { text: 'Omarchy / Hyprland', link: '/guide/platforms/hyprland' },
           { text: 'GNOME', link: '/guide/platforms/gnome' },
           { text: 'KDE Plasma', link: '/guide/platforms/kde' }

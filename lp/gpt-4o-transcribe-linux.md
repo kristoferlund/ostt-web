@@ -4,17 +4,12 @@ title: "GPT-4o Transcribe on Linux"
 description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects OpenAI's GPT-4o transcription model to a global hotkey, clipboard, and shell pipeline."
 ---
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="/" class="header-logo" aria-label="OSTT home">
-      <span class="logo-mark" aria-hidden="true"></span>
-    </a>
-    <nav class="header-nav">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-    </nav>
-  </div>
-</header>
+<script setup>
+import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
+import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
+</script>
+
+<SiteHeader />
 
 <main class="landing">
 
@@ -119,22 +114,4 @@ description: "Use gpt-4o-transcribe on Linux from the terminal. OSTT connects Op
 
 </main>
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <strong>OSTT</strong>
-      <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
-    </div>
-    <div class="footer-links">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="/guide/why-ostt">Why OSTT?</a>
-      <a href="/guide/commands">Commands</a>
-      <a href="/guide/platforms">Platforms</a>
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-      <a href="/reference/providers">Providers</a>
-      <a href="/guide/troubleshooting">Troubleshooting</a>
-    </div>
-  </div>
-</footer>
+<SiteFooter />
