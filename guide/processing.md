@@ -66,7 +66,7 @@ ostt transcribe rec.wav -p assistant --attach window.png
 ostt process 1 assistant --attach window.png
 ```
 
-AI actions send it to their agent, if the agent takes images (see [Agents](#agents)); bash actions get its path in `$OSTT_ATTACHMENT`. PNG, JPEG, GIF and WebP work. The [Omarchy dictation plugin](/omarchy) uses this to send a screenshot of the window you are dictating into.
+AI actions send it to their agent; with an agent that takes no images (see [Agents](#agents)), the action fails. Bash actions get its path in `$OSTT_ATTACHMENT`. PNG, JPEG, GIF and WebP work. The [Omarchy dictation plugin](/omarchy) uses this to send a screenshot of the window you are dictating into.
 
 ## Configure Actions
 

@@ -12,9 +12,9 @@
 - [Why OSTT?](https://ostt.ai/guide/why-ostt): Why OSTT exists and how it compares to GUI dictation apps.
 - [Installation](https://ostt.ai/guide/installation): Install via shell script, Homebrew, AUR, .deb, .rpm, or from source. Runtime dependency setup for each platform.
 - [Changelog](https://ostt.ai/guide/changelog): Release notes and notable changes for OSTT.
-- [Commands](https://ostt.ai/guide/commands): Full CLI reference: record, transcribe, retry, replay, process, paste output, auth, model, history, keyword, replace, config, logs, daemon, shell completions.
+- [Commands](https://ostt.ai/guide/commands): Full CLI reference: record, transcribe, retry, replay, process (with --attach), agent list/models, paste output, auth, model, history, keyword, replace, config, logs, daemon, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions. AI actions run an agent you already use (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot, Cursor, Grok, Pi, Oh My Pi, Hermes, OpenClaw, or one you add) with its tools switched off, and can take an attached image.
-- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference: audio, transcription params, paste output, text replace rules, popup, processing defaults.
+- [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference: audio, transcription params, paste output, text replace rules, popup, processing defaults and custom agents ([process.agents]).
 - [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Practical recommendations for choosing cloud providers, built-in local Parakeet and Whisper, external command/HTTP engines, Swedish/EU models, offline privacy, and retry strategies.
 
 ## Local Models

@@ -504,6 +504,10 @@ p code {
   overflow-wrap: anywhere;
 }
 
+.install-block .nowrap {
+  white-space: nowrap;
+}
+
 .install-block .dim {
   color: var(--color-muted);
 }

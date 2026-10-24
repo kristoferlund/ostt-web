@@ -4,7 +4,7 @@ description: Use OSTT as the Omarchy 4.5 dictation backend, with per-app context
 
 # Omarchy / Hyprland Setup
 
-Omarchy is an Arch-based desktop built on Hyprland. Use OSTT as a floating voice-to-text popup from any workspace, either to copy a transcript to the clipboard or to open Omarchy's default coding agent with your spoken prompt.
+Omarchy is an Arch-based desktop built on Hyprland. On Omarchy 4.5 or later, OSTT can be the [dictation backend](#dictation-backend) behind Omarchy's own dictation keys; the plugin installs OSTT for you, so skip straight there. OSTT also works as a floating voice-to-text popup from any workspace, either to copy a transcript to the clipboard or to open Omarchy's default coding agent with your spoken prompt.
 
 ## Install OSTT
 
@@ -59,7 +59,7 @@ Right-click the microphone in the bar to choose, for each app, its action and wh
 "obsidian" = { action = "clean" }
 ```
 
-Every other app gets plain transcription. If the agent fails or takes longer than a minute, OSTT pastes your words as it heard them, and a notification says why. The [plugin's README](https://github.com/kristoferlund/ostt-omarchy-dictate#readme) has the details.
+Every other app gets plain transcription. If the agent fails or runs past its time limit (a minute for the actions the setup adds), OSTT pastes your words as it heard them, and a notification says why. The [plugin's README](https://github.com/kristoferlund/ostt-omarchy-dictate#readme) has the details.
 
 ## Omarchy 4.x
 
