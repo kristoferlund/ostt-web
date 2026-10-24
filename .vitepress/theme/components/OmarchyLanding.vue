@@ -44,14 +44,14 @@ const editorAfter = words([['Export:', false, true], [' Files with spaces in the
 const agents = [
   { name: 'Claude Code', icon: 'claude' },
   { name: 'Codex', icon: 'openai' },
-  { name: 'OpenCode' },
+  { name: 'OpenCode', icon: 'opencode' },
   { name: 'Gemini CLI', icon: 'googlegemini' },
   { name: 'GitHub Copilot', icon: 'githubcopilot' },
   { name: 'Cursor', icon: 'cursor' },
-  { name: 'Grok' },
-  { name: 'Pi' },
-  { name: 'Hermes' },
-  { name: 'OpenClaw' }
+  { name: 'Grok', icon: 'grok' },
+  { name: 'Pi', icon: 'pi' },
+  { name: 'Hermes', icon: 'hermes' },
+  { name: 'OpenClaw', icon: 'openclaw' }
 ]
 
 const facts = [
@@ -312,7 +312,7 @@ onBeforeUnmount(() => {
       <div class="agents" data-reveal>
         <ul>
           <li v-for="(a, n) in agents" :key="a.name" :style="{ '--n': n }">
-            <span v-if="a.icon" class="agent-icon" :style="{ '--icon': `url(/agents/${a.icon}.svg)` }" aria-hidden="true"></span>
+            <span class="agent-icon" :style="{ '--icon': `url(/agents/${a.icon}.svg)` }" aria-hidden="true"></span>
             <span class="agent-name">{{ a.name }}</span>
           </li>
         </ul>
@@ -1265,10 +1265,6 @@ onBeforeUnmount(() => {
   color: #a1a1aa;
   text-align: center;
 }
-.agents li:not(:has(.agent-icon)) .agent-name {
-  font-size: 13px;
-  color: #d9d9de;
-}
 .branches {
   position: absolute;
   inset: 0;
@@ -1531,18 +1527,15 @@ onBeforeUnmount(() => {
     bottom: 88px;
     width: calc(100% - 16px);
   }
-  /* Names give way to icons; agents without one keep a small wordmark. */
-  .agents li:has(.agent-icon) .agent-name {
+  /* Names give way to the icons. */
+  .agents .agent-name {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip: rect(0 0 0 0);
   }
-  .agents li:not(:has(.agent-icon)) .agent-name {
-    font-size: 10px;
-    padding: 0 2px;
-  }
+
   .facts {
     grid-template-columns: 1fr 1fr;
   }
