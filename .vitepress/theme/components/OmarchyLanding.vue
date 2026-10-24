@@ -1,0 +1,1348 @@
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+
+// The action that takes instructions and sees the screen. One place, so a
+// new name is a one-line change.
+const ASSISTANT = 'Ghostwriter'
+
+const INSTALL = 'omarchy plugin add https://github.com/kristoferlund/ostt-omarchy-dictate.git --enable'
+
+type Word = { w: string; hl: boolean; b: boolean; i: number }
+
+// Splits text segments into words, keeping the spaces with them, so each word
+// can appear on its own. A segment is [text, highlight?, bold?].
+function words(segments: [string, boolean?, boolean?][]): Word[] {
+  let i = 0
+  return segments.flatMap(([text, hl, b]) =>
+    text
+      .split(/(?<=\s)/)
+      .filter(Boolean)
+      .map((w) => ({ w, hl: !!hl, b: !!b, i: i++ }))
+  )
+}
+
+const issueText =
+  'Reproduced on 2.3.1. Exporting a file with a space in its name writes an empty file. Renaming it fixes the export, so the path is probably not quoted.'
+const issueWords = words([[issueText]])
+
+const slackSpoken = words([["Tell her yes if the fix lands in time, and that I'll do the changelog tonight."]])
+const slackReply = words([
+  ['Yes, '],
+  ['Thursday', true],
+  [' works for '],
+  ['2.4', true],
+  [' as long as '],
+  ["Jonas's export fix", true],
+  [' lands '],
+  ['tomorrow morning', true],
+  [". I'll have the changelog ready tonight."]
+])
+
+const editorSpoken = words([['Rewrite this like the other points.']])
+const editorAfter = words([['Export:', false, true], [' Files with spaces in their names no longer export empty.']])
+
+const agents = [
+  { name: 'Claude Code', icon: 'claude' },
+  { name: 'Codex', icon: 'openai' },
+  { name: 'OpenCode' },
+  { name: 'Gemini CLI', icon: 'googlegemini' },
+  { name: 'GitHub Copilot', icon: 'githubcopilot' },
+  { name: 'Cursor', icon: 'cursor' },
+  { name: 'Grok' },
+  { name: 'Pi' },
+  { name: 'Oh My Pi' },
+  { name: 'Hermes' },
+  { name: 'OpenClaw' }
+]
+
+const apps = [
+  { name: 'Ghostty', kind: 'terminal', action: 'Plain transcription', shot: false },
+  { name: 'Obsidian', kind: 'notes', action: 'Text cleanup', shot: false },
+  { name: 'Slack', kind: 'chat', action: ASSISTANT, shot: true },
+  { name: 'Typora', kind: 'writer', action: ASSISTANT, shot: true }
+]
+
+// A vertical sound wave for the spine: a line that swells into a burst of
+// speech and settles back, drawn top to bottom.
+function wave(height = 120, width = 28, cycles = 9): string {
+  const mid = width / 2
+  const steps = 120
+  let d = `M ${mid} 0`
+  for (let s = 1; s <= steps; s++) {
+    const t = s / steps
+    const envelope = Math.sin(Math.PI * t) ** 2
+    const x = mid + Math.sin(t * cycles * 2 * Math.PI) * envelope * (mid - 1) * (0.55 + 0.45 * Math.sin(t * 23))
+    d += ` L ${x.toFixed(2)} ${(t * height).toFixed(2)}`
+  }
+  return d
+}
+const wavePath = wave()
+
+// One bar of the pill's level meter: its place in the wave and how high it
+// swings, varied so the bars don't move in step.
+function bar(n: number) {
+  return { '--n': n, '--amp': `${5 + ((n * 7) % 13)}px` }
+}
+
+// Each scene plays a loop of phases while it is on screen.
+const phase = reactive<Record<string, number>>({ issue: 0, slack: 0, editor: 0 })
+const timelines: Record<string, [number, number][]> = {
+  // 1 speaking, 2 transcribing, 3 pasted
+  issue: [[1, 3400], [2, 1200], [3, 6000], [0, 900]],
+  // 1 screenshot, 2 speaking, 3 writing, 4 pasted
+  slack: [[1, 900], [2, 3000], [3, 2000], [4, 6500], [0, 900]],
+  editor: [[1, 900], [2, 2000], [3, 1800], [4, 6000], [0, 900]]
+}
+const timers: Record<string, ReturnType<typeof setTimeout>> = {}
+const running: Record<string, boolean> = {}
+
+function play(name: string) {
+  if (running[name]) return
+  running[name] = true
+  let k = 0
+  const step = () => {
+    if (!running[name]) return
+    const [p, ms] = timelines[name][k]
+    phase[name] = p
+    k = (k + 1) % timelines[name].length
+    timers[name] = setTimeout(step, ms)
+  }
+  step()
+}
+
+function stop(name: string) {
+  running[name] = false
+  clearTimeout(timers[name])
+}
+
+const copied = ref(false)
+function copyInstall() {
+  navigator.clipboard?.writeText(INSTALL)
+  copied.value = true
+  setTimeout(() => (copied.value = false), 2000)
+}
+
+const root = ref<HTMLElement | null>(null)
+const logo = ref<HTMLElement | null>(null)
+const spineTop = ref(0)
+const progress = ref(0)
+let observer: IntersectionObserver | null = null
+let frame = 0
+
+function measure() {
+  if (!root.value || !logo.value) return
+  spineTop.value = logo.value.offsetTop + logo.value.offsetHeight + 20
+}
+
+// How far down the page the reader is, for the lit part of the spine.
+function onScroll() {
+  cancelAnimationFrame(frame)
+  frame = requestAnimationFrame(() => {
+    if (!root.value) return
+    const rect = root.value.getBoundingClientRect()
+    const reached = window.innerHeight * 0.55 - rect.top - spineTop.value
+    progress.value = Math.min(1, Math.max(0, reached / (rect.height - spineTop.value)))
+  })
+}
+
+const reduced = ref(false)
+
+onMounted(() => {
+  reduced.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  measure()
+  onScroll()
+  window.addEventListener('resize', measure)
+  window.addEventListener('scroll', onScroll, { passive: true })
+
+  if (reduced.value) {
+    Object.assign(phase, { issue: 3, slack: 4, editor: 4 })
+    root.value?.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'))
+    return
+  }
+  observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const el = entry.target as HTMLElement
+        if (entry.isIntersecting) el.classList.add('in')
+        const scene = el.dataset.scene
+        if (scene) entry.isIntersecting ? play(scene) : stop(scene)
+      }
+    },
+    { threshold: 0.35 }
+  )
+  root.value?.querySelectorAll('[data-reveal], [data-scene]').forEach((el) => observer!.observe(el))
+})
+
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  Object.keys(timelines).forEach(stop)
+  window.removeEventListener('resize', measure)
+  window.removeEventListener('scroll', onScroll)
+  cancelAnimationFrame(frame)
+})
+</script>
+
+<template>
+  <main ref="root" class="ol" :class="{ reduced }" :style="{ '--spine-top': spineTop + 'px', '--progress': progress }">
+    <div class="spine" aria-hidden="true"><div class="spine-lit"></div></div>
+
+    <!-- Hero -->
+    <section class="hero">
+      <span ref="logo" class="hero-mark" role="img" aria-label="OSTT"></span>
+      <div class="hero-text mask">
+        <p class="kicker">OSTT for Omarchy</p>
+        <h1>Dictation that sees<br />what you see.</h1>
+        <p class="lede">
+          Talk to any app on Omarchy. Ask for a reply instead of a transcript, and your AI agent reads the screen and writes it
+          for you.
+        </p>
+        <button class="install" type="button" :class="{ copied }" @click="copyInstall" aria-label="Copy the install command">
+          <code><span class="dim">omarchy plugin add https://github.com/kristoferlund/</span><b>ostt-omarchy-dictate</b><span class="dim">.git --enable</span></code>
+          <span class="install-state">{{ copied ? 'Copied' : 'Copy' }}</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 1. Plain dictation -->
+    <section class="chapter">
+      <div class="node" data-reveal>
+        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
+      </div>
+      <header class="chapter-head mask" data-reveal>
+        <p class="kicker">Dictate</p>
+        <h2>Speak into any app.</h2>
+        <p>
+          OSTT plugs into Omarchy's own dictation. Talk, and your words land where your cursor is, in any app. Parakeet and
+          Whisper run on your own machine.
+        </p>
+      </header>
+
+      <div class="screen" data-scene="issue" :data-phase="phase.issue">
+        <div class="win issue">
+          <div class="issue-top">
+            <span class="issue-state">Open</span>
+            <span class="issue-title">Export fails for file names with spaces <span class="dim">#482</span></span>
+          </div>
+          <div class="comment">
+            <span class="avatar a1">M</span>
+            <div class="bubble">
+              <p class="meta"><b>maya</b> opened this issue</p>
+              <p>Exported files come out empty for some projects. Anyone else seeing this?</p>
+            </div>
+          </div>
+          <div class="comment">
+            <span class="avatar a0">K</span>
+            <div class="bubble composer">
+              <p class="meta"><b>Write</b> <span class="dim">Preview</span></p>
+              <p class="typed">
+                <span v-for="t in issueWords" :key="t.i" class="word" :style="{ '--i': t.i }">{{ t.w }}</span><span class="caret"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="voice">
+          <p class="said">
+            <span v-for="t in issueWords" :key="t.i" class="word" :style="{ '--i': t.i }">{{ t.w }}</span>
+          </p>
+          <div class="pill"><i v-for="n in 18" :key="n" :style="bar(n)"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Agents -->
+    <section class="chapter">
+      <div class="node" data-reveal>
+        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
+      </div>
+      <header class="chapter-head mask" data-reveal>
+        <p class="kicker">Connect</p>
+        <h2>Runs on the agent you already pay for.</h2>
+        <p>
+          OSTT uses the coding agent you are signed in to, so there is no new account and no API key. Every agent runs with its
+          tools switched off.
+        </p>
+      </header>
+      <div class="agents" data-reveal>
+        <ul>
+          <li v-for="(a, n) in agents" :key="a.name" :style="{ '--n': n }">
+            <span v-if="a.icon" class="agent-icon" :style="{ '--icon': `url(/agents/${a.icon}.svg)` }" aria-hidden="true"></span>
+            <span class="agent-name">{{ a.name }}</span>
+          </li>
+        </ul>
+        <svg class="bus" viewBox="0 0 600 70" preserveAspectRatio="none" aria-hidden="true">
+          <path v-for="x in [100, 200, 300, 400, 500]" :key="x" :d="`M ${x} 0 C ${x} 42, 300 28, 300 70`" pathLength="1" />
+        </svg>
+      </div>
+    </section>
+
+    <!-- 3. Instructions with screen context -->
+    <section class="chapter">
+      <div class="node" data-reveal>
+        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
+      </div>
+      <header class="chapter-head mask" data-reveal>
+        <p class="kicker">Instruct</p>
+        <h2>Say what you want written.</h2>
+        <p>
+          Turn on {{ ASSISTANT }} for an app and OSTT sends your agent a screenshot along with your words. It reads the
+          conversation and writes the reply, names and dates included.
+        </p>
+      </header>
+
+      <div class="screen" data-scene="slack" :data-phase="phase.slack">
+        <div class="win slack">
+          <aside class="slack-side">
+            <p class="ws">Northwind</p>
+            <p class="ch on"># release</p>
+            <p class="ch"># design</p>
+            <p class="ch"># support</p>
+          </aside>
+          <div class="slack-main">
+            <p class="slack-top"># release</p>
+            <div class="msg">
+              <span class="avatar a1">M</span>
+              <div>
+                <p class="meta"><b>Maya</b> <span class="dim">10:14</span></p>
+                <p>Can we still ship <em>2.4</em> on <em>Thursday</em>? QA found a crash in the export dialog.</p>
+              </div>
+            </div>
+            <div class="msg">
+              <span class="avatar a2">J</span>
+              <div>
+                <p class="meta"><b>Jonas</b> <span class="dim">10:21</span></p>
+                <p>The <em>export fix</em> is in review, should land <em>tomorrow morning</em>.</p>
+              </div>
+            </div>
+            <div class="msg">
+              <span class="avatar a1">M</span>
+              <div>
+                <p class="meta"><b>Maya</b> <span class="dim">10:23</span></p>
+                <p>@kristofer are we good, and who's on the changelog?</p>
+              </div>
+            </div>
+            <div class="slack-composer">
+              <p class="typed">
+                <span v-for="t in slackReply" :key="t.i" class="word" :class="{ hl: t.hl }" :style="{ '--i': t.i }">{{ t.w }}</span><span class="caret"></span>
+              </p>
+              <span class="placeholder">Message #release</span>
+            </div>
+          </div>
+          <div class="scan" aria-hidden="true"></div>
+        </div>
+        <div class="voice">
+          <p class="said">
+            <span v-for="t in slackSpoken" :key="t.i" class="word" :style="{ '--i': t.i }">{{ t.w }}</span>
+          </p>
+          <div class="pill"><i v-for="n in 18" :key="n" :style="bar(n)"></i><span class="pill-label">{{ ASSISTANT }}</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Edit a selection -->
+    <section class="chapter">
+      <div class="node" data-reveal>
+        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
+      </div>
+      <header class="chapter-head mask" data-reveal>
+        <p class="kicker">Edit</p>
+        <h2>Change what you select.</h2>
+        <p>Select a passage and say what to change. The agent sees the rest of the page, so the new text fits in.</p>
+      </header>
+
+      <div class="screen" data-scene="editor" :data-phase="phase.editor">
+        <div class="win editor">
+          <p class="editor-top">release-notes.md</p>
+          <div class="doc">
+            <h3>OSTT 2.4</h3>
+            <ul>
+              <li><b>Agents:</b> Gemini CLI and Copilot join the built-in agents.</li>
+              <li><b>Popup:</b> The level meter follows your microphone's gain.</li>
+              <li class="target">
+                <span class="before">fixed exporting files that have spaces in the name, it wrote empty files before</span>
+                <span class="after"
+                  ><span v-for="t in editorAfter" :key="t.i" class="word" :style="{ '--i': t.i }"
+                    ><b v-if="t.b">{{ t.w }}</b><template v-else>{{ t.w }}</template></span
+                  ></span
+                >
+              </li>
+              <li><b>Daemon:</b> Starts with your session when installed as a service.</li>
+            </ul>
+          </div>
+          <div class="scan" aria-hidden="true"></div>
+        </div>
+        <div class="voice">
+          <p class="said">
+            <span v-for="t in editorSpoken" :key="t.i" class="word" :style="{ '--i': t.i }">{{ t.w }}</span>
+          </p>
+          <div class="pill"><i v-for="n in 18" :key="n" :style="bar(n)"></i><span class="pill-label">{{ ASSISTANT }}</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Per app -->
+    <section class="chapter">
+      <div class="node" data-reveal>
+        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
+      </div>
+      <header class="chapter-head mask" data-reveal>
+        <p class="kicker">Choose</p>
+        <h2>Each app gets its own.</h2>
+        <p>
+          Plain transcription in the terminal, a light cleanup in your notes, {{ ASSISTANT }} in chat. Pick per app from the
+          microphone in the bar.
+        </p>
+      </header>
+      <div class="card" data-reveal>
+        <p class="card-head"><span class="mark" aria-hidden="true"></span> Dictation</p>
+        <ul>
+          <li v-for="(app, n) in apps" :key="app.name" :style="{ '--n': n }">
+            <span class="app-icon" :class="app.kind" aria-hidden="true"></span>
+            <span class="app-name">{{ app.name }}</span>
+            <span class="app-action" :class="{ strong: app.action === ASSISTANT }">
+              <svg v-if="app.shot" class="cam" viewBox="0 0 16 16" aria-label="with screenshot"><rect x="1.5" y="4" width="13" height="9" rx="2" /><circle cx="8" cy="8.5" r="2.4" /><path d="M5.5 4l1-1.6h3l1 1.6" /></svg>
+              {{ app.action }}
+            </span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Facts -->
+    <section class="chapter end">
+      <div class="node" data-reveal>
+        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
+      </div>
+      <div class="facts" data-reveal>
+        <div>
+          <h3>Local and fast</h3>
+          <p>Parakeet and Whisper on your CPU or GPU, kept loaded so dictation starts the moment you speak.</p>
+        </div>
+        <div>
+          <h3>Never loses a word</h3>
+          <p>If the agent fails or takes too long, your words are pasted as you said them.</p>
+        </div>
+        <div>
+          <h3>Screenshots on request</h3>
+          <p>Only in the apps you choose, sent only to your agent, deleted when the dictation is done.</p>
+        </div>
+        <div>
+          <h3>Open source</h3>
+          <p>MIT-licensed, configured in plain TOML you can read, change and keep with your dotfiles.</p>
+        </div>
+      </div>
+
+      <div class="get mask" data-reveal>
+        <h2>Get it.</h2>
+        <button class="install big" type="button" :class="{ copied }" @click="copyInstall" aria-label="Copy the install command">
+          <code><span class="dim">omarchy plugin add https://github.com/kristoferlund/</span><b>ostt-omarchy-dictate</b><span class="dim">.git --enable</span></code>
+          <span class="install-state">{{ copied ? 'Copied' : 'Copy' }}</span>
+        </button>
+        <p class="links">
+          <a href="/guide/platforms/hyprland#dictation-backend">Setup guide</a>
+          <a href="/guide/processing">Processing actions</a>
+          <a href="https://github.com/kristoferlund/ostt-omarchy-dictate">GitHub</a>
+        </p>
+      </div>
+    </section>
+  </main>
+</template>
+
+<style scoped>
+.ol {
+  --sig: #a5b4ff;
+  --sig-soft: rgb(165 180 255 / 14%);
+  --win: #101011;
+  --win-line: #2a2a2d;
+  --ink: var(--color-ink);
+  --body: var(--color-body);
+  --mute: #5f6068;
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 160px;
+  color: var(--body);
+}
+
+/* The spine: a hairline from the logo to the end, lit as far as you read. */
+.spine {
+  position: absolute;
+  left: 50%;
+  top: var(--spine-top);
+  bottom: 120px;
+  width: 1px;
+  transform: translateX(-0.5px);
+  background: linear-gradient(to bottom, #262628, #262628 92%, transparent);
+}
+.spine-lit {
+  height: 100%;
+  transform-origin: top;
+  transform: scaleY(var(--progress));
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0%), rgb(255 255 255 / 55%) 30%, var(--sig));
+  box-shadow: 0 0 12px rgb(165 180 255 / 35%);
+}
+
+/* Text that sits on the spine hides it behind itself. */
+.mask {
+  position: relative;
+  background: var(--color-canvas);
+}
+
+.kicker {
+  font-family: var(--font-code);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin: 0 0 14px;
+}
+
+/* Hero */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120px 24px 40px;
+  text-align: center;
+}
+.hero-mark {
+  display: block;
+  width: 96px;
+  height: 70px;
+  background: var(--ink);
+  mask: url('/logo.svg') center / contain no-repeat;
+  -webkit-mask: url('/logo.svg') center / contain no-repeat;
+}
+.hero-text {
+  margin-top: 120px;
+  padding: 28px 8px;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 4.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.lede {
+  max-width: 540px;
+  text-wrap: balance;
+  margin: 28px auto 40px;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.install {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  max-width: 100%;
+  padding: 12px 12px 12px 18px;
+  border: 1px solid var(--win-line);
+  border-radius: 10px;
+  background: #0e0e0f;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.install:hover,
+.install:focus-visible {
+  border-color: #4a4a50;
+}
+.install:focus-visible {
+  outline: 2px solid var(--sig);
+  outline-offset: 3px;
+}
+.install code {
+  font-family: var(--font-code);
+  font-size: 13.5px;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.install code b {
+  font-weight: 600;
+}
+.install-state {
+  flex: none;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #1c1c1f;
+  color: var(--body);
+}
+.install.copied .install-state {
+  color: var(--sig);
+}
+.dim {
+  color: var(--mute);
+}
+
+/* Chapters */
+.chapter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+}
+.node {
+  position: relative;
+  width: 28px;
+  height: 120px;
+  margin: 120px 0 0;
+  background: var(--color-canvas);
+}
+.node-wave {
+  display: block;
+  width: 28px;
+  height: 120px;
+  overflow: visible;
+}
+.node-wave path {
+  fill: none;
+  stroke: var(--sig);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 4px rgb(165 180 255 / 50%));
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.6, 0, 0.2, 1);
+}
+.node.in .node-wave path {
+  stroke-dashoffset: 0;
+}
+
+.chapter-head {
+  max-width: 600px;
+  padding: 36px 12px 56px;
+  text-align: center;
+}
+.chapter-head h2,
+.get h2 {
+  margin: 0;
+  text-wrap: balance;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.chapter-head p:not(.kicker) {
+  text-wrap: balance;
+  margin: 18px auto 0;
+  max-width: 500px;
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
+.node[data-reveal] {
+  transform: none;
+}
+
+/* A scene: an app window as Hyprland draws it, with the dictation pill below. */
+.screen {
+  position: relative;
+  width: min(760px, 100%);
+  padding: 34px 34px 150px;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #17181c 0%, #0c0c0d 55%),
+    var(--color-canvas);
+  border: 1px solid #1d1d20;
+  box-shadow: 0 40px 120px -40px rgb(0 0 0 / 90%);
+}
+.screen::before {
+  /* fine grain, like a lit screen */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: radial-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px);
+  background-size: 3px 3px;
+  pointer-events: none;
+}
+.win {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #3b3b40;
+  border-radius: 10px;
+  background: var(--win);
+  color: #c9c9cf;
+  font-size: 13.5px;
+  line-height: 1.55;
+  text-align: left;
+}
+.win p {
+  margin: 0;
+}
+.meta {
+  font-size: 12.5px;
+  color: #8b8b93;
+}
+.meta b {
+  color: #e4e4e8;
+  font-weight: 600;
+}
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0b0b0c;
+}
+.a0 {
+  background: #e4e4e8;
+}
+.a1 {
+  background: #f0b27a;
+}
+.a2 {
+  background: #8fd3b6;
+}
+
+/* Words appear one by one once their phase begins. */
+.word {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  transition-delay: calc(var(--i) * 70ms);
+}
+.caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: var(--sig);
+  opacity: 0;
+}
+
+/* GitHub-like issue */
+.issue-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--win-line);
+}
+.issue-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ededf0;
+}
+.issue-state {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: #1f6f43;
+  color: #e9fff2;
+}
+.comment {
+  display: flex;
+  gap: 12px;
+  padding: 14px 18px 0;
+}
+.comment:last-child {
+  padding-bottom: 18px;
+}
+.bubble {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--win-line);
+  border-radius: 8px;
+}
+.bubble .meta {
+  margin-bottom: 4px;
+}
+.composer {
+  min-height: 112px;
+  border-color: #4a4a52;
+}
+.composer .typed {
+  margin-top: 6px;
+}
+
+/* Slack-like channel */
+.slack {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+}
+.slack-side {
+  padding: 14px 12px;
+  background: #18141c;
+  border-right: 1px solid var(--win-line);
+}
+.slack-side .ws {
+  font-weight: 700;
+  color: #ededf0;
+  margin-bottom: 14px;
+}
+.slack-side .ch {
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: #8b8b93;
+  font-size: 13px;
+}
+.slack-side .ch.on {
+  background: #2d2540;
+  color: #ededf0;
+}
+.slack-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 18px 16px;
+}
+.slack-top {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--win-line);
+  font-weight: 700;
+  color: #ededf0;
+}
+.msg {
+  display: flex;
+  gap: 10px;
+}
+.msg em {
+  font-style: normal;
+  border-radius: 3px;
+  transition:
+    background 0.4s ease,
+    box-shadow 0.4s ease;
+}
+.slack-composer {
+  position: relative;
+  min-height: 68px;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border: 1px solid #4a4a52;
+  border-radius: 8px;
+}
+.placeholder {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  color: #5f6068;
+  transition: opacity 0.2s;
+}
+.word.hl {
+  border-radius: 3px;
+  box-shadow: inset 0 -1.5px 0 var(--sig);
+}
+
+/* Markdown editor */
+.editor-top {
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--win-line);
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: #8b8b93;
+}
+.doc {
+  padding: 18px 26px 22px;
+}
+.doc h3 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: #ededf0;
+}
+.doc ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.doc li {
+  margin: 6px 0;
+}
+.doc b {
+  color: #ededf0;
+}
+.target {
+  position: relative;
+}
+.target .before {
+  border-radius: 3px;
+  background: rgb(74 116 222 / 45%);
+  transition: opacity 0.25s ease;
+}
+.target .after {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* The screenshot: a light sweep over the window. */
+.scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, rgb(165 180 255 / 0%) 40%, rgb(165 180 255 / 22%) 50%, transparent 52%);
+  background-size: 100% 220%;
+  background-position: 0 120%;
+  opacity: 0;
+}
+
+/* Voice: what was said, and the pill while OSTT listens. */
+.voice {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(560px, 88%);
+  transform: translateX(-50%);
+}
+.said {
+  margin: 0;
+  min-height: 2.8em;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.45;
+  font-style: italic;
+  color: #b9bac4;
+}
+.said .word {
+  transition-delay: calc(var(--i) * 110ms);
+}
+.pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 34px;
+  padding: 0 18px;
+  border: 1px solid #2c2c31;
+  border-radius: 99px;
+  background: #121214;
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+.pill i {
+  display: block;
+  width: 3px;
+  height: 4px;
+  border-radius: 2px;
+  background: #e8e8ee;
+}
+.pill-label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-code);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--sig);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+@keyframes talk {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: var(--amp);
+  }
+}
+@keyframes think {
+  0%,
+  100% {
+    opacity: 0.25;
+    height: 4px;
+  }
+  50% {
+    opacity: 1;
+    height: 10px;
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes sweep {
+  from {
+    background-position: 0 120%;
+    opacity: 1;
+  }
+  to {
+    background-position: 0 -40%;
+    opacity: 1;
+  }
+}
+@keyframes glow {
+  0%,
+  100% {
+    background: transparent;
+  }
+  40% {
+    background: var(--sig-soft);
+  }
+}
+
+/* Phases. Issue: 1 speaking, 2 transcribing, 3 pasted.
+   Slack and editor: 1 screenshot, 2 speaking, 3 writing, 4 pasted. */
+[data-scene='issue'][data-phase='1'] .said .word,
+[data-scene='slack'][data-phase='2'] .said .word,
+[data-scene='slack'][data-phase='3'] .said .word,
+[data-scene='editor'][data-phase='2'] .said .word,
+[data-scene='editor'][data-phase='3'] .said .word,
+[data-scene='issue'][data-phase='2'] .said .word {
+  opacity: 1;
+}
+[data-scene='issue'][data-phase='1'] .pill,
+[data-scene='issue'][data-phase='2'] .pill,
+[data-scene='slack'][data-phase='2'] .pill,
+[data-scene='slack'][data-phase='3'] .pill,
+[data-scene='editor'][data-phase='2'] .pill,
+[data-scene='editor'][data-phase='3'] .pill {
+  opacity: 1;
+  transform: none;
+}
+[data-scene='issue'][data-phase='1'] .pill i,
+[data-scene='slack'][data-phase='2'] .pill i,
+[data-scene='editor'][data-phase='2'] .pill i {
+  animation: talk 0.7s ease-in-out infinite;
+  animation-delay: calc(var(--n) * -53ms);
+}
+[data-scene='issue'][data-phase='2'] .pill i,
+[data-scene='slack'][data-phase='3'] .pill i,
+[data-scene='editor'][data-phase='3'] .pill i {
+  animation: think 1s ease-in-out infinite;
+  animation-delay: calc(var(--n) * 55ms);
+}
+[data-scene='slack'][data-phase='3'] .pill-label,
+[data-scene='editor'][data-phase='3'] .pill-label {
+  opacity: 1;
+}
+[data-scene='issue'][data-phase='3'] .typed .word,
+[data-scene='slack'][data-phase='4'] .typed .word,
+[data-scene='editor'][data-phase='4'] .after .word {
+  opacity: 1;
+}
+[data-scene='issue'][data-phase='3'] .caret,
+[data-scene='slack'][data-phase='4'] .caret {
+  opacity: 1;
+  animation: blink 1s steps(1) infinite;
+}
+[data-scene='slack'][data-phase='4'] .placeholder {
+  opacity: 0;
+}
+[data-scene='slack'][data-phase='1'] .scan,
+[data-scene='editor'][data-phase='1'] .scan {
+  animation: sweep 0.9s ease-in-out forwards;
+}
+[data-scene='slack'][data-phase='3'] .msg em,
+[data-scene='slack'][data-phase='4'] .msg em {
+  background: var(--sig-soft);
+  box-shadow: inset 0 -1.5px 0 var(--sig);
+}
+[data-scene='editor'][data-phase='4'] .target .before {
+  opacity: 0;
+}
+
+/* Agents */
+.agents {
+  width: min(760px, 100%);
+}
+.agents ul {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.agents li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 92px;
+  border: 1px solid #1f1f22;
+  border-radius: 12px;
+  background: #0e0e0f;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease,
+    border-color 0.2s;
+  transition-delay: calc(var(--n) * 60ms);
+}
+.agents.in li {
+  opacity: 1;
+  transform: none;
+}
+.agents li:hover {
+  border-color: #3a3a40;
+}
+.agents li:nth-child(n + 7) {
+  /* the second row, centred under the first */
+  transform: translateY(8px) translateX(50%);
+}
+.agents.in li:nth-child(n + 7) {
+  transform: translateX(50%);
+}
+.agent-icon {
+  width: 24px;
+  height: 24px;
+  background: #d9d9de;
+  mask: var(--icon) center / contain no-repeat;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+}
+.agent-name {
+  font-family: var(--font-code);
+  font-size: 11.5px;
+  color: #a1a1aa;
+  text-align: center;
+}
+.agents li:not(:has(.agent-icon)) .agent-name {
+  font-size: 13px;
+  color: #d9d9de;
+}
+.bus {
+  display: block;
+  width: 100%;
+  height: 70px;
+  margin-top: 10px;
+}
+.bus path {
+  fill: none;
+  stroke: #2e2e33;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.4s ease 0.6s;
+}
+.agents.in .bus path {
+  stroke-dashoffset: 0;
+}
+
+/* The per-app card, as the bar widget shows it */
+.card {
+  width: min(420px, 100%);
+  padding: 18px;
+  border: 1px solid #2a2a2d;
+  border-radius: 14px;
+  background: #0f0f10;
+  box-shadow: 0 30px 80px -30px rgb(0 0 0 / 90%);
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #222225;
+  font-weight: 600;
+  color: var(--ink);
+}
+.card-head .mark {
+  width: 26px;
+  height: 19px;
+  background: var(--ink);
+  mask: url('/logo.svg') center / contain no-repeat;
+  -webkit-mask: url('/logo.svg') center / contain no-repeat;
+}
+.card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.card li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  border-radius: 8px;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+  transition-delay: calc(0.3s + var(--n) * 120ms);
+}
+.card.in li {
+  opacity: 1;
+  transform: none;
+}
+.card li:hover {
+  background: #17171a;
+}
+.app-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #26262b;
+  position: relative;
+}
+.app-icon.terminal::after {
+  content: '>_';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-code);
+  font-size: 10px;
+  color: #d9d9de;
+}
+.app-icon.notes {
+  background: #3b2d5c;
+}
+.app-icon.chat {
+  background: #4a2346;
+}
+.app-icon.writer {
+  background: #24384f;
+}
+.app-name {
+  flex: 1;
+  color: #e4e4e8;
+}
+.app-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #8b8b93;
+}
+.app-action.strong {
+  color: var(--sig);
+}
+.cam {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+
+/* Facts and install */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  width: min(1000px, 100%);
+  margin-top: 56px;
+  border: 1px solid #1f1f22;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1f1f22;
+}
+.facts div {
+  padding: 26px 24px;
+  background: var(--color-canvas);
+}
+.facts h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.facts p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.get {
+  margin-top: 140px;
+  padding: 32px 8px;
+  text-align: center;
+}
+.get .install {
+  margin-top: 28px;
+}
+.links {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  margin: 28px 0 0;
+  font-size: 14px;
+}
+.links a {
+  color: var(--body);
+  transition: color 0.2s;
+}
+.links a:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .hero-text {
+    margin-top: 90px;
+  }
+  .screen {
+    padding: 16px 12px 124px;
+    border-radius: 16px;
+  }
+  .slack {
+    grid-template-columns: 1fr;
+  }
+  .slack-side {
+    display: none;
+  }
+  .agents ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .agents li:nth-child(n + 7),
+  .agents.in li:nth-child(n + 7) {
+    transform: none;
+  }
+  .bus {
+    display: none;
+  }
+  .facts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .facts {
+    grid-template-columns: 1fr;
+  }
+  .win {
+    font-size: 12.5px;
+  }
+}
+
+/* Without motion: everything in its final state. */
+.reduced .word,
+.reduced .agents li,
+.reduced .card li,
+.reduced [data-reveal] {
+  transition: none;
+}
+.reduced .said .word {
+  opacity: 1;
+}
+.reduced .pill {
+  display: none;
+}
+</style>
