@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { useSpine } from '../spine'
+import SpineNode from './SpineNode.vue'
 
 // The action that takes instructions and sees the screen. One place, so a
 // new name is a one-line change.
@@ -96,21 +98,6 @@ const apps = [
   { name: 'Typora', icon: 'typora', action: ASSISTANT, shot: true }
 ]
 
-// A vertical sound wave for the spine: a line that swells into a burst of
-// speech and settles back, drawn top to bottom.
-function wave(height = 120, width = 28, cycles = 9): string {
-  const mid = width / 2
-  const steps = 120
-  let d = `M ${mid} 0`
-  for (let s = 1; s <= steps; s++) {
-    const t = s / steps
-    const envelope = Math.sin(Math.PI * t) ** 2
-    const x = mid + Math.sin(t * cycles * 2 * Math.PI) * envelope * (mid - 1) * (0.55 + 0.45 * Math.sin(t * 23))
-    d += ` L ${x.toFixed(2)} ${(t * height).toFixed(2)}`
-  }
-  return d
-}
-const wavePath = wave()
 
 
 
@@ -158,83 +145,18 @@ function copyInstall() {
   setTimeout(() => (copied.value = false), 2000)
 }
 
-const root = ref<HTMLElement | null>(null)
-const logo = ref<HTMLElement | null>(null)
-const spine = ref<HTMLElement | null>(null)
-const explore = ref<HTMLElement | null>(null)
-const spineBottom = ref(0)
-const spineTop = ref(0)
-const progress = ref(0)
-let observer: IntersectionObserver | null = null
-let frame = 0
+const { root, logo, end, spine, style, reduced } = useSpine((name, visible) => (visible ? play(name) : stop(name)))
 
-// The spine runs from just under the logo to just above the closing links.
-function measure() {
-  if (!root.value || !logo.value || !explore.value) return
-  spineTop.value = logo.value.offsetTop + logo.value.offsetHeight + 20
-  spineBottom.value = root.value.offsetHeight - explore.value.offsetTop + 48
-}
-
-// The lit part of the spine ends at this height on screen, and each node's
-// wave is drawn as far as the lit spine has reached into it, so the two stay
-// joined scrolling down and back up.
-const TIP = 0.55
-const clamp = (x: number) => Math.min(1, Math.max(0, x))
-
-function onScroll() {
-  cancelAnimationFrame(frame)
-  frame = requestAnimationFrame(() => {
-    if (!root.value || !spine.value) return
-    measure()
-    // Without motion, the whole line is drawn from the start.
-    const tip = reduced.value ? Infinity : window.innerHeight * TIP
-    const line = spine.value.getBoundingClientRect()
-    progress.value = clamp((tip - line.top) / line.height)
-    root.value.querySelectorAll<HTMLElement>('.node, .agents').forEach((node) => {
-      const box = node.getBoundingClientRect()
-      node.style.setProperty('--draw', String(clamp((tip - box.top) / box.height)))
-    })
-  })
-}
-
-const reduced = ref(false)
-
+// Without motion, every scene shows its result.
 onMounted(() => {
-  reduced.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  onScroll()
-  window.addEventListener('resize', measure)
-  window.addEventListener('scroll', onScroll, { passive: true })
-
-  if (reduced.value) {
-    Object.assign(phase, { issue: 3, slack: 4, editor: 4 })
-    root.value?.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'))
-    return
-  }
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        const el = entry.target as HTMLElement
-        if (entry.isIntersecting) el.classList.add('in')
-        const scene = el.dataset.scene
-        if (scene) entry.isIntersecting ? play(scene) : stop(scene)
-      }
-    },
-    { threshold: 0.35 }
-  )
-  root.value?.querySelectorAll('[data-reveal], [data-scene]').forEach((el) => observer!.observe(el))
+  if (reduced.value) Object.assign(phase, { issue: 3, slack: 4, editor: 4 })
 })
 
-onBeforeUnmount(() => {
-  observer?.disconnect()
-  Object.keys(timelines).forEach(stop)
-  window.removeEventListener('resize', measure)
-  window.removeEventListener('scroll', onScroll)
-  cancelAnimationFrame(frame)
-})
+onBeforeUnmount(() => Object.keys(timelines).forEach(stop))
 </script>
 
 <template>
-  <main ref="root" class="ol" :class="{ reduced }" :style="{ '--spine-top': spineTop + 'px', '--spine-bottom': spineBottom + 'px', '--progress': progress }">
+  <main ref="root" class="spine-page" :class="{ reduced }" :style="style">
     <div ref="spine" class="spine" aria-hidden="true"><div class="spine-lit"></div></div>
 
     <!-- Hero -->
@@ -257,9 +179,7 @@ onBeforeUnmount(() => {
 
     <!-- 1. Plain dictation -->
     <section class="chapter">
-      <div class="node">
-        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
-      </div>
+      <SpineNode />
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Dictate</p>
         <h2>Speak into any app.</h2>
@@ -305,9 +225,7 @@ onBeforeUnmount(() => {
 
     <!-- 2. Agents -->
     <section class="chapter">
-      <div class="node">
-        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
-      </div>
+      <SpineNode />
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Connect</p>
         <h2>Processing runs on the agent you already pay for.</h2>
@@ -317,7 +235,7 @@ onBeforeUnmount(() => {
           API key, and the agent's tools switched off.
         </p>
       </header>
-      <div class="agents" data-reveal>
+      <div class="agents" data-reveal data-draw>
         <ul>
           <li v-for="(a, n) in agents" :key="a.name" :style="{ '--n': n }">
             <span class="agent-icon" :style="{ '--icon': `url(/agents/${a.icon}.svg)` }" aria-hidden="true"></span>
@@ -332,9 +250,7 @@ onBeforeUnmount(() => {
 
     <!-- 3. Instructions with screen context -->
     <section class="chapter">
-      <div class="node">
-        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
-      </div>
+      <SpineNode />
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Instruct</p>
         <h2>Say what you want written.</h2>
@@ -397,9 +313,7 @@ onBeforeUnmount(() => {
 
     <!-- 4. Edit a selection -->
     <section class="chapter">
-      <div class="node">
-        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
-      </div>
+      <SpineNode />
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Edit</p>
         <h2>Select and make changes.</h2>
@@ -439,9 +353,7 @@ onBeforeUnmount(() => {
 
     <!-- 5. Per app -->
     <section class="chapter">
-      <div class="node">
-        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
-      </div>
+      <SpineNode />
       <header class="chapter-head mask" data-reveal>
         <p class="kicker">Choose</p>
         <h2>Choose what dictation does in each app.</h2>
@@ -473,9 +385,7 @@ onBeforeUnmount(() => {
 
     <!-- Facts -->
     <section class="chapter end">
-      <div class="node">
-        <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
-      </div>
+      <SpineNode />
       <div class="facts" data-reveal>
         <div v-for="(fact, n) in facts" :key="fact.title" class="fact" :style="{ '--n': n }">
           <span class="fact-icon" aria-hidden="true">
@@ -499,7 +409,7 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
-    <nav ref="explore" class="explore" aria-label="Learn more">
+    <nav ref="end" class="explore" aria-label="Learn more">
       <a class="primary" href="/guide/platforms/hyprland#dictation-backend">Setup guide <span aria-hidden="true">→</span></a>
       <a href="/guide/processing">Processing actions <span aria-hidden="true">→</span></a>
       <a href="https://github.com/kristoferlund/ostt-omarchy-dictate">GitHub <span aria-hidden="true">↗</span></a>
@@ -508,141 +418,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.ol {
-  --sig: #a5b4ff;
-  --sig-soft: rgb(165 180 255 / 14%);
-  --win: #101011;
-  --win-line: #2a2a2d;
-  --ink: var(--color-ink);
-  --body: var(--color-body);
-  --mute: #5f6068;
-  position: relative;
-  overflow: hidden;
-  padding-bottom: 120px;
-  color: var(--body);
-}
-
-/* The spine: a hairline from the logo to the end, lit as far as you read. */
-.spine {
-  position: absolute;
-  left: 50%;
-  top: var(--spine-top);
-  bottom: var(--spine-bottom);
-  width: 1px;
-  transform: translateX(-0.5px);
-}
-.spine-lit {
-  height: 100%;
-  transform-origin: top;
-  transform: scaleY(var(--progress));
-  background: linear-gradient(to bottom, rgb(255 255 255 / 0%), rgb(255 255 255 / 55%) 30%, var(--sig));
-  box-shadow: 0 0 12px rgb(165 180 255 / 35%);
-}
-
-/* Text that sits on the spine hides it behind itself. */
-.mask {
-  position: relative;
-  background: var(--color-canvas);
-}
-
-.kicker {
-  font-family: var(--font-code);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--mute);
-  margin: 0 0 14px;
-}
-
-/* Hero */
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 120px 24px 40px;
-  text-align: center;
-}
-.hero-mark {
-  display: block;
-  width: 96px;
-  height: 70px;
-  background: var(--ink);
-  mask: url('/logo.svg') center / contain no-repeat;
-  -webkit-mask: url('/logo.svg') center / contain no-repeat;
-}
-.hero-text {
-  margin-top: 120px;
-  padding: 28px 8px;
-}
-.hero h1 {
-  margin: 0;
-  font-size: clamp(2.4rem, 7vw, 4.75rem);
-  line-height: 1.02;
-  letter-spacing: -0.045em;
-  font-weight: 600;
-  color: var(--ink);
-}
-.lede {
-  max-width: 540px;
-  text-wrap: balance;
-  margin: 28px auto 40px;
-  font-size: 1.125rem;
-  line-height: 1.6;
-}
-
-.install {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-  max-width: 100%;
-  padding: 12px 12px 12px 18px;
-  border: 1px solid var(--win-line);
-  border-radius: 10px;
-  background: #0e0e0f;
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-.install:hover,
-.install:focus-visible {
-  border-color: #4a4a50;
-}
-.install:focus-visible {
-  outline: 2px solid var(--sig);
-  outline-offset: 3px;
-}
-.install code {
-  font-family: var(--font-code);
-  font-size: 13.5px;
-  overflow-wrap: anywhere;
-  text-align: left;
-}
-.install code b {
-  font-weight: 600;
-}
-.install-state {
-  flex: none;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  background: #1c1c1f;
-  color: var(--body);
-}
-.install.copied .install-state {
-  color: var(--sig);
-}
-.dim {
-  color: var(--mute);
-}
-.free {
-  margin: 18px 0 0;
-  font-family: var(--font-code);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--sig);
-}
 .local {
   display: flex;
   align-items: center;
@@ -676,15 +451,6 @@ onBeforeUnmount(() => {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.chapter-head a {
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-color: rgb(165 180 255 / 50%);
-  text-underline-offset: 3px;
-}
-.chapter-head a:hover {
-  text-decoration-color: var(--sig);
-}
 /* An action named in running text: a pill that stays on the line. */
 .action-pill {
   display: inline-flex;
@@ -703,80 +469,7 @@ onBeforeUnmount(() => {
 .action-pill span {
   font-size: 0.95em;
 }
-.get-sub {
-  max-width: 460px;
-  margin: 16px auto 0;
-  font-size: 1.02rem;
-  line-height: 1.6;
-  text-wrap: balance;
-}
 
-/* Chapters */
-.chapter {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 20px;
-}
-.node {
-  position: relative;
-  width: 28px;
-  height: 120px;
-  margin: 120px 0 0;
-  background: var(--color-canvas);
-}
-.node-wave {
-  display: block;
-  width: 28px;
-  height: 120px;
-  overflow: visible;
-}
-.node-wave path {
-  fill: none;
-  stroke: var(--sig);
-  stroke-width: 1.2;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--draw, 0));
-  filter: drop-shadow(0 0 4px rgb(165 180 255 / 50%));
-  transition: stroke-dashoffset 0.12s linear;
-}
-
-.chapter-head {
-  max-width: 600px;
-  padding: 36px 12px 56px;
-  text-align: center;
-}
-.chapter-head h2,
-.get h2 {
-  margin: 0;
-  text-wrap: balance;
-  font-size: clamp(1.7rem, 4vw, 2.6rem);
-  line-height: 1.1;
-  letter-spacing: -0.035em;
-  font-weight: 600;
-  color: var(--ink);
-}
-.chapter-head p:not(.kicker) {
-  text-wrap: balance;
-  margin: 18px auto 0;
-  max-width: 500px;
-  font-size: 1.02rem;
-  line-height: 1.65;
-}
-
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-[data-reveal].in {
-  opacity: 1;
-  transform: none;
-}
 
 /* A scene: an app window as Hyprland draws it, with the dictation pill below. */
 .screen {
@@ -1520,67 +1213,7 @@ onBeforeUnmount(() => {
   font-size: 14px;
   line-height: 1.6;
 }
-.get {
-  margin-top: 140px;
-  padding: 32px 8px;
-  text-align: center;
-}
-.get .install {
-  margin-top: 28px;
-}
-.explore {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  padding: 0 20px;
-}
-.explore a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 18px;
-  border: 1px solid #2a2a2e;
-  border-radius: 99px;
-  background: #0f0f10;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 500;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
-}
-.explore a span {
-  color: var(--mute);
-  transition: transform 0.2s ease;
-}
-.explore a:hover {
-  border-color: #45454c;
-  background: #151517;
-}
-.explore a:hover span {
-  transform: translateX(2px);
-}
-.explore a:focus-visible {
-  outline: 2px solid var(--sig);
-  outline-offset: 3px;
-}
-.explore a.primary {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--color-canvas);
-}
-.explore a.primary span {
-  color: inherit;
-}
-.explore a.primary:hover {
-  background: #ffffff;
-}
-
 @media (max-width: 760px) {
-  .hero-text {
-    margin-top: 90px;
-  }
   .screen {
     padding: 16px 12px 52px;
     border-radius: 16px;
