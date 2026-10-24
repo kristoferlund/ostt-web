@@ -33,6 +33,7 @@ const columns = [
       { text: 'Linux & macOS', href: '/' },
       { text: 'Omarchy dictation', href: '/omarchy' },
       { text: 'macOS setup', href: '/guide/platforms/macos' },
+      { text: 'Omarchy dictation setup', href: '/guide/platforms/omarchy-dictation' },
       { text: 'Hyprland setup', href: '/guide/platforms/hyprland' },
       { text: 'GNOME setup', href: '/guide/platforms/gnome' },
       { text: 'KDE Plasma setup', href: '/guide/platforms/kde' }

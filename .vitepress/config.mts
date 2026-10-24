@@ -174,6 +174,7 @@ export default defineConfig({
         text: 'Platform Setup',
         items: [
           { text: 'macOS', link: '/guide/platforms/macos' },
+          { text: 'Omarchy Dictation', link: '/guide/platforms/omarchy-dictation' },
           { text: 'Omarchy / Hyprland', link: '/guide/platforms/hyprland' },
           { text: 'GNOME', link: '/guide/platforms/gnome' },
           { text: 'KDE Plasma', link: '/guide/platforms/kde' }

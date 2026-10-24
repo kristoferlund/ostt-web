@@ -410,7 +410,7 @@ onBeforeUnmount(() => Object.keys(timelines).forEach(stop))
     </section>
 
     <nav ref="end" class="explore" aria-label="Learn more">
-      <a class="primary" href="/guide/platforms/hyprland#dictation-backend">Setup guide <span aria-hidden="true">→</span></a>
+      <a class="primary" href="/guide/platforms/omarchy-dictation">Setup guide <span aria-hidden="true">→</span></a>
       <a href="/guide/processing">Processing actions <span aria-hidden="true">→</span></a>
       <a href="https://github.com/kristoferlund/ostt-omarchy-dictate">GitHub <span aria-hidden="true">↗</span></a>
     </nav>

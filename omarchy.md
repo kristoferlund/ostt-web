@@ -10,7 +10,7 @@ import SiteFooter from './.vitepress/theme/components/SiteFooter.vue'
 import SiteHeader from './.vitepress/theme/components/SiteHeader.vue'
 </script>
 
-<SiteHeader docs="/guide/platforms/hyprland#dictation-backend" github="https://github.com/kristoferlund/ostt-omarchy-dictate" />
+<SiteHeader docs="/guide/platforms/omarchy-dictation" github="https://github.com/kristoferlund/ostt-omarchy-dictate" />
 
 <OmarchyLanding />
 

@@ -8,6 +8,10 @@ description: Install OSTT via the one-line shell script, Homebrew, AUR, .deb, .r
 Prefer to let an AI coding agent do it? Run `npx skills add https://github.com/kristoferlund/ostt-skill` and your agent (Claude Code and other skill-aware tools) can install, configure, and troubleshoot OSTT for you. See [Install with an AI Agent](/guide/ai-skill).
 :::
 
+::: tip Omarchy 4.5 or later
+The [OSTT dictation plugin](/guide/platforms/omarchy-dictation) installs OSTT for you and makes it the program behind Omarchy's own dictation keys: `omarchy plugin add https://github.com/kristoferlund/ostt-omarchy-dictate.git --enable`, then click the microphone in the bar.
+:::
+
 ## Recommended Installer
 
 ```bash
@@ -79,7 +83,7 @@ On Omarchy, also select the coding agent used by the voice-to-agent hotkey if yo
 omarchy agent --pick
 ```
 
-The Omarchy installer changes are append-only and idempotent. Existing bindings, OSTT window rules, and `[process.actions.agent]` definitions are preserved instead of overwritten. See [Omarchy / Hyprland Setup](./platforms/hyprland.md) for the generated configuration and manual setup.
+The Omarchy installer changes are append-only and idempotent. Existing bindings, OSTT window rules, and `[process.actions.agent]` definitions are preserved instead of overwritten. See [Omarchy / Hyprland Setup](./platforms/hyprland.md) for the generated configuration and manual setup, and [Omarchy Dictation](./platforms/omarchy-dictation.md) for the dictation plugin.
 
 ## Native Package Options
 
