@@ -1,4 +1,8 @@
 <script setup lang="ts">
+withDefaults(defineProps<{ tagline?: string }>(), {
+  tagline: 'Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.'
+})
+
 const columns = [
   {
     title: 'Get started',
@@ -53,7 +57,7 @@ const columns = [
     <div class="footer-inner footer-columns">
       <div class="footer-brand">
         <strong>OSTT</strong>
-        <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
+        <span>{{ tagline }}</span>
       </div>
       <nav v-for="column in columns" :key="column.title" class="footer-links" :aria-label="column.title">
         <p class="footer-title">{{ column.title }}</p>

@@ -4,6 +4,10 @@ title: "Deepgram Nova-3 on the Command Line"
 description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT connects Nova-3 to a global hotkey, clipboard, and shell pipeline on Linux and macOS."
 ---
 
+<script setup>
+import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
+</script>
+
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="header-logo" aria-label="OSTT home">
@@ -115,22 +119,4 @@ description: "Use Deepgram Nova-3 for speech-to-text from your terminal. OSTT co
 
 </main>
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <strong>OSTT</strong>
-      <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
-    </div>
-    <div class="footer-links">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="/guide/why-ostt">Why OSTT?</a>
-      <a href="/guide/commands">Commands</a>
-      <a href="/guide/platforms">Platforms</a>
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-      <a href="/reference/providers">Providers</a>
-      <a href="/guide/troubleshooting">Troubleshooting</a>
-    </div>
-  </div>
-</footer>
+<SiteFooter />

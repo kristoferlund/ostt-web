@@ -4,6 +4,10 @@ title: "OSTT vs Voxtype: Open Source Speech-to-Text Compared"
 description: "Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, macOS support, local models, cloud providers, paste output, custom engines, retry, and developer workflows."
 ---
 
+<script setup>
+import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
+</script>
+
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="header-logo" aria-label="OSTT home">
@@ -135,22 +139,4 @@ description: "Compare OSTT and Voxtype for open source speech-to-text, Linux dic
 
 </main>
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <strong>OSTT</strong>
-      <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
-    </div>
-    <div class="footer-links">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="/guide/why-ostt">Why OSTT?</a>
-      <a href="/guide/commands">Commands</a>
-      <a href="/guide/platforms">Platforms</a>
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-      <a href="https://voxtype.io/docs/">Voxtype docs</a>
-      <a href="/guide/choosing-a-model">Choosing a model</a>
-    </div>
-  </div>
-</footer>
+<SiteFooter />

@@ -4,6 +4,10 @@ title: "OSTT vs Hyprwhspr: Linux Dictation Compared"
 description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide dictation, local and cloud models, paste output, custom external engines, retry, and terminal workflows."
 ---
 
+<script setup>
+import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
+</script>
+
 <header class="site-header">
   <div class="header-inner">
     <a href="/" class="header-logo" aria-label="OSTT home">
@@ -146,22 +150,4 @@ description: "Compare OSTT and Hyprwhspr for Linux speech-to-text, system-wide d
 
 </main>
 
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <strong>OSTT</strong>
-      <span>Open source voice-to-text for developers. Linux-first, provider-agnostic, scriptable.</span>
-    </div>
-    <div class="footer-links">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="/guide/platforms/hyprland">Hyprland setup</a>
-      <a href="/guide/commands">Commands</a>
-      <a href="/guide/external-engines">External engines</a>
-    </div>
-    <div class="footer-links">
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-      <a href="https://github.com/goodroot/hyprwhspr">Hyprwhspr GitHub</a>
-      <a href="/reference/providers">Providers</a>
-    </div>
-  </div>
-</footer>
+<SiteFooter />
