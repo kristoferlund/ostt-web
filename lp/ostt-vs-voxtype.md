@@ -68,7 +68,7 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
   <section class="landing-grid compact">
     <article>
       <h3>Dictation that fits the app</h3>
-      <p>Plain transcription in the terminal, light cleanup in your notes, a full writing assistant in Slack and email. On Omarchy you pick it per app from the microphone in the bar.</p>
+      <p>Plain transcription in the terminal, light cleanup in your notes, Ghostwriter writing for you in Slack and email. On Omarchy you pick it per app from the microphone in the bar.</p>
     </article>
     <article>
       <h3>It sees what you see</h3>

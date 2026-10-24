@@ -71,7 +71,7 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
   <section class="landing-grid compact">
     <article>
       <h3>No second AI subscription</h3>
-      <p>You already pay for Claude, ChatGPT or another agent. OSTT runs its writing assistant through that agent's CLI, so context-aware dictation costs nothing extra.</p>
+      <p>You already pay for Claude, ChatGPT or another agent. OSTT runs Ghostwriter, its writing action, through that agent's CLI, so context-aware dictation costs nothing extra.</p>
     </article>
     <article>
       <h3>It sees what you see</h3>

@@ -14,13 +14,13 @@ This page takes you from install to dictating with a hotkey. [Why OSTT?](./why-o
 curl -fsSL https://ostt.ai/install | bash
 ```
 
-The installer detects your platform and GPU, installs runtime dependencies, downloads and verifies the latest release, and installs the `ostt` CLI. If no model is active at the end, it offers to download the local Whisper base model so you can start transcribing straight away.
+The installer detects your platform and GPU, installs runtime dependencies, downloads and verifies the latest release, and installs the `ostt` CLI. If no model is active at the end, it offers to download Parakeet, a fast local model, so you can start transcribing straight away.
 
 See [Installation](./installation.md) for package managers, installer options, and per-platform dependencies.
 
 ## Choose A Model
 
-Parakeet is the recommended local model for English and 25 European languages. Download it, select it, and keep it loaded between recordings:
+Parakeet is the recommended local model for English and 25 European languages. If you skipped the installer's offer, download it and select it. Then keep it loaded between recordings:
 
 ```bash
 ostt model local download parakeet-ultra

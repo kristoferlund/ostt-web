@@ -30,7 +30,7 @@ If you have not chosen a default coding agent yet, the installer says so. Choose
 omarchy agent --pick
 ```
 
-OSTT also needs a transcription model. When none is active, the installer offers a small local Whisper model; [Choosing a Model](/guide/choosing-a-model) helps you pick a better one for your language and hardware:
+OSTT also needs a transcription model. When none is active, the installer offers to download Parakeet, a fast local model. For other languages, [Choosing a Model](/guide/choosing-a-model) helps you pick one:
 
 ```bash
 ostt model

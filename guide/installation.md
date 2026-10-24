@@ -52,7 +52,7 @@ curl -fsSL https://ostt.ai/install | bash -s -- --no-gpu --no-modify-path
 | `--no-gpu` | Install the CPU build even if GPU support is detected. |
 | `--no-modify-path` | Do not add the install directory to your shell profile. |
 | `--no-omarchy-setup` | Do not configure Omarchy hotkeys, popup rules, or the default-agent action. |
-| `--no-model-download` | Do not offer to download the Whisper base model when none is active. |
+| `--no-model-download` | Do not offer to download the Parakeet model when none is active. |
 | `--version VERSION` | Install a specific release, for example `--version v0.0.20`. |
 | `--install-dir DIR` | Install `ostt` to `DIR` instead of `~/.local/bin`. |
 | `-y`, `--yes` | Accepted and ignored; the installer is non-interactive by default. |
@@ -62,7 +62,7 @@ The install directory can also be set with the `OSTT_INSTALL_DIR` environment va
 
 ### First Run
 
-OSTT requires an active transcription model before recording. When none is active, the installer ends by offering to download the local Whisper base model (142 MB) and selecting it for you. If the base model is already on disk from an earlier install, it is selected without asking. Accept it and OSTT is ready to transcribe.
+OSTT requires an active transcription model before recording. When none is active, the installer ends by offering to download Parakeet (`parakeet/parakeet-ultra`, 707 MB), a fast local model for English and 25 European languages, and selecting it for you. If it is already on disk from an earlier install, it is selected without asking. Accept it and OSTT is ready to transcribe.
 
 If you decline (or ran the installer with `--no-model-download` or without a terminal), pick a model yourself:
 

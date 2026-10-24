@@ -59,7 +59,7 @@ The agent runs with its tools switched off, so text on screen cannot make it run
 
 The setup adds two actions to `~/.config/ostt/ostt.toml`, using the agent and model you pick. Edit their prompts there:
 
-- **Writing assistant** (`assistant`) tidies up your words and carries out spoken instructions.
+- **Ghostwriter** (`ghostwriter`) tidies up your words and carries out spoken instructions.
 - **Text cleanup** (`clean`) only fixes misheard words, punctuation and filler.
 
 If you already have an action with one of those ids, the setup uses it as it is.
@@ -72,7 +72,7 @@ The choices are saved in `~/.config/ostt/dictate.toml` by Hyprland window class,
 
 ```toml
 [apps]
-"Slack" = { action = "assistant", screenshot = true }
+"Slack" = { action = "ghostwriter", screenshot = true }
 "obsidian" = { action = "clean" }
 ```
 
@@ -91,17 +91,17 @@ The screenshot is a capture of the window's area of the screen, so anything on t
 Update the plugin:
 
 ```bash
-omarchy plugin update ostt.dictation --yes
+omarchy plugin update io.github.kristoferlund.ostt-dictate --yes
 ```
 
 Remove it:
 
 ```bash
-~/.config/omarchy/plugins/ostt.dictation/uninstall
-omarchy plugin remove ostt.dictation
+~/.config/omarchy/plugins/io.github.kristoferlund.ostt-dictate/uninstall
+omarchy plugin remove io.github.kristoferlund.ostt-dictate
 ```
 
-`uninstall` switches dictation away from OSTT and removes the plugin's scripts. OSTT itself stays installed, and so do `~/.config/ostt/dictate.toml` and the `assistant` and `clean` actions.
+`uninstall` switches dictation away from OSTT and removes the plugin's scripts. OSTT itself stays installed, and so do `~/.config/ostt/dictate.toml` and the `ghostwriter` and `clean` actions.
 
 ## The OSTT Popup on Omarchy
 
