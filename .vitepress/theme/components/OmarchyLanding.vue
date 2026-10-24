@@ -486,10 +486,9 @@ onBeforeUnmount(() => {
       <div class="get mask" data-reveal>
         <h2>Try it.</h2>
         <p class="get-sub">
-          Add the plugin, and OSTT becomes Omarchy's dictation. A short setup installs OSTT and helps you pick a transcription
-          model and an agent.
+          Install the plugin to make OSTT Omarchy's default dictation. OSTT is free and requires no account. The plugin is open
+          source and MIT licensed.
         </p>
-        <p class="get-free">OSTT is free and requires no account. The plugin is open source and MIT licensed.</p>
         <button class="install big" type="button" :class="{ copied }" @click="copyInstall" aria-label="Copy the install command">
           <code><span class="dim">omarchy plugin add https://github.com/kristoferlund/</span><b>ostt-omarchy-dictate</b><span class="dim">.git --enable</span></code>
           <span class="install-state">{{ copied ? 'Copied' : 'Copy' }}</span>
@@ -682,11 +681,6 @@ onBeforeUnmount(() => {
 }
 .chapter-head a:hover {
   text-decoration-color: var(--sig);
-}
-.get-free {
-  margin: 14px auto 0;
-  font-size: 0.95rem;
-  color: var(--sig);
 }
 .get-sub {
   max-width: 460px;
