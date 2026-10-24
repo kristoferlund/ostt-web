@@ -47,7 +47,7 @@
 
 ## Landing Pages
 
-- [Omarchy Dictation With Your Own AI Agent](https://ostt.ai/omarchy): The OSTT dictation plugin for Omarchy 4.5: hold Right Alt and speak, local Parakeet and Whisper transcription, and a per-app writing assistant that runs on your existing Claude Code, Codex, OpenCode or other agent subscription, optionally with a screenshot of the window.
+- [Omarchy Dictation That Takes Instructions](https://ostt.ai/omarchy): The OSTT dictation plugin for Omarchy 4.5: speak into any app with local Parakeet and Whisper transcription, and choose a processing action per app. Ghostwriter runs on your existing Claude Code, Codex, OpenCode or other agent subscription, reads a screenshot of the window, and writes what you ask for. Free, no account; the plugin is open source and MIT licensed.
 - [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget. Sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
 - [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): Compare OSTT and Voxtype for open source speech-to-text, Linux dictation, paste output, local engines, cloud providers, retry, and developer workflows.
 - [OSTT vs Hyprwhspr](https://ostt.ai/lp/ostt-vs-hyprwhspr): Compare OSTT and Hyprwhspr for Linux dictation, system-wide paste, local and cloud models, external engines, retry, and terminal-native speech-to-text.
