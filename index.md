@@ -6,22 +6,11 @@ description: Open source, terminal-native speech-to-text for Linux and macOS. Re
 <script setup>
 import HomeLanding from './.vitepress/theme/components/HomeLanding.vue'
 import SiteFooter from './.vitepress/theme/components/SiteFooter.vue'
+import SiteHeader from './.vitepress/theme/components/SiteHeader.vue'
 </script>
 
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="/" class="header-logo" aria-label="OSTT home">
-      <span class="logo-mark" aria-hidden="true"></span>
-    </a>
-    <nav class="header-nav">
-      <a href="/" aria-current="page">Linux &amp; macOS</a>
-      <a href="/omarchy">Omarchy</a>
-      <a href="/guide/getting-started">Docs</a>
-      <a href="https://github.com/kristoferlund/ostt" class="header-github">GitHub</a>
-    </nav>
-  </div>
-</header>
+<SiteHeader />
 
 <HomeLanding />
 

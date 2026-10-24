@@ -6,19 +6,10 @@ description: "Use Mistral Voxtral Mini Transcribe from your terminal on Linux an
 
 <script setup>
 import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
+import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
 </script>
 
-<header class="site-header">
-  <div class="header-inner">
-    <a href="/" class="header-logo" aria-label="OSTT home">
-      <span class="logo-mark" aria-hidden="true"></span>
-    </a>
-    <nav class="header-nav">
-      <a href="/guide/getting-started">Documentation</a>
-      <a href="https://github.com/kristoferlund/ostt">GitHub</a>
-    </nav>
-  </div>
-</header>
+<SiteHeader />
 
 <main class="landing">
 
