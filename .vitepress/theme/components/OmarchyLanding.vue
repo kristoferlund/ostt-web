@@ -159,14 +159,18 @@ function copyInstall() {
 const root = ref<HTMLElement | null>(null)
 const logo = ref<HTMLElement | null>(null)
 const spine = ref<HTMLElement | null>(null)
+const explore = ref<HTMLElement | null>(null)
+const spineBottom = ref(0)
 const spineTop = ref(0)
 const progress = ref(0)
 let observer: IntersectionObserver | null = null
 let frame = 0
 
+// The spine runs from just under the logo to just above the closing links.
 function measure() {
-  if (!root.value || !logo.value) return
+  if (!root.value || !logo.value || !explore.value) return
   spineTop.value = logo.value.offsetTop + logo.value.offsetHeight + 20
+  spineBottom.value = root.value.offsetHeight - explore.value.offsetTop + 48
 }
 
 // The lit part of the spine ends at this height on screen, and each node's
@@ -179,7 +183,9 @@ function onScroll() {
   cancelAnimationFrame(frame)
   frame = requestAnimationFrame(() => {
     if (!root.value || !spine.value) return
-    const tip = window.innerHeight * TIP
+    measure()
+    // Without motion, the whole line is drawn from the start.
+    const tip = reduced.value ? Infinity : window.innerHeight * TIP
     const line = spine.value.getBoundingClientRect()
     progress.value = clamp((tip - line.top) / line.height)
     root.value.querySelectorAll<HTMLElement>('.node, .agents').forEach((node) => {
@@ -193,15 +199,12 @@ const reduced = ref(false)
 
 onMounted(() => {
   reduced.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  measure()
   onScroll()
   window.addEventListener('resize', measure)
   window.addEventListener('scroll', onScroll, { passive: true })
 
   if (reduced.value) {
     Object.assign(phase, { issue: 3, slack: 4, editor: 4 })
-    root.value?.style.setProperty('--progress', '1')
-    root.value?.querySelectorAll<HTMLElement>('.node, .agents').forEach((node) => node.style.setProperty('--draw', '1'))
     root.value?.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'))
     return
   }
@@ -229,7 +232,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main ref="root" class="ol" :class="{ reduced }" :style="{ '--spine-top': spineTop + 'px', '--progress': progress }">
+  <main ref="root" class="ol" :class="{ reduced }" :style="{ '--spine-top': spineTop + 'px', '--spine-bottom': spineBottom + 'px', '--progress': progress }">
     <div ref="spine" class="spine" aria-hidden="true"><div class="spine-lit"></div></div>
 
     <!-- Hero -->
@@ -317,7 +320,6 @@ onBeforeUnmount(() => {
           </li>
         </ul>
         <svg class="branches" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
-          <path v-for="d in branches" :key="'base' + d" class="base" :d="d" />
           <path v-for="d in branches" :key="d" class="lit" :d="d" pathLength="1" />
         </svg>
       </div>
@@ -463,14 +465,6 @@ onBeforeUnmount(() => {
         <svg class="node-wave" viewBox="0 0 28 120" aria-hidden="true"><path :d="wavePath" pathLength="1" /></svg>
       </div>
       <div class="facts" data-reveal>
-        <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
-          <defs>
-            <linearGradient id="fact-ink" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#c3ccff" />
-              <stop offset="1" stop-color="#8fd3b6" />
-            </linearGradient>
-          </defs>
-        </svg>
         <div v-for="(fact, n) in facts" :key="fact.title" class="fact" :style="{ '--n': n }">
           <span class="fact-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path v-for="d in fact.icon" :key="d" :d="d" pathLength="1" /></svg>
@@ -486,13 +480,14 @@ onBeforeUnmount(() => {
           <code><span class="dim">omarchy plugin add https://github.com/kristoferlund/</span><b>ostt-omarchy-dictate</b><span class="dim">.git --enable</span></code>
           <span class="install-state">{{ copied ? 'Copied' : 'Copy' }}</span>
         </button>
-        <p class="links">
-          <a href="/guide/platforms/hyprland#dictation-backend">Setup guide</a>
-          <a href="/guide/processing">Processing actions</a>
-          <a href="https://github.com/kristoferlund/ostt-omarchy-dictate">GitHub</a>
-        </p>
       </div>
     </section>
+
+    <nav ref="explore" class="explore" aria-label="Learn more">
+      <a class="primary" href="/guide/platforms/hyprland#dictation-backend">Setup guide <span aria-hidden="true">→</span></a>
+      <a href="/guide/processing">Processing actions <span aria-hidden="true">→</span></a>
+      <a href="https://github.com/kristoferlund/ostt-omarchy-dictate">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
   </main>
 </template>
 
@@ -507,7 +502,7 @@ onBeforeUnmount(() => {
   --mute: #5f6068;
   position: relative;
   overflow: hidden;
-  padding-bottom: 160px;
+  padding-bottom: 120px;
   color: var(--body);
 }
 
@@ -516,10 +511,9 @@ onBeforeUnmount(() => {
   position: absolute;
   left: 50%;
   top: var(--spine-top);
-  bottom: 120px;
+  bottom: var(--spine-bottom);
   width: 1px;
   transform: translateX(-0.5px);
-  background: linear-gradient(to bottom, #262628, #262628 92%, transparent);
 }
 .spine-lit {
   height: 100%;
@@ -1276,9 +1270,6 @@ onBeforeUnmount(() => {
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
-.branches .base {
-  stroke: #262628;
-}
 /* Lit as far as the spine has reached, all five together. */
 .branches .lit {
   stroke: var(--sig);
@@ -1391,79 +1382,36 @@ onBeforeUnmount(() => {
 .facts {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  width: min(1040px, 100%);
+  gap: 1px;
+  width: min(1000px, 100%);
   margin-top: 56px;
+  border: 1px solid #1f1f22;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1f1f22;
 }
 .fact {
-  position: relative;
-  padding: 24px 22px 26px;
-  border: 1px solid #1f1f23;
-  border-radius: 14px;
-  background:
-    radial-gradient(140% 90% at 0% 0%, rgb(165 180 255 / 7%), transparent 55%),
-    #0d0d0f;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.6s ease,
-    transform 0.6s ease,
-    border-color 0.25s ease;
-  transition-delay: calc(var(--n) * 90ms);
-}
-.fact::after {
-  /* a lit top edge */
-  content: '';
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(165 180 255 / 45%), rgb(143 211 182 / 35%), transparent);
-  opacity: 0.5;
-  transition: opacity 0.25s ease;
-}
-.facts.in .fact {
-  opacity: 1;
-  transform: none;
-}
-.fact:hover {
-  border-color: #33333a;
-}
-.fact:hover::after {
-  opacity: 1;
+  padding: 26px 24px;
+  background: var(--color-canvas);
 }
 .fact-icon {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 20px;
-  border: 1px solid rgb(165 180 255 / 30%);
-  border-radius: 12px;
-  background:
-    radial-gradient(100% 100% at 30% 20%, rgb(165 180 255 / 22%), rgb(143 211 182 / 6%) 70%),
-    #121318;
-  box-shadow:
-    0 0 24px -6px rgb(165 180 255 / 35%),
-    inset 0 1px 0 rgb(255 255 255 / 6%);
-  transition: box-shadow 0.25s ease;
-}
-.fact:hover .fact-icon {
-  box-shadow:
-    0 0 32px -4px rgb(165 180 255 / 55%),
-    inset 0 1px 0 rgb(255 255 255 / 8%);
+  width: 38px;
+  height: 38px;
+  margin-bottom: 18px;
+  border: 1px solid #26262b;
+  border-radius: 10px;
+  background: #111113;
 }
 .fact-icon svg {
-  width: 26px;
-  height: 26px;
-  filter: drop-shadow(0 0 3px rgb(165 180 255 / 45%));
+  width: 20px;
+  height: 20px;
 }
 .fact-icon path {
   fill: none;
-  stroke: url(#fact-ink);
-  stroke-width: 1.7;
+  stroke: var(--sig);
+  stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 1;
@@ -1493,19 +1441,53 @@ onBeforeUnmount(() => {
 .get .install {
   margin-top: 28px;
 }
-.links {
+.explore {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 26px;
-  margin: 28px 0 0;
-  font-size: 14px;
+  gap: 12px;
+  padding: 0 20px;
 }
-.links a {
-  color: var(--body);
-  transition: color 0.2s;
-}
-.links a:hover {
+.explore a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border: 1px solid #2a2a2e;
+  border-radius: 99px;
+  background: #0f0f10;
   color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+.explore a span {
+  color: var(--mute);
+  transition: transform 0.2s ease;
+}
+.explore a:hover {
+  border-color: #45454c;
+  background: #151517;
+}
+.explore a:hover span {
+  transform: translateX(2px);
+}
+.explore a:focus-visible {
+  outline: 2px solid var(--sig);
+  outline-offset: 3px;
+}
+.explore a.primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--color-canvas);
+}
+.explore a.primary span {
+  color: inherit;
+}
+.explore a.primary:hover {
+  background: #ffffff;
 }
 
 @media (max-width: 760px) {
@@ -1552,7 +1534,6 @@ onBeforeUnmount(() => {
 
 /* Without motion: everything in its final state. */
 .reduced .word,
-.reduced .fact,
 .reduced .fact-icon path,
 .reduced .agents li,
 .reduced .card li,
