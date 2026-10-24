@@ -28,6 +28,12 @@ function session(lines: string[]): Line[] {
   })
 }
 
+const gpus = [
+  { name: 'CUDA', hardware: 'NVIDIA' },
+  { name: 'Vulkan', hardware: 'AMD, Intel, NVIDIA' },
+  { name: 'Metal', hardware: 'macOS' }
+]
+
 const localSession = session([
   '# Download and select a local model',
   'ostt model local download parakeet-ultra',
@@ -129,10 +135,14 @@ const offsets = [36, 8, 64, 40, 12, 72, 48, 20, 0, 56, 28, 44]
         <p class="kicker">Local models</p>
         <h2>Runs offline, on your own hardware.</h2>
         <p>
-          A built-in engine runs NVIDIA Parakeet and OpenAI Whisper on your CPU or GPU. Once a model is downloaded, no audio
-          leaves your machine. See <a href="/guide/local-models">Local Models</a>.
+          A built-in engine runs NVIDIA Parakeet and OpenAI Whisper with <strong>full GPU support</strong>, and the installer picks the right
+          build for your hardware. Once a model is downloaded, no audio leaves your machine. See
+          <a href="/guide/local-models">Local Models</a> and <a href="/guide/gpu-acceleration">GPU Acceleration</a>.
         </p>
       </header>
+      <ul class="gpu mask" data-reveal aria-label="GPU backends">
+        <li v-for="g in gpus" :key="g.name"><b>{{ g.name }}</b><span>{{ g.hardware }}</span></li>
+      </ul>
       <div class="term" data-reveal>
         <p class="term-bar"><span></span><span></span><span></span></p>
         <pre><code><span
@@ -309,6 +319,37 @@ const offsets = [36, 8, 64, 40, 12, 72, 48, 20, 0, 56, 28, 44]
 }
 
 /* Terminal sessions, typed once they come into view. */
+.chapter-head strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.gpu {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: -24px 0 40px;
+  padding: 8px;
+  list-style: none;
+}
+.gpu li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid rgb(165 180 255 / 30%);
+  border-radius: 99px;
+  background: rgb(165 180 255 / 8%);
+  font-size: 0.92rem;
+}
+.gpu b {
+  font-weight: 600;
+  color: var(--ink);
+}
+.gpu span {
+  color: var(--body);
+}
+
 .term {
   width: min(680px, 100%);
   border: 1px solid #26262a;
