@@ -1,7 +1,7 @@
 ---
 layout: false
-title: "Omarchy Dictation That Sees What You See"
-description: "OSTT dictation for Omarchy: talk to any app, and your Claude Code, Codex or OpenCode agent reads the screen and writes the reply. Local Parakeet and Whisper."
+title: "Omarchy Dictation That Takes Instructions"
+description: "OSTT dictation for Omarchy takes instructions: ask for a reply instead of a transcript, and your Claude Code, Codex or OpenCode agent reads the screen and writes it."
 ---
 
 <script setup>

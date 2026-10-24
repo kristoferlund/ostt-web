@@ -50,7 +50,6 @@ const agents = [
   { name: 'Cursor', icon: 'cursor' },
   { name: 'Grok' },
   { name: 'Pi' },
-  { name: 'Oh My Pi' },
   { name: 'Hermes' },
   { name: 'OpenClaw' }
 ]
@@ -81,6 +80,14 @@ const facts = [
     icon: ['M8.5 7L3.5 12l5 5', 'M15.5 7l5 5-5 5', 'M13.5 5l-3 14']
   }
 ]
+
+// The spine's five branches through the agents: out from the centre above
+// the two rows, straight down through each column, and back in below. In a
+// 1000 × 400 box; the rows sit between y = 100 and y = 300.
+const columns = [92, 296, 500, 704, 908]
+const branches = columns.map(
+  (x) => `M 500 0 C 500 60, ${x} 40, ${x} 100 L ${x} 300 C ${x} 360, 500 340, 500 400`
+)
 
 const apps = [
   { name: 'Ghostty', kind: 'terminal', action: 'Plain transcription', shot: false },
@@ -151,6 +158,7 @@ function copyInstall() {
 
 const root = ref<HTMLElement | null>(null)
 const logo = ref<HTMLElement | null>(null)
+const spine = ref<HTMLElement | null>(null)
 const spineTop = ref(0)
 const progress = ref(0)
 let observer: IntersectionObserver | null = null
@@ -170,11 +178,11 @@ const clamp = (x: number) => Math.min(1, Math.max(0, x))
 function onScroll() {
   cancelAnimationFrame(frame)
   frame = requestAnimationFrame(() => {
-    if (!root.value) return
+    if (!root.value || !spine.value) return
     const tip = window.innerHeight * TIP
-    const rect = root.value.getBoundingClientRect()
-    progress.value = clamp((tip - rect.top - spineTop.value) / (rect.height - spineTop.value))
-    root.value.querySelectorAll<HTMLElement>('.node').forEach((node) => {
+    const line = spine.value.getBoundingClientRect()
+    progress.value = clamp((tip - line.top) / line.height)
+    root.value.querySelectorAll<HTMLElement>('.node, .agents').forEach((node) => {
       const box = node.getBoundingClientRect()
       node.style.setProperty('--draw', String(clamp((tip - box.top) / box.height)))
     })
@@ -193,7 +201,7 @@ onMounted(() => {
   if (reduced.value) {
     Object.assign(phase, { issue: 3, slack: 4, editor: 4 })
     root.value?.style.setProperty('--progress', '1')
-    root.value?.querySelectorAll<HTMLElement>('.node').forEach((node) => node.style.setProperty('--draw', '1'))
+    root.value?.querySelectorAll<HTMLElement>('.node, .agents').forEach((node) => node.style.setProperty('--draw', '1'))
     root.value?.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'))
     return
   }
@@ -222,16 +230,16 @@ onBeforeUnmount(() => {
 
 <template>
   <main ref="root" class="ol" :class="{ reduced }" :style="{ '--spine-top': spineTop + 'px', '--progress': progress }">
-    <div class="spine" aria-hidden="true"><div class="spine-lit"></div></div>
+    <div ref="spine" class="spine" aria-hidden="true"><div class="spine-lit"></div></div>
 
     <!-- Hero -->
     <section class="hero">
       <span ref="logo" class="hero-mark" role="img" aria-label="OSTT"></span>
       <div class="hero-text mask">
         <p class="kicker">OSTT for Omarchy</p>
-        <h1>Dictation that sees<br />what you see.</h1>
+        <h1>Dictation that takes<br />instructions.</h1>
         <p class="lede">
-          Talk to any app on Omarchy. Ask for a reply instead of a transcript, and your AI agent reads the screen and writes it
+          Talk to any app on Omarchy. Ask for a reply instead of just a transcript, and your agent reads the screen and writes it
           for you.
         </p>
         <button class="install" type="button" :class="{ copied }" @click="copyInstall" aria-label="Copy the install command">
@@ -308,8 +316,9 @@ onBeforeUnmount(() => {
             <span class="agent-name">{{ a.name }}</span>
           </li>
         </ul>
-        <svg class="bus" viewBox="0 0 600 70" preserveAspectRatio="none" aria-hidden="true">
-          <path v-for="x in [100, 200, 300, 400, 500]" :key="x" :d="`M ${x} 0 C ${x} 42, 300 28, 300 70`" pathLength="1" />
+        <svg class="branches" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true">
+          <path v-for="d in branches" :key="'base' + d" class="base" :d="d" />
+          <path v-for="d in branches" :key="d" class="lit" :d="d" pathLength="1" />
         </svg>
       </div>
     </section>
@@ -949,7 +958,7 @@ onBeforeUnmount(() => {
     0 0 0 1px rgb(0 0 0 / 40%);
   text-align: left;
   opacity: 0;
-  transform: translateY(10px) scale(0.98);
+  transform: translate(-18px, 26px) scale(0.92);
   transform-origin: bottom left;
   transition:
     opacity 0.35s ease,
@@ -999,7 +1008,7 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(10px);
   box-shadow: 0 18px 40px -12px rgb(0 0 0 / 95%);
   opacity: 0;
-  transform: translate(-50%, 10px) scale(0.96);
+  transform: translate(-50%, 22px) scale(0.9);
   transition:
     opacity 0.3s ease,
     transform 0.3s ease;
@@ -1032,35 +1041,46 @@ onBeforeUnmount(() => {
 
 /* A slow drift while they are up; `translate` leaves `transform` to the
    fade in and out. */
+@keyframes drift {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -0.6deg;
+  }
+  50% {
+    translate: 10px -12px;
+    rotate: 0.6deg;
+  }
+}
 @keyframes bob {
   0%,
   100% {
     translate: 0 0;
   }
   50% {
-    translate: 0 -4px;
+    translate: 0 -9px;
   }
 }
 .speech {
-  animation: bob 4.2s ease-in-out infinite;
+  animation: drift 3.8s ease-in-out infinite;
 }
 .pill {
-  animation: bob 3.6s ease-in-out infinite;
-  animation-delay: -1.2s;
+  animation: bob 2.6s ease-in-out infinite;
+  animation-delay: -0.9s;
 }
 
 /* After the paste they rise out of the way rather than drop back. */
 [data-scene='issue'][data-phase='3'] .speech,
 [data-scene='slack'][data-phase='4'] .speech,
 [data-scene='editor'][data-phase='4'] .speech {
-  transform: translateY(-14px) scale(0.98);
-  transition-duration: 0.5s;
+  transform: translate(12px, -34px) scale(0.96);
+  transition-duration: 0.6s;
 }
 [data-scene='issue'][data-phase='3'] .pill,
 [data-scene='slack'][data-phase='4'] .pill,
 [data-scene='editor'][data-phase='4'] .pill {
-  transform: translate(-50%, -12px) scale(0.96);
-  transition-duration: 0.5s;
+  transform: translate(-50%, -26px) scale(0.94);
+  transition-duration: 0.6s;
 }
 
 @keyframes rec {
@@ -1184,14 +1204,24 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 
-/* Agents */
+/* Agents: two rows of five, with the spine's branches running behind them.
+   The block is as tall as the branches' box: 100px above, two 92px rows
+   with 16px between, 100px below; columns sit at 2% gaps so their centres
+   match the branches' x positions. */
 .agents {
+  position: relative;
   width: min(760px, 100%);
+  height: 400px;
+  padding: 100px 0;
 }
 .agents ul {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: 92px 92px;
+  column-gap: 2%;
+  row-gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1202,7 +1232,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  height: 92px;
+  min-width: 0;
   border: 1px solid #1f1f22;
   border-radius: 12px;
   background: #0e0e0f;
@@ -1221,13 +1251,6 @@ onBeforeUnmount(() => {
 .agents li:hover {
   border-color: #3a3a40;
 }
-.agents li:nth-child(n + 7) {
-  /* the second row, centred under the first */
-  transform: translateY(8px) translateX(50%);
-}
-.agents.in li:nth-child(n + 7) {
-  transform: translateX(50%);
-}
 .agent-icon {
   width: 24px;
   height: 24px;
@@ -1236,6 +1259,7 @@ onBeforeUnmount(() => {
   -webkit-mask: var(--icon) center / contain no-repeat;
 }
 .agent-name {
+  padding: 0 6px;
   font-family: var(--font-code);
   font-size: 11.5px;
   color: #a1a1aa;
@@ -1245,23 +1269,27 @@ onBeforeUnmount(() => {
   font-size: 13px;
   color: #d9d9de;
 }
-.bus {
-  display: block;
+.branches {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 70px;
-  margin-top: 10px;
+  height: 100%;
 }
-.bus path {
+.branches path {
   fill: none;
-  stroke: #2e2e33;
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.4s ease 0.6s;
 }
-.agents.in .bus path {
-  stroke-dashoffset: 0;
+.branches .base {
+  stroke: #262628;
+}
+/* Lit as far as the spine has reached, all five together. */
+.branches .lit {
+  stroke: var(--sig);
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--draw, 0));
+  filter: drop-shadow(0 0 3px rgb(165 180 255 / 55%));
+  transition: stroke-dashoffset 0.12s linear;
 }
 
 /* The per-app card, as the bar widget shows it */
@@ -1503,15 +1531,17 @@ onBeforeUnmount(() => {
     bottom: 88px;
     width: calc(100% - 16px);
   }
-  .agents ul {
-    grid-template-columns: repeat(3, 1fr);
+  /* Names give way to icons; agents without one keep a small wordmark. */
+  .agents li:has(.agent-icon) .agent-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
-  .agents li:nth-child(n + 7),
-  .agents.in li:nth-child(n + 7) {
-    transform: none;
-  }
-  .bus {
-    display: none;
+  .agents li:not(:has(.agent-icon)) .agent-name {
+    font-size: 10px;
+    padding: 0 2px;
   }
   .facts {
     grid-template-columns: 1fr 1fr;
