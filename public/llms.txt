@@ -15,14 +15,15 @@
 - [Commands](https://ostt.ai/guide/commands): Full CLI reference: record, transcribe, retry, replay, process (with --attach), agent list/models, paste output, auth, model, history, keyword, replace, config, logs, daemon, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions. AI actions run an agent you already use (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot, Cursor, Grok, Pi, Oh My Pi, Hermes, OpenClaw, or one you add) with its tools switched off, and can take an attached image.
 - [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference: audio, transcription params, paste output, text replace rules, popup, processing defaults and custom agents ([process.agents]).
-- [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Practical recommendations for choosing cloud providers, built-in local Parakeet and Whisper, external command/HTTP engines, Swedish/EU models, offline privacy, and retry strategies.
+- [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Start with built-in local Parakeet and Whisper models with full GPU support; when to use cloud providers or external command/HTTP engines; Swedish and Norwegian models; retry comparisons.
 
-## Local Models
+## Models
 
 - [Local Models](https://ostt.ai/guide/local-models): Run Parakeet and Whisper models offline. No API key required.
 - [External Engines](https://ostt.ai/guide/external-engines): Connect command-based ASR tools and OpenAI-compatible HTTP transcription endpoints, including local or remote custom engines.
 - [GPU Acceleration](https://ostt.ai/guide/gpu-acceleration): Metal (macOS), CUDA (NVIDIA Linux), and Vulkan (AMD/Intel Linux) GPU backends.
 - [Daemon Mode](https://ostt.ai/guide/daemon): Keep a local model loaded in a background process. Install as systemd or launchd service.
+- [Cloud Models](https://ostt.ai/guide/cloud-models): Hosted transcription from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, and Mistral with your own API key, and when the cloud fits.
 
 ## Platform Setup
 

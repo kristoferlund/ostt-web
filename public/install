@@ -1564,7 +1564,7 @@ offer_default_model() {
     return 0
   fi
 
-  printf '\nOSTT transcribes with a cloud or local model; configure one with `ostt model`.\nOr start right away with the small Whisper base model (142 MB).\n'
+  printf '\nOSTT transcribes with a local or cloud model; configure one with `ostt model`.\nOr start right away with the small Whisper base model (142 MB).\n'
   printf 'Download it now? [Y/n] '
   if ! read -r answer 2>/dev/null </dev/tty; then
     printf '\n'

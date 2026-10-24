@@ -4,11 +4,11 @@ description: Supported OSTT transcription providers, cloud models, local models,
 
 # Providers and Models
 
-OSTT can use cloud providers or local Parakeet and Whisper models. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
+OSTT can use local Parakeet and Whisper models or cloud providers. Run `ostt model` to choose the active model. Run `ostt auth login` first when you want to use a cloud provider.
 
-Transcription request params are configured under `[provider.params]` or `[provider."model".params]`, or passed per invocation with `--param key=value`. Use `ostt model params PROVIDER/MODEL` to list supported params for a cloud or local model. Params under `[provider.params]` apply to every model of that provider, so each one must be supported by the model you select; put model-specific params under `[provider."model".params]`.
+Transcription request params are configured under `[provider.params]` or `[provider."model".params]`, or passed per invocation with `--param key=value`. Use `ostt model params PROVIDER/MODEL` to list supported params for a local or cloud model. Params under `[provider.params]` apply to every model of that provider, so each one must be supported by the model you select; put model-specific params under `[provider."model".params]`.
 
-For practical recommendations by use case, see [Choosing a Transcription Model or Provider](/guide/choosing-a-model).
+For practical recommendations by use case, see [Choosing a Transcription Model](/guide/choosing-a-model) and [Cloud Models](/guide/cloud-models).
 
 ## Local
 
@@ -22,7 +22,7 @@ Choose **Local models** to download curated models, activate downloaded models, 
 
 The curated model list is maintained in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. Open a pull request there to suggest a model for inclusion in the default list shown to all users.
 
-Local transcription supports GPU acceleration through Metal on macOS and CUDA or Vulkan builds on Linux.
+Local transcription has full GPU support through Metal on macOS and CUDA or Vulkan builds on Linux.
 
 | Provider | Models | Params |
 | --- | --- | --- |

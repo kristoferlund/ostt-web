@@ -168,9 +168,10 @@ export default defineConfig({
         items: [
           { text: 'Choosing a Model', link: '/guide/choosing-a-model' },
           { text: 'Local Models', link: '/guide/local-models' },
-          { text: 'External Engines', link: '/guide/external-engines' },
           { text: 'GPU Acceleration', link: '/guide/gpu-acceleration' },
-          { text: 'Daemon Mode', link: '/guide/daemon' }
+          { text: 'Daemon Mode', link: '/guide/daemon' },
+          { text: 'Cloud Models', link: '/guide/cloud-models' },
+          { text: 'External Engines', link: '/guide/external-engines' }
         ]
       },
       {

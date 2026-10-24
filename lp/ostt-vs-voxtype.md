@@ -24,7 +24,7 @@ import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
 
   <section class="landing-hero">
     <h1>OSTT vs Voxtype: which open source speech-to-text tool should you choose?</h1>
-    <p class="lede">Voxtype and OSTT are both open source speech-to-text tools for people who want voice input outside a proprietary dictation subscription. Voxtype is strongest as an integrated Linux dictation daemon with local engine setup. OSTT is strongest when you want provider choice, cloud or local models, paste output, saved recordings, retry, files, stdout, and shell or AI processing.</p>
+    <p class="lede">Voxtype and OSTT are both open source speech-to-text tools for people who want voice input outside a proprietary dictation subscription. Voxtype is strongest as an integrated Linux dictation daemon with local engine setup. OSTT is strongest when you want provider choice, local or cloud models, paste output, saved recordings, retry, files, stdout, and shell or AI processing.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Copy install command">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -45,7 +45,7 @@ import SiteFooter from '../.vitepress/theme/components/SiteFooter.vue'
       <div>
         <p class="eyebrow">Short Answer</p>
         <h2>Choose OSTT when model choice and developer workflow matter.</h2>
-        <p>Voxtype is a serious Rust-native dictation project with detailed local model, daemon, hotkey, output, GPU, and packaging docs. OSTT takes a different route: it treats speech-to-text as a terminal primitive that can paste into apps, write files, stream through stdout, call cloud or local providers, retry a saved recording, and post-process text through AI prompts or bash commands.</p>
+        <p>Voxtype is a serious Rust-native dictation project with detailed local model, daemon, hotkey, output, GPU, and packaging docs. OSTT takes a different route: it treats speech-to-text as a terminal primitive that can paste into apps, write files, stream through stdout, call local or cloud models, retry a saved recording, and post-process text through AI prompts or bash commands.</p>
       </div>
       <div class="command-card">
         <pre><code># Dictate into the focused app&#10;ostt launch --paste&#10;&#10;# Clean the transcript, then paste it&#10;ostt launch --paste -p clean&#10;&#10;# Transcribe a file and summarize it&#10;ostt transcribe meeting.mp3 -p summary -o notes.md&#10;&#10;# Retry the same saved audio with another model&#10;ostt retry -m deepgram/nova-3</code></pre>

@@ -6,7 +6,7 @@ description: How OSTT, a terminal-native, open source, provider-agnostic voice-t
 
 OSTT exists for developers and power users who want speech-to-text to behave like the rest of their toolchain: transparent, scriptable, provider-agnostic, and comfortable on Linux.
 
-Many dictation apps are polished GUI products built around a proprietary cloud, a subscription, or a Mac-first workflow. OSTT takes a smaller approach. It is open source and terminal-native, works with your own API keys or entirely offline, and is designed so transcription output can move through shell pipelines, AI prompts, files, clipboards, hotkeys, and scripts.
+Many dictation apps are polished GUI products built around a proprietary cloud, a subscription, or a Mac-first workflow. OSTT takes a smaller approach. It is open source and terminal-native, runs entirely offline or with your own API keys, and is designed so transcription output can move through shell pipelines, AI prompts, files, clipboards, hotkeys, and scripts.
 
 ## Where OSTT Is Different
 
@@ -14,15 +14,15 @@ Many dictation apps are polished GUI products built around a proprietary cloud, 
 
 Many popular dictation tools focus on macOS, Windows, and mobile. OSTT is built with Linux desktop workflows in mind: Wayland clipboard handling, Omarchy/Hyprland setup, GNOME and KDE guides, AUR packaging, native Linux packages, and a popup launcher that works from global hotkeys.
 
-### Provider Choice
-
-OSTT does not force one transcription backend. You can choose from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, and Mistral in the cloud, or run Parakeet and Whisper models locally, then switch models when your needs change.
-
-This matters for quality, latency, price, language support, and regulatory requirements. For example, Berget provides Swedish/EU-hosted transcription options for users who care about data residency.
-
 ### Local Models on Your Own Hardware
 
-Parakeet and Whisper models run on OSTT's built-in engine, on the CPU or on the GPU through the Metal, CUDA, and Vulkan builds. Once a model is downloaded, audio never leaves your machine. [Daemon mode](./daemon.md) keeps the model loaded between recordings, so dictation does not wait for it to load.
+Parakeet and Whisper models run on OSTT's built-in engine, with full GPU support through the Metal, CUDA, and Vulkan builds, or on the CPU. Once a model is downloaded, audio never leaves your machine. [Daemon mode](./daemon.md) keeps the model loaded between recordings, so dictation does not wait for it to load.
+
+### Provider Choice
+
+OSTT does not force one transcription backend. Alongside local models, you can choose from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, and Mistral in the cloud, or connect your own engine, then switch models when your needs change.
+
+This matters for quality, latency, price, language support, and regulatory requirements. For example, Berget provides Swedish/EU-hosted transcription options for users who care about data residency.
 
 ### Retry With Another Model
 

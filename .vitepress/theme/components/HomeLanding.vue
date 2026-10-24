@@ -90,7 +90,7 @@ const down = pipeline(false)
 const features = [
   { title: 'Linux-first', text: 'Hotkeys for Omarchy and Hyprland, GNOME, KDE and other Linux desktops, with macOS support too.' },
   { title: 'Paste into any app', text: 'OSTT closes its popup, waits for focus to return, and pastes into the editor, browser, chat or terminal you were in.' },
-  { title: 'Cloud or local models', text: 'OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral, or Parakeet and Whisper on your machine.' },
+  { title: 'Local or cloud models', text: 'Parakeet and Whisper on your machine, or OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs and Mistral.' },
   { title: 'GPU acceleration', text: 'Metal on macOS, CUDA on NVIDIA, Vulkan on AMD and Intel. The install script picks the right build.' },
   { title: 'Daemon mode', text: 'Keep a local model loaded in the background, so every transcription starts at once.' },
   { title: 'Process with AI or bash', text: 'Run your own prompts on the agent you already use, or any shell command, before the text is sent on.' },

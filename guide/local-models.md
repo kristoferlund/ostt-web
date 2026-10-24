@@ -11,7 +11,7 @@ Both model families run on the same built-in engine, [transcribe.cpp](https://gi
 - **Parakeet** (`parakeet/...`) is fast and accurate, adds punctuation and capitalization, and detects the language by itself. Good default for English and the 25 European languages it covers.
 - **Whisper** (`whisper/...`) covers around 100 languages and has regional fine-tunes such as KB-Whisper for Swedish and NB-Whisper for Norwegian.
 
-For when to pick local, cloud, or an external engine, see [Choosing a Transcription Model or Provider](/guide/choosing-a-model).
+For when to pick local, cloud, or an external engine, see [Choosing a Transcription Model](/guide/choosing-a-model).
 
 Local transcription can run on the GPU on macOS (Metal) and Linux x86_64 (CUDA, Vulkan). See [GPU Acceleration](./gpu-acceleration) for setup details. To avoid model load time on repeated use, see [Daemon Mode](./daemon).
 

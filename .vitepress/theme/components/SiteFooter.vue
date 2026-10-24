@@ -24,7 +24,7 @@ const columns = [
       { text: 'GPU acceleration', href: '/guide/gpu-acceleration' },
       { text: 'Daemon mode', href: '/guide/daemon' },
       { text: 'External engines', href: '/guide/external-engines' },
-      { text: 'Cloud providers', href: '/reference/providers' }
+      { text: 'Cloud models', href: '/guide/cloud-models' }
     ]
   },
   {

@@ -1,6 +1,6 @@
 ---
 layout: false
-description: Open source, terminal-native speech-to-text for Linux and macOS. Record from a hotkey, transcribe with cloud or local models, and paste text into the focused app or route it to your clipboard, files, AI prompts, and shell commands.
+description: Open source, terminal-native speech-to-text for Linux and macOS. Record from a hotkey, transcribe with local or cloud models, and paste text into the focused app or route it to your clipboard, files, AI prompts, and shell commands.
 ---
 
 <script setup>

@@ -4,7 +4,7 @@ description: Install OSTT, choose a transcription model, record from the termina
 
 # Getting Started
 
-OSTT is an open source speech-to-text tool for the terminal. It records from your microphone, transcribes with the cloud or local model you choose, and sends the text wherever you need it: stdout, the clipboard, a file, the app you were typing in, or an AI prompt or shell command first.
+OSTT is an open source speech-to-text tool for the terminal. It records from your microphone and transcribes on your own machine with local Parakeet and Whisper models, with full GPU support and no account or API key. A cloud provider is an option when you want one. The text goes wherever you need it: stdout, the clipboard, a file, the app you were typing in, or an AI prompt or shell command first.
 
 This page takes you from install to dictating with a hotkey. [Why OSTT?](./why-ostt.md) explains how it compares with other dictation tools.
 
@@ -20,15 +20,23 @@ See [Installation](./installation.md) for package managers, installer options, a
 
 ## Choose A Model
 
-If you skipped the Whisper download, or want a different model, open the model picker:
+Parakeet is the recommended local model for English and 25 European languages. Download it, select it, and keep it loaded between recordings:
+
+```bash
+ostt model local download parakeet-ultra
+ostt model select parakeet/parakeet-ultra
+ostt daemon start
+```
+
+To browse every model, open the model picker:
 
 ```bash
 ostt model
 ```
 
-Choose **Local provider** to download and activate an offline model, or **Cloud provider** for a hosted one. [Choosing a Model](./choosing-a-model.md) helps you decide.
+The **Local models** section downloads and activates offline models. [Choosing a Model](./choosing-a-model.md) helps you pick one for your language and hardware.
 
-A cloud provider needs its API key first:
+To use a [cloud model](./cloud-models.md) instead, save the provider's API key first:
 
 ```bash
 ostt auth login
