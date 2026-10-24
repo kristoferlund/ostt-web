@@ -1,3 +1,6 @@
 # Canonicalize VitePress clean URLs on Cloudflare Pages.
 /index.html / 301
 /*.html /:splat 301
+
+# Retired pages.
+/guide/platforms /guide/getting-started#use-a-global-hotkey 301

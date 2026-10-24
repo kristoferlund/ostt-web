@@ -137,12 +137,8 @@ export default defineConfig({
     nav: [
       { text: 'Start', link: '/guide/getting-started' },
       { text: 'Why OSTT?', link: '/guide/why-ostt' },
-      { text: 'AI Agent', link: '/guide/ai-skill' },
       { text: 'Models', link: '/guide/choosing-a-model' },
       { text: 'Processing', link: '/guide/processing' },
-      { text: 'Platforms', link: '/guide/platforms' },
-      { text: 'Omarchy', link: '/omarchy' },
-      { text: 'Reference', link: '/reference/providers' }
     ],
     sidebar: [
       {
@@ -177,7 +173,6 @@ export default defineConfig({
       {
         text: 'Platform Setup',
         items: [
-          { text: 'Overview', link: '/guide/platforms' },
           { text: 'macOS', link: '/guide/platforms/macos' },
           { text: 'Omarchy / Hyprland', link: '/guide/platforms/hyprland' },
           { text: 'GNOME', link: '/guide/platforms/gnome' },

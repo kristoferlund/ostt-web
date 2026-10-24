@@ -80,7 +80,7 @@ The first hotkey press opens a popup terminal and starts recording. Pressing the
 
 With `--paste`, the popup closes and OSTT pastes the transcript into the app that regains focus. Use `ostt launch -c` instead to copy it and paste yourself.
 
-See [Platform Setup](./platforms.md) for hotkey setup on macOS, Omarchy/Hyprland, GNOME, and KDE, and for changing the paste shortcut when an app needs a different one.
+See the setup guide for [macOS](./platforms/macos.md), [Omarchy/Hyprland](./platforms/hyprland.md), [GNOME](./platforms/gnome.md), or [KDE Plasma](./platforms/kde.md) for hotkey setup and for changing the paste shortcut when an app needs a different one.
 
 ## Process the Result
 
