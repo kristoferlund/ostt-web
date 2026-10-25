@@ -49,6 +49,8 @@ The microphone in the bar shows the state:
 
 Left-click starts dictation, or stops it and pastes. Right-click cancels a recording or a pending transcription, and otherwise opens the per-app settings.
 
+Music and videos that are playing pause while you record, and play on when you stop or cancel; players you had paused stay paused. To turn this off, use the switch at the bottom of the per-app settings, or put `pause_media = false` at the top of `~/.config/ostt/dictate.toml`. It works with players that support MPRIS, which most do.
+
 Dictated text is saved to `ostt history`. If a transcription fails, the recording is kept and the notification shows how to retry it.
 
 ## Context-Aware Dictation
