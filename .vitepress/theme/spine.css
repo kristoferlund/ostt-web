@@ -76,6 +76,15 @@
   letter-spacing: -0.045em;
   font-weight: 600;
   color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+/* Shown once the tagline for this visit is picked (tagline.ts). */
+.spine-page .hero h1.ready {
+  opacity: 1;
+}
+.spine-page.reduced .hero h1 {
+  transition: none;
 }
 .spine-page .lede {
   max-width: 540px;

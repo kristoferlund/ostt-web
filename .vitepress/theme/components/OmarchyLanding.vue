@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { useSpine } from '../spine'
+import { useTagline } from '../tagline'
 import SpineNode from './SpineNode.vue'
 
 // The action that takes instructions and sees the screen. One place, so a
@@ -138,9 +139,16 @@ function stop(name: string) {
   clearTimeout(timers[name])
 }
 
+const { tagline, ready, track } = useTagline([
+  ['Dictation that takes', 'instructions.'],
+  ['Dictation with', 'superpowers.'],
+  ['Ask for the reply,', 'not the transcript.']
+])
+
 const copied = ref(false)
 function copyInstall() {
   navigator.clipboard?.writeText(INSTALL)
+  track('Copy plugin install')
   copied.value = true
   setTimeout(() => (copied.value = false), 2000)
 }
@@ -164,7 +172,7 @@ onBeforeUnmount(() => Object.keys(timelines).forEach(stop))
       <span ref="logo" class="hero-mark" role="img" aria-label="OSTT"></span>
       <div class="hero-text mask">
         <p class="kicker">OSTT for Omarchy</p>
-        <h1>Dictation that takes<br />instructions.</h1>
+        <h1 :class="{ ready }"><template v-for="(line, i) in tagline" :key="i"><br v-if="i" />{{ line }}</template></h1>
         <p class="lede">
           Talk to any app on Omarchy. Ask for a reply instead of just a transcript, and your agent reads the screen and writes it
           for you.
