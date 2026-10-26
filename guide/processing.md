@@ -155,30 +155,14 @@ An AI action may take `timeout_secs` seconds, 300 by default. A slow or hung age
 
 ### Agents
 
-`tool` names the agent. These are built in:
-
-| `tool` | Agent | Takes images |
-| --- | --- | --- |
-| `claude-code` | Claude Code | yes |
-| `codex-cli` | Codex | yes |
-| `opencode` | OpenCode (2.0 or later) | yes |
-| `gemini-cli` | Gemini CLI | yes |
-| `pi` | Pi | yes |
-| `oh-my-pi` | Oh My Pi | yes |
-| `hermes` | Hermes | no |
-| `copilot` | GitHub Copilot | yes |
-| `grok` | Grok | no |
-| `cursor` | Cursor | no |
-| `openclaw` | OpenClaw | no |
-
-List them, with which are installed, and an agent's models:
+`tool` names the agent: `claude-code`, `codex-cli`, `opencode`, `gemini-cli`, `pi`, `oh-my-pi`, `hermes`, `copilot`, `grok`, `cursor` or `openclaw`. List them, with which are installed, and an agent's models:
 
 ```bash
 ostt agent list
 ostt agent models claude-code
 ```
 
-Every built-in agent runs with all of its tools switched off, in a new empty working directory. A transcript or a screenshot can contain text written by someone else, and that text must not be able to make the agent run commands or read and change your files. How each agent is run is data, in OSTT's [`agents.toml`](https://github.com/kristoferlund/ostt/blob/main/src/config/agents.toml), with notes on how each one was checked.
+Every built-in agent runs with all of its tools switched off, in a new empty working directory. A transcript or a screenshot can contain text written by someone else, and that text must not be able to make the agent run commands or read and change your files. [Agents](/reference/agents) describes how each one runs, which take images, and the trade-offs, such as GitHub Copilot taking the prompt as a command-line argument that other local users can read.
 
 ### Add or Replace an Agent
 
@@ -197,7 +181,7 @@ model = "gpt-4o-mini"
 inputs = [{ role = "user", source = "transcription" }]
 ```
 
-OSTT writes the prompt to the program's stdin and reads the answer from its stdout. In `command`, `{model}` is the action's model, `{workdir}` the agent's empty working directory, and `{prompt}` the prompt, for a program that takes it as an argument instead. `image_args` (arguments with an `{image}` path) or `image_prompt` (text added to the prompt) let it take an image; `env` and `files` set environment variables and write files into the working directory before it runs. Switching off the agent's tools is up to you for an agent you add.
+OSTT writes the prompt to the program's stdin and reads the answer from its stdout. In `command`, `{model}` is the action's model, `{workdir}` the agent's empty working directory, and `{prompt}` the prompt, for a program that takes it as an argument instead, where other local users can read it while the program runs. `image_args` (arguments with an `{image}` path) or `image_prompt` (text added to the prompt) let it take an image; `env` and `files` set environment variables and write files into the working directory before it runs. `models` (a fixed list) or `models_command` (a command that prints them) give the models `ostt agent models` lists; `models_pattern` is a regex whose first group picks each model out of a line of that command's output. Switching off the agent's tools is up to you for an agent you add.
 
 ### Input Sources
 
