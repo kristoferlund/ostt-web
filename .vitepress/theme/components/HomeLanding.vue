@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useSpine } from '../spine'
+import { useTagline } from '../tagline'
 import SpineNode from './SpineNode.vue'
 
 const INSTALL = 'curl -fsSL https://ostt.ai/install | bash'
 
 const { root, logo, end, spine, style, reduced } = useSpine()
 
+const { tagline, ready, track } = useTagline([
+  ['Open source voice‑to‑text', 'for Linux. And macOS.'],
+  ['Dictation with', 'superpowers.'],
+  ['Voice‑to‑text that stays', 'on your machine.']
+])
+
 const copied = ref(false)
 function copyInstall() {
   navigator.clipboard?.writeText(INSTALL)
+  track('Copy install')
   copied.value = true
   setTimeout(() => (copied.value = false), 2000)
 }
@@ -115,7 +123,7 @@ const offsets = [36, 8, 64, 40, 12, 72, 48, 20, 0, 56, 28, 44]
       <span ref="logo" class="hero-mark" role="img" aria-label="OSTT"></span>
       <div class="hero-text mask">
         <p class="kicker">Speech to text, in your terminal</p>
-        <h1>Open source voice&#8209;to&#8209;text<br />for Linux. And macOS.</h1>
+        <h1 :class="{ ready }"><template v-for="(line, i) in tagline" :key="i"><br v-if="i" />{{ line }}</template></h1>
         <p class="lede">
           Record from a hotkey, transcribe on your own machine with Parakeet or Whisper or with a cloud model, then paste the
           text into the app you are in, or send it to your clipboard, a file, an AI prompt or any shell command.
