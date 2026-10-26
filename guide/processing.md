@@ -171,6 +171,8 @@ An AI action may take `timeout_secs` seconds, 300 by default. A slow or hung age
 | `cursor` | Cursor | no |
 | `openclaw` | OpenClaw | no |
 
+Copilot, Grok and Cursor take the prompt as a command-line argument, which other users on the same computer can read while the agent runs. The others read it from stdin.
+
 List them, with which are installed, and an agent's models:
 
 ```bash
@@ -197,7 +199,7 @@ model = "gpt-4o-mini"
 inputs = [{ role = "user", source = "transcription" }]
 ```
 
-OSTT writes the prompt to the program's stdin and reads the answer from its stdout. In `command`, `{model}` is the action's model, `{workdir}` the agent's empty working directory, and `{prompt}` the prompt, for a program that takes it as an argument instead. `image_args` (arguments with an `{image}` path) or `image_prompt` (text added to the prompt) let it take an image; `env` and `files` set environment variables and write files into the working directory before it runs. Switching off the agent's tools is up to you for an agent you add.
+OSTT writes the prompt to the program's stdin and reads the answer from its stdout. In `command`, `{model}` is the action's model, `{workdir}` the agent's empty working directory, and `{prompt}` the prompt, for a program that takes it as an argument instead, where other local users can read it while the program runs. `image_args` (arguments with an `{image}` path) or `image_prompt` (text added to the prompt) let it take an image; `env` and `files` set environment variables and write files into the working directory before it runs. Switching off the agent's tools is up to you for an agent you add.
 
 ### Input Sources
 

@@ -57,7 +57,7 @@ Dictated text is saved to `ostt history`. If a transcription fails, the recordin
 
 In apps you choose, dictation goes through a [processing action](/guide/processing) that runs an AI agent you already use, such as Claude Code, Codex or OpenCode. The agent tidies up your words and carries out spoken instructions. If you allow it for that app, the agent also gets a screenshot of the window, so it can match names, terms and tone on screen. Every other app keeps plain transcription.
 
-The agent runs with its tools switched off, so text on screen cannot make it run commands or touch files. `ostt agent list` shows the agents OSTT can run this way, which are installed, and which take images.
+The agent runs with its tools switched off, so text on screen cannot make it run commands or touch files. The setup offers only agents that read your words from stdin, where other users on the computer cannot see them, so not GitHub Copilot, Grok or Cursor. `ostt agent list` shows the agents OSTT can run this way, which are installed, and which take images.
 
 The setup adds two actions to `~/.config/ostt/ostt.toml`, using the agent and model you pick. Edit their prompts there:
 
