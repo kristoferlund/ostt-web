@@ -171,7 +171,7 @@ An AI action may take `timeout_secs` seconds, 300 by default. A slow or hung age
 | `cursor` | Cursor | no |
 | `openclaw` | OpenClaw | no |
 
-Copilot, Grok and Cursor take the prompt as a command-line argument, which other users on the same computer can read while the agent runs. The others read it from stdin.
+GitHub Copilot takes the prompt as a command-line argument, which other users on the same computer can read while it runs. The others read it from stdin.
 
 List them, with which are installed, and an agent's models:
 
