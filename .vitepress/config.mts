@@ -192,6 +192,7 @@ export default defineConfig({
           { text: 'Berget', link: '/reference/providers/berget' },
           { text: 'ElevenLabs', link: '/reference/providers/elevenlabs' },
           { text: 'Mistral', link: '/reference/providers/mistral' },
+          { text: 'Agents', link: '/reference/agents' },
           { text: 'Troubleshooting', link: '/guide/troubleshooting' }
         ]
       }

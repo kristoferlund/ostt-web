@@ -36,6 +36,7 @@
 ## Reference
 
 - [Providers and Models](https://ostt.ai/reference/providers): All supported cloud providers (OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, Mistral) local Parakeet and Whisper models, and pointers to external command/HTTP engines. Configuration options per provider.
+- [Agents](https://ostt.ai/reference/agents): How OSTT runs each AI agent for processing actions with its tools switched off: prompt on stdin or as an argument, images, model lists, how each was tested, and the trade-offs per agent.
 - [OpenAI](https://ostt.ai/reference/providers/openai): OpenAI transcription models and configuration options for OSTT.
 - [Deepgram](https://ostt.ai/reference/providers/deepgram): Deepgram Nova transcription models and configuration options for OSTT.
 - [Groq](https://ostt.ai/reference/providers/groq): Groq Whisper transcription models and configuration options for OSTT.

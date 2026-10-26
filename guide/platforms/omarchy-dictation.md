@@ -26,7 +26,7 @@ Then click the microphone that appears in the bar. The setup opens in a terminal
 
 - installs OSTT from the AUR if it is missing: the CUDA build (`ostt-cuda-bin`) on an NVIDIA GPU with Arch's `cuda` 13 already installed, the Vulkan build (`ostt-vulkan-bin`) where Vulkan works, and `ostt-bin` otherwise, plus `ffmpeg`, `python`, `wtype` and `grim`;
 - asks you to choose a transcription model if none is selected, and for a local model offers to keep it loaded with the [daemon](/guide/daemon) so dictation starts instantly;
-- offers context-aware dictation;
+- offers context-aware dictation, which needs OSTT 0.0.32 or later, and says how to update an older OSTT;
 - makes OSTT Omarchy's dictation backend.
 
 Afterwards OSTT is listed in **Setup > Defaults > Dictation**. Selecting it there runs the setup again, to finish one you stopped or to change your answers.
@@ -57,7 +57,7 @@ Dictated text is saved to `ostt history`. If a transcription fails, the recordin
 
 In apps you choose, dictation goes through a [processing action](/guide/processing) that runs an AI agent you already use, such as Claude Code, Codex or OpenCode. The agent tidies up your words and carries out spoken instructions. If you allow it for that app, the agent also gets a screenshot of the window, so it can match names, terms and tone on screen. Every other app keeps plain transcription.
 
-The agent runs with its tools switched off, so text on screen cannot make it run commands or touch files. The setup offers only agents that read your words from stdin, where other users on the computer cannot see them, so not GitHub Copilot. `ostt agent list` shows the agents OSTT can run this way, which are installed, and which take images.
+The agent runs with its tools switched off, so text on screen cannot make it run commands or touch files. The setup offers only agents that read your words from stdin, where other users on the computer cannot see them, so not GitHub Copilot. `ostt agent list` shows the agents OSTT can run this way, which are installed, and which take images. [Agents](/reference/agents) describes how each one runs.
 
 The setup adds two actions to `~/.config/ostt/ostt.toml`, using the agent and model you pick. Edit their prompts there:
 
