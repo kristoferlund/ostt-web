@@ -240,7 +240,7 @@ language = "en"
 response_format = "json"
 ```
 
-See [External Engines](./external-engines.md) for full setup examples and rationale.
+See [External Engines](./external-engines.md) for full setup examples.
 
 ## Processing Actions
 

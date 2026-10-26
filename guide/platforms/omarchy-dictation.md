@@ -24,14 +24,14 @@ omarchy plugin add https://github.com/kristoferlund/ostt-omarchy-dictate.git --e
 
 Then click the microphone that appears in the bar. The setup opens in a terminal and:
 
-- installs OSTT if it is missing, with the Vulkan build (`ostt-vulkan-bin` from the AUR) where Vulkan works and `ostt-bin` otherwise, plus `ffmpeg`, `python`, `wtype` and `grim`;
+- installs OSTT from the AUR if it is missing: the CUDA build (`ostt-cuda-bin`) on an NVIDIA GPU with Arch's `cuda` 13 already installed, the Vulkan build (`ostt-vulkan-bin`) where Vulkan works, and `ostt-bin` otherwise, plus `ffmpeg`, `python`, `wtype` and `grim`;
 - asks you to choose a transcription model if none is selected, and for a local model offers to keep it loaded with the [daemon](/guide/daemon) so dictation starts instantly;
 - offers context-aware dictation;
 - makes OSTT Omarchy's dictation backend.
 
 Afterwards OSTT is listed in **Setup > Defaults > Dictation**. Selecting it there runs the setup again, to finish one you stopped or to change your answers.
 
-On an NVIDIA GPU, `ostt-cuda-bin` is the faster build for local models, but it pulls in CUDA, which is several GB. See [GPU Acceleration](/guide/gpu-acceleration).
+On an NVIDIA GPU, `ostt-cuda-bin` is the faster build for local models. The setup picks it only when `cuda` is already installed, because CUDA is several GB. See [GPU Acceleration](/guide/gpu-acceleration).
 
 ## Dictate
 

@@ -158,7 +158,7 @@ Model downloads can be hundreds of megabytes or several gigabytes. Delete unused
 
 ## Curated Model List
 
-OSTT's built-in local model list is maintained outside the CLI in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. This keeps the curated list updateable without changing the application code. OSTT keeps the last downloaded copy, so downloaded models stay usable offline.
+OSTT's built-in local model list is maintained outside the CLI in the [kristoferlund/ostt-models](https://github.com/kristoferlund/ostt-models) repository. OSTT keeps the last downloaded copy, so downloaded models stay usable offline.
 
 To suggest a model for everyone, open a pull request in that repository. Include the model URL, display name, size, language coverage, and any useful hardware or accuracy notes.
 
