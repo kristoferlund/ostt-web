@@ -23,6 +23,7 @@ export function useSpine(onScene?: (name: string, visible: boolean) => void) {
   const progress = ref(0)
   const reduced = ref(false)
   let observer: IntersectionObserver | null = null
+  let resizer: ResizeObserver | null = null
   let frame = 0
 
   function measure() {
@@ -38,8 +39,12 @@ export function useSpine(onScene?: (name: string, visible: boolean) => void) {
       measure()
       // Without motion, the whole line is drawn from the start.
       const tip = reduced.value ? Infinity : window.innerHeight * TIP
-      const line = spine.value.getBoundingClientRect()
-      progress.value = clamp((tip - line.top) / line.height)
+      // From the measured ends, not the spine's own box, which still has the
+      // ends of the last measure until the style is applied.
+      const page = root.value.getBoundingClientRect()
+      const lineTop = page.top + top.value
+      const lineHeight = page.height - top.value - bottom.value
+      progress.value = clamp((tip - lineTop) / lineHeight)
       root.value.querySelectorAll<HTMLElement>('[data-draw]').forEach((el) => {
         const box = el.getBoundingClientRect()
         el.style.setProperty('--draw', String(clamp((tip - box.top) / box.height)))
@@ -52,6 +57,10 @@ export function useSpine(onScene?: (name: string, visible: boolean) => void) {
     update()
     window.addEventListener('resize', update)
     window.addEventListener('scroll', update, { passive: true })
+    // The page's height changes without a scroll or resize event as fonts and
+    // images load.
+    resizer = new ResizeObserver(update)
+    if (root.value) resizer.observe(root.value)
     if (reduced.value) {
       root.value?.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('in'))
       return
@@ -71,6 +80,7 @@ export function useSpine(onScene?: (name: string, visible: boolean) => void) {
 
   onBeforeUnmount(() => {
     observer?.disconnect()
+    resizer?.disconnect()
     window.removeEventListener('resize', update)
     window.removeEventListener('scroll', update)
     cancelAnimationFrame(frame)
