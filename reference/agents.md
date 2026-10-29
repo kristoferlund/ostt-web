@@ -29,7 +29,7 @@ Every built-in agent runs with all of its tools switched off. A transcript or a 
 - **Model list.** `ostt agent models <tool>` prints the models OSTT can offer when you set up an action. For the others, use the model name the agent itself takes.
 - **Tested.** "Run" means the agent was run through OSTT with a text prompt, an image where it takes one, and an attempt to make it create a file and read `/etc/hostname`, which it could not. Pi and Oh My Pi were run against a test server instead of a live model. OpenClaw was configured from its documentation and has not been run.
 
-`ostt agent list` shows which agents are installed. `--format json` adds `images` and `prompt_in_args` for each.
+`ostt agent list` shows which agents are installed. `--format json` adds `images` and `prompt_in_args` for each. `ostt process list --format json` has `prompt_in_args` for each action too, for the agent it runs on.
 
 ## How Every Agent Runs
 
