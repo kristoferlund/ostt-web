@@ -6,6 +6,13 @@ description: Release notes and notable changes for OSTT.
 
 ## [Unreleased]
 
+## 0.0.34 - 2026-10-30
+
+### Fixed
+
+- Everything ostt keeps is readable only by you, from the moment it starts. Every command sets a private umask, so whatever it creates is mode 0600, and makes the data, config and log directories private before it reads or writes anything. Before, a custom model URL, which can be a signed download link, was saved in `models.json` readable by other local users when the model picker ran before anything else had made the data directory private.
+- Files an earlier version left readable, such as `models.json`, recordings, logs and `ostt.toml`, are restricted when ostt next starts, including an `ostt.toml` linked from a dotfiles folder.
+
 ## 0.0.33 - 2026-10-29
 
 ### Added

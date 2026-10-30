@@ -26,7 +26,7 @@ Then click the microphone that appears in the bar. The setup opens in a terminal
 
 - installs OSTT from the AUR if it is missing: the CUDA build (`ostt-cuda-bin`) on an NVIDIA GPU with Arch's `cuda` 13 already installed, the Vulkan build (`ostt-vulkan-bin`) where Vulkan works, and `ostt-bin` otherwise, plus `ffmpeg`, `python`, `wtype` and `grim`;
 - asks you to choose a transcription model if none is selected, and for a local model offers to keep it loaded with the [daemon](/guide/daemon) so dictation starts instantly;
-- offers context-aware dictation, which needs OSTT 0.0.33 or later. An older OSTT, from another OSTT package or OSTT's install script, can be replaced by the AUR package;
+- offers context-aware dictation, which needs OSTT 0.0.34 or later. An older OSTT, from another OSTT package or OSTT's install script, can be replaced by the AUR package;
 - makes OSTT Omarchy's dictation backend.
 
 Afterwards OSTT is listed in **Setup > Defaults > Dictation**. Selecting it there runs the setup again, to finish one you stopped or to change your answers.
