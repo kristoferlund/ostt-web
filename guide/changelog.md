@@ -6,6 +6,10 @@ description: Release notes and notable changes for OSTT.
 
 ## [Unreleased]
 
+### Fixed
+
+- Local Parakeet models accept a `language` param in the config and with `--param`. Klang Pianissimo's Danish and Swedish GGUF models require `language=da` and `language=sv`; previously OSTT dropped these settings from the config and rejected them on the command line.
+
 ## 0.0.34 - 2026-10-30
 
 ### Fixed

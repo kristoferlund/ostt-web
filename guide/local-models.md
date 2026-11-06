@@ -1,5 +1,5 @@
 ---
-description: Run offline transcription with local Parakeet and Whisper models. No API key required. Download curated models or add custom Hugging Face model files.
+description: Run offline transcription with local Parakeet and Whisper models, including Klang Pianissimo for Swedish and Danish. Model downloads, language settings, GPU support, and custom Hugging Face files.
 ---
 
 # Local Models
@@ -8,10 +8,12 @@ OSTT can transcribe with local Parakeet and Whisper models. Local models run on 
 
 Both model families run on the same built-in engine, [transcribe.cpp](https://github.com/handy-computer/transcribe.cpp), with the same GPU support, daemon mode and model picker. Choose per model:
 
-- **Parakeet** (`parakeet/...`) is fast and accurate, adds punctuation and capitalization, and detects the language by itself. Good default for English and the 25 European languages it covers.
+- **Parakeet** (`parakeet/...`) adds punctuation and capitalization. The multilingual releases detect 25 European languages; Klang's **Pianissimo** fine-tunes specialize in Swedish and Danish and need an explicit language setting.
 - **Whisper** (`whisper/...`) covers around 100 languages and has regional fine-tunes such as KB-Whisper for Swedish and NB-Whisper for Norwegian.
 
 For when to pick local, cloud, or an external engine, see [Choosing a Transcription Model](/guide/choosing-a-model).
+
+For Swedish or Danish, start with [Klang Pianissimo](/guide/pianissimo): language-specific Parakeet models with 706 MiB Q8_0 downloads. The guide links Klang's model pages and Hugging Face releases and explains setup and limitations.
 
 Local transcription can run on the GPU on macOS (Metal) and Linux x86_64 (CUDA, Vulkan). See [GPU Acceleration](./gpu-acceleration) for setup details. To avoid model load time on repeated use, see [Daemon Mode](./daemon).
 
@@ -62,14 +64,30 @@ The curated list includes these Parakeet models. All are Q8_0 GGUF files pinned 
 
 | Model ID | Download | Languages | Notes |
 | --- | ---: | --- | --- |
-| `parakeet/parakeet-ultra` | 707 MiB | 25 European languages, auto-detected | Most accurate multilingual Parakeet. Moondream's post-trained version of TDT 0.6B v3. |
+| `parakeet/pianissimo-sv` | 706 MiB | Swedish; set `language=sv` | [Klang Pianissimo for Swedish](https://klang.ai/pianissimo-sv/). [Hugging Face GGUF](https://huggingface.co/KlangAI/pianissimo-sv-gguf). |
+| `parakeet/pianissimo-da` | 706 MiB | Danish; set `language=da` | [Klang Pianissimo for Danish](https://klang.ai/pianissimo-da/). [Hugging Face GGUF](https://huggingface.co/KlangAI/pianissimo-da-gguf). |
+| `parakeet/parakeet-ultra` | 707 MiB | 25 European languages, auto-detected | Moondream's post-trained version of TDT 0.6B v3. |
 | `parakeet/parakeet-tdt-0.6b-v3` | 706 MiB | 25 European languages, auto-detected | NVIDIA's original multilingual release. |
 | `parakeet/parakeet-tdt-0.6b-v2` | 696 MiB | English | NVIDIA's English model. |
 | `parakeet/parakeet-tdt_ctc-110m` | 130 MiB | English | Small and very fast, for low-power machines, at somewhat lower accuracy. |
 
 The 25 languages are Bulgarian, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Hungarian, Italian, Latvian, Lithuanian, Maltese, Polish, Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish, Swedish and Ukrainian. English-only models produce nonsense for other languages.
 
-Parakeet models take no params. They detect the language themselves, and OSTT rejects `--param` values for them. Keyword boosting is not supported; [text replacements](/guide/configuration#text-replace) still apply.
+### Parakeet Params
+
+Parakeet accepts `language`, a string defaulting to `"auto"`. The multilingual models can detect the language; Klang's GGUF instructions require `"sv"` or `"da"` for the corresponding Pianissimo model. Save defaults under `[parakeet.<model-id>.params]` or pass `--param language=sv` for one run:
+
+```toml
+[parakeet.pianissimo-sv.params]
+language = "sv"
+
+[parakeet.pianissimo-da.params]
+language = "da"
+```
+
+**Language parameter support is currently unreleased.** See [Pianissimo setup and CLI compatibility](/guide/pianissimo#set-up-local-transcription) before using these models. `ostt model params parakeet/pianissimo-sv` must list `language`.
+
+Whisper decode controls and keyword boosting are not supported by OSTT's local Parakeet route; [text replacements](/guide/configuration#text-replace) still apply. For training details, accuracy reports, precision variants, and the separate Swedish cloud route, see [Klang Pianissimo](/guide/pianissimo).
 
 ## Whisper Models
 

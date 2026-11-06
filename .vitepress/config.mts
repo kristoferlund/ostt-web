@@ -164,6 +164,7 @@ export default defineConfig({
         items: [
           { text: 'Choosing a Model', link: '/guide/choosing-a-model' },
           { text: 'Local Models', link: '/guide/local-models' },
+          { text: 'Pianissimo: Swedish & Danish', link: '/guide/pianissimo' },
           { text: 'GPU Acceleration', link: '/guide/gpu-acceleration' },
           { text: 'Daemon Mode', link: '/guide/daemon' },
           { text: 'Cloud Models', link: '/guide/cloud-models' },

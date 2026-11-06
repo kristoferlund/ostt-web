@@ -147,6 +147,12 @@ const offsets = [36, 8, 64, 40, 12, 72, 48, 20, 0, 56, 28, 44]
           build for your hardware. Once a model is downloaded, no audio leaves your machine. See
           <a href="/guide/local-models">Local Models</a> and <a href="/guide/gpu-acceleration">GPU Acceleration</a>.
         </p>
+        <p>
+          For Swedish and Danish, try <a href="/guide/pianissimo">Klang Pianissimo</a>:
+          <a href="https://klang.ai/pianissimo-sv/">Klang AI's Swedish model</a> and
+          <a href="https://klang.ai/pianissimo-da/">Danish model</a>, trained for each language.
+          Each Q8_0 GGUF download is 706 MiB. See the guide for Hugging Face links, language settings and CLI compatibility.
+        </p>
       </header>
       <ul class="gpu mask" data-reveal aria-label="GPU backends">
         <li v-for="g in gpus" :key="g.name"><b>{{ g.name }}</b><span>{{ g.hardware }}</span></li>

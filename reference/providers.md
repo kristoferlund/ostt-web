@@ -26,12 +26,12 @@ Local transcription has full GPU support through Metal on macOS and CUDA or Vulk
 
 | Provider | Models | Params |
 | --- | --- | --- |
-| `parakeet` | `parakeet/parakeet-ultra`, `parakeet/parakeet-tdt-0.6b-v3`, `parakeet/parakeet-tdt-0.6b-v2`, `parakeet/parakeet-tdt_ctc-110m` | None; the language is detected automatically |
+| `parakeet` | `parakeet/pianissimo-sv` (Swedish), `parakeet/pianissimo-da` (Danish), `parakeet/parakeet-ultra`, `parakeet/parakeet-tdt-0.6b-v3`, `parakeet/parakeet-tdt-0.6b-v2`, `parakeet/parakeet-tdt_ctc-110m` | `language` (currently unreleased); Pianissimo requires `sv` or `da` |
 | `whisper` | `whisper/turbo`, `whisper/large-v3`, regional KB-Whisper and NB-Whisper models, and more | `language`, `no_context`, `temperature`, `no_speech_thold`, `prompt` |
 
 Local models need 16 kHz mono 16-bit WAV. OSTT records in that format automatically when a local model is active; files you pass to `ostt transcribe` must already be in it. See [Local Models](../guide/local-models.md#audio-format).
 
-Local Whisper params use the same provider/model format as cloud providers, for example `[whisper.params]`, `[whisper.turbo.params]`, or `--param language=sv`. Use model IDs such as `whisper/turbo` or `parakeet/parakeet-ultra`. See [Local Models](../guide/local-models.md) for setup details and local param descriptions.
+Local params use the same provider/model format as cloud providers, for example `[whisper.turbo.params]`, `[parakeet.pianissimo-sv.params]`, or `--param language=sv`. See [Local Models](/guide/local-models) for parameter descriptions and [Klang Pianissimo](/guide/pianissimo) for Swedish and Danish setup, CLI compatibility, and links to Klang's model pages and Hugging Face releases.
 
 ## Cloud Provider Guides
 
