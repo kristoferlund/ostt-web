@@ -30,7 +30,7 @@ These figures describe Klang's published evaluations of the original models, not
 ## Set Up Local Transcription
 
 ::: warning CLI compatibility
-The registry entries are already available, but Parakeet `language` parameter support is currently unreleased. The commands below require a build containing that fix. Check `ostt model params parakeet/pianissimo-sv`: it must list `language`. Older builds reject `--param language=...` and ignore the saved setting, so a registry refresh alone is not enough.
+Local Parakeet `language` settings require **OSTT 0.0.35 or newer**. Check `ostt model params parakeet/pianissimo-sv`: it must list `language`. Older builds reject `--param language=...` and ignore the saved setting, so a registry refresh alone is not enough.
 :::
 
 Klang's GGUF instructions require an explicit language: **`sv` for Swedish and `da` for Danish**. Save model-specific defaults with `ostt config`:

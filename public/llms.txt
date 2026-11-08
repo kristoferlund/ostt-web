@@ -20,7 +20,7 @@
 ## Models
 
 - [Local Models](https://ostt.ai/guide/local-models): Offline Parakeet and Whisper, including Klang Pianissimo Swedish and Danish Q8_0 GGUF models. Downloads, language params, CLI compatibility, and audio format requirements. No API key required.
-- [Klang Pianissimo for Swedish and Danish](https://ostt.ai/guide/pianissimo): Klang AI's language-specific Parakeet fine-tunes, parakeet/pianissimo-sv and parakeet/pianissimo-da. Official Klang model pages, Hugging Face model cards and GGUF files, 706 MiB downloads, required sv/da language settings, currently unreleased CLI language support, attributed benchmarks, precision variants, OSTT limitations, and the separate hosted Swedish Berget route.
+- [Klang Pianissimo for Swedish and Danish](https://ostt.ai/guide/pianissimo): Klang AI's language-specific Parakeet fine-tunes, parakeet/pianissimo-sv and parakeet/pianissimo-da. Official Klang model pages, Hugging Face model cards and GGUF files, 706 MiB downloads, required sv/da language settings with OSTT 0.0.35+, attributed benchmarks, precision variants, OSTT limitations, and the separate hosted Swedish Berget route.
 - [External Engines](https://ostt.ai/guide/external-engines): Connect command-based ASR tools and OpenAI-compatible HTTP transcription endpoints, including local or remote custom engines.
 - [GPU Acceleration](https://ostt.ai/guide/gpu-acceleration): Metal (macOS), CUDA (NVIDIA Linux), and Vulkan (AMD/Intel Linux) GPU backends.
 - [Daemon Mode](https://ostt.ai/guide/daemon): Keep a local model loaded in a background process. Install as systemd or launchd service.

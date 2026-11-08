@@ -26,7 +26,7 @@ Local transcription has full GPU support through Metal on macOS and CUDA or Vulk
 
 | Provider | Models | Params |
 | --- | --- | --- |
-| `parakeet` | `parakeet/pianissimo-sv` (Swedish), `parakeet/pianissimo-da` (Danish), `parakeet/parakeet-ultra`, `parakeet/parakeet-tdt-0.6b-v3`, `parakeet/parakeet-tdt-0.6b-v2`, `parakeet/parakeet-tdt_ctc-110m` | `language` (currently unreleased); Pianissimo requires `sv` or `da` |
+| `parakeet` | `parakeet/pianissimo-sv` (Swedish), `parakeet/pianissimo-da` (Danish), `parakeet/parakeet-ultra`, `parakeet/parakeet-tdt-0.6b-v3`, `parakeet/parakeet-tdt-0.6b-v2`, `parakeet/parakeet-tdt_ctc-110m` | `language` (OSTT 0.0.35+); Pianissimo requires `sv` or `da` |
 | `whisper` | `whisper/turbo`, `whisper/large-v3`, regional KB-Whisper and NB-Whisper models, and more | `language`, `no_context`, `temperature`, `no_speech_thold`, `prompt` |
 
 Local models need 16 kHz mono 16-bit WAV. OSTT records in that format automatically when a local model is active; files you pass to `ostt transcribe` must already be in it. See [Local Models](../guide/local-models.md#audio-format).

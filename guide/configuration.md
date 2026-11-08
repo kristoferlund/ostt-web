@@ -231,7 +231,7 @@ language = "sv"
 language = "da"
 ```
 
-This requires the currently unreleased Parakeet language-param fix; older builds ignore these saved settings. See [CLI compatibility](/guide/pianissimo#set-up-local-transcription). Parakeet does not accept Whisper-only controls such as `temperature`, `no_context`, or `prompt`.
+This requires OSTT 0.0.35 or newer; older builds ignore these saved settings. See [CLI compatibility](/guide/pianissimo#set-up-local-transcription). Parakeet does not accept Whisper-only controls such as `temperature`, `no_context`, or `prompt`.
 
 ## External Engines
 

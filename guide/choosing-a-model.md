@@ -23,7 +23,7 @@ ostt daemon start
 
 Or run `ostt model` and pick from the **Local models** section.
 
-Start with **multilingual Parakeet** when your language is English or one of the 25 European languages it covers. It adds punctuation and capitalization and detects the language itself. For **Swedish or Danish**, try [Klang Pianissimo](/guide/pianissimo), Parakeet fine-tunes trained for each language; these require `language=sv` or `language=da` and a build with the currently unreleased Parakeet language-param fix. Use **Whisper** for other languages, regional alternatives such as KB-Whisper (Swedish) and NB-Whisper (Norwegian), or Whisper-specific decoding controls. [Local Models](/guide/local-models) lists every model and command.
+Start with **multilingual Parakeet** when your language is English or one of the 25 European languages it covers. It adds punctuation and capitalization and detects the language itself. For **Swedish or Danish**, try [Klang Pianissimo](/guide/pianissimo), Parakeet fine-tunes trained for each language; these require `language=sv` or `language=da` and OSTT 0.0.35 or newer. Use **Whisper** for other languages, regional alternatives such as KB-Whisper (Swedish) and NB-Whisper (Norwegian), or Whisper-specific decoding controls. [Local Models](/guide/local-models) lists every model and command.
 
 The installer picks the GPU build for your hardware, so in most cases local models run on the GPU without extra setup. [Daemon Mode](/guide/daemon) keeps the model loaded, so each recording starts transcribing straight away.
 

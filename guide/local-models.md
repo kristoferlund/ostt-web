@@ -85,7 +85,7 @@ language = "sv"
 language = "da"
 ```
 
-**Language parameter support is currently unreleased.** See [Pianissimo setup and CLI compatibility](/guide/pianissimo#set-up-local-transcription) before using these models. `ostt model params parakeet/pianissimo-sv` must list `language`.
+**Language parameter support requires OSTT 0.0.35 or newer.** See [Pianissimo setup and CLI compatibility](/guide/pianissimo#set-up-local-transcription) before using these models. `ostt model params parakeet/pianissimo-sv` must list `language`.
 
 Whisper decode controls and keyword boosting are not supported by OSTT's local Parakeet route; [text replacements](/guide/configuration#text-replace) still apply. For training details, accuracy reports, precision variants, and the separate Swedish cloud route, see [Klang Pianissimo](/guide/pianissimo).
 

@@ -34,7 +34,7 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
         <p class="eyebrow">Klang Pianissimo</p>
         <h2>Tränad för svenska. Körs på din dator.</h2>
         <p>Klang har finjusterat en modell med ungefär 600 miljoner parametrar på cirka 50 000 timmar svenskt tal. OSTT använder Klangs rekommenderade Q8_0 GGUF: 706 MiB, med verifierad kontrollsumma. Modellvikterna är öppna under CC BY 4.0. Efter nedladdningen kan du transkribera offline utan Python eller NeMo.</p>
-        <p>Den lokala modellen heter <code>parakeet/pianissimo-sv</code> och behöver <code>language=sv</code>. Språkparametern kräver en OSTT-version med en ännu inte släppt rättning. Se <a href="/guide/pianissimo#set-up-local-transcription">versionskrav och sparade språkinställningar</a> innan du börjar.</p>
+        <p>Den lokala modellen heter <code>parakeet/pianissimo-sv</code> och behöver <code>language=sv</code>. Språkparametern kräver OSTT 0.0.35 eller senare. Se <a href="/guide/pianissimo#set-up-local-transcription">versionskrav och sparade språkinställningar</a> innan du börjar.</p>
       </div>
       <div class="command-card">
         <pre><code># Ladda ned den lokala svenska modellen&#10;ostt model local download parakeet/pianissimo-sv&#10;&#10;# Spela in och kopiera, med uttryckligt språkval&#10;ostt -m parakeet/pianissimo-sv --param language=sv -c&#10;&#10;# Transkribera en 16 kHz mono PCM16 WAV-fil&#10;ostt transcribe intervju.wav -m parakeet/pianissimo-sv --param language=sv</code></pre>
