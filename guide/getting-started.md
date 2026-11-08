@@ -36,6 +36,8 @@ ostt model
 
 The **Local models** section downloads and activates offline models. [Choosing a Model](./choosing-a-model.md) helps you pick one for your language and hardware.
 
+**Dictating in Swedish or Danish?** [Klang Pianissimo](/guide/pianissimo) offers language-specific local Parakeet models: `parakeet/pianissimo-sv` and `parakeet/pianissimo-da`. Each is a 706 MiB download. Follow that guide for the required language setting and CLI compatibility before selecting one.
+
 To use a [cloud model](./cloud-models.md) instead, save the provider's API key first:
 
 ```bash

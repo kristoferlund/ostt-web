@@ -219,7 +219,19 @@ On macOS, paste mode uses `osascript`/System Events to send `cmd+v`. macOS may p
 
 ## Local Transcription
 
-Local Whisper (`whisper/*`) and Parakeet (`parakeet/*`) models are configured like other providers, with `[whisper.params]` for all Whisper models and `[whisper."model".params]` for one model. Parakeet takes no params. See [Local Models](./local-models.md#whisper-params) for the Whisper params.
+Local Whisper (`whisper/*`) and Parakeet (`parakeet/*`) models are configured like other providers, with `[whisper.params]` for all Whisper models and `[whisper."model".params]` for one model. See [Whisper params](/guide/local-models#whisper-params) and [Parakeet params](/guide/local-models#parakeet-params).
+
+[Klang Pianissimo](/guide/pianissimo) needs model-specific language settings: Swedish uses `parakeet/pianissimo-sv` with `language = "sv"`; Danish uses `parakeet/pianissimo-da` with `language = "da"`:
+
+```toml
+[parakeet.pianissimo-sv.params]
+language = "sv"
+
+[parakeet.pianissimo-da.params]
+language = "da"
+```
+
+This requires OSTT 0.0.35 or newer; older builds ignore these saved settings. See [CLI compatibility](/guide/pianissimo#set-up-local-transcription). Parakeet does not accept Whisper-only controls such as `temperature`, `no_context`, or `prompt`.
 
 ## External Engines
 

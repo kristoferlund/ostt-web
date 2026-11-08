@@ -18,6 +18,8 @@ Many popular dictation tools focus on macOS, Windows, and mobile. OSTT is built 
 
 Parakeet and Whisper models run on OSTT's built-in engine, with full GPU support through the Metal, CUDA, and Vulkan builds, or on the CPU. Once a model is downloaded, audio never leaves your machine. [Daemon mode](./daemon.md) keeps the model loaded between recordings, so dictation does not wait for it to load.
 
+The local list includes [Klang Pianissimo for Swedish and Danish](/guide/pianissimo), language-specific Parakeet fine-tunes by [Klang AI](https://klang.ai/), alongside multilingual Parakeet, KB-Whisper, and NB-Whisper. You can choose a model trained for your language without sending audio to a cloud provider; the Pianissimo guide covers its language-setting requirement and CLI compatibility.
+
 ### Provider Choice
 
 OSTT does not force one transcription backend. Alongside local models, you can choose from OpenAI, Deepgram, Groq, DeepInfra, AssemblyAI, Berget, ElevenLabs, and Mistral in the cloud, or connect your own engine, then switch models when your needs change.

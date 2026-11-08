@@ -64,6 +64,8 @@ The install directory can also be set with the `OSTT_INSTALL_DIR` environment va
 
 OSTT requires an active transcription model before recording. When none is active, the installer ends by offering to download Parakeet (`parakeet/parakeet-ultra`, 707 MB), a fast local model for English and 25 European languages, and selecting it for you. If it is already on disk from an earlier install, it is selected without asking. Accept it and OSTT is ready to transcribe.
 
+The installer default is multilingual Parakeet, not Klang's language-specific fine-tunes. For Swedish and Danish, see [Klang Pianissimo](/guide/pianissimo) for model downloads, required language settings, and CLI compatibility.
+
 If you decline (or ran the installer with `--no-model-download` or without a terminal), pick a model yourself:
 
 ```bash

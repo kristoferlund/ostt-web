@@ -69,6 +69,7 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
     <article>
       <h3>KB Whisper lokalt</h3>
       <p>OSTT kör också KB Whisper på din egen dator, utan API-nyckel: <code>ostt model local download whisper/kb-whisper-large</code> och sedan <code>ostt model select whisper/kb-whisper-large</code>. Med <code>--paste</code> klistras texten in direkt i appen du står i.</p>
+      <p>Jämför också med <a href="/lp/klang-pianissimo-svenska">Klang Pianissimo för svenska</a>, en språkanpassad Parakeet-modell med en Q8_0-nedladdning på 706 MiB. <a href="/guide/pianissimo">Modellguiden</a> beskriver både den svenska och den danska varianten, språkval och versionskrav.</p>
     </article>
   </section>
 

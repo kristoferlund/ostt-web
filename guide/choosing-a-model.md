@@ -1,6 +1,6 @@
 ---
 title: "Choosing a Transcription Model"
-description: Choose an OSTT transcription model. Start with built-in local Parakeet and Whisper models with full GPU support, then add a cloud provider or an external engine when you need one.
+description: Choose an OSTT transcription model. Local Parakeet, Klang Pianissimo for Swedish and Danish, Whisper, GPU support, cloud providers, and external engines compared.
 ---
 
 # Choosing a Transcription Model
@@ -23,7 +23,7 @@ ostt daemon start
 
 Or run `ostt model` and pick from the **Local models** section.
 
-Start with **Parakeet** when your language is English or one of the 25 European languages it covers. It adds punctuation and capitalization and detects the language itself. Use **Whisper** for other languages, for regional fine-tunes such as KB-Whisper (Swedish) and NB-Whisper (Norwegian), or when you need Whisper params such as a fixed language. [Local Models](/guide/local-models) lists every model and command.
+Start with **multilingual Parakeet** when your language is English or one of the 25 European languages it covers. It adds punctuation and capitalization and detects the language itself. For **Swedish or Danish**, try [Klang Pianissimo](/guide/pianissimo), Parakeet fine-tunes trained for each language; these require `language=sv` or `language=da` and OSTT 0.0.35 or newer. Use **Whisper** for other languages, regional alternatives such as KB-Whisper (Swedish) and NB-Whisper (Norwegian), or Whisper-specific decoding controls. [Local Models](/guide/local-models) lists every model and command.
 
 The installer picks the GPU build for your hardware, so in most cases local models run on the GPU without extra setup. [Daemon Mode](/guide/daemon) keeps the model loaded, so each recording starts transcribing straight away.
 
@@ -43,7 +43,8 @@ See [GPU Acceleration](/guide/gpu-acceleration) for how the build is chosen.
 | --- | --- | --- |
 | Everyday dictation | Local `parakeet/parakeet-ultra` with daemon mode | Fast and accurate on a GPU, with punctuation and language detection built in. |
 | Languages Parakeet does not cover | Local `whisper/turbo` or `whisper/large-v3` | Whisper covers around 100 languages. |
-| Swedish | Local `whisper/kb-whisper-large`, or Berget `berget/KBLab/kb-whisper-large` and `berget/klang/pianissimo` in the cloud | KB-Whisper is KBLab's Swedish fine-tune. Pianissimo transcribes after recording stops and does not support keyword boosting. |
+| Swedish | Local `parakeet/pianissimo-sv`; compare with `whisper/kb-whisper-large`. Berget hosts `berget/klang/pianissimo` and `berget/KBLab/kb-whisper-large` | [Klang's Swedish Pianissimo](https://klang.ai/pianissimo-sv/) specializes in Swedish speech and dialects, with a 706 MiB Q8_0 download. Set `language=sv`; see [setup and compatibility](/guide/pianissimo#set-up-local-transcription). |
+| Danish | Local `parakeet/pianissimo-da` | [Klang's Danish Pianissimo](https://klang.ai/pianissimo-da/) is trained on approximately 70,000 hours of Danish speech. Set `language=da`; see [setup and compatibility](/guide/pianissimo#set-up-local-transcription). |
 | Norwegian | Local `whisper/nb-whisper-large`, or Berget `berget/NbAiLab/nb-whisper-large` in the cloud | NB-Whisper is documented for Norwegian, Bokmål, Nynorsk, and English. |
 | Other local ASR engines | `command/<profile>` or `http/<profile>` external engines | Run faster-whisper, Cohere Transcribe, Speaches, LocalAI, or your own wrapper without making OSTT bundle every runtime. |
 | Speaker labels and long meetings | Cloud providers with diarization and formatting params | Long files often benefit from provider-specific params such as diarization, formatting, language hints, and prompts. |
@@ -119,6 +120,7 @@ ostt transcribe meeting.mp3 -p summary -o summary.md
 ## Related Pages
 
 - [Local Models](/guide/local-models)
+- [Klang Pianissimo: Swedish and Danish](/guide/pianissimo)
 - [GPU Acceleration](/guide/gpu-acceleration)
 - [Daemon Mode](/guide/daemon)
 - [Cloud Models](/guide/cloud-models)

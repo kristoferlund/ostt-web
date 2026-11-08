@@ -17,7 +17,7 @@ Berget documentation:
 
 | Model ID | Notes |
 | --- | --- |
-| `berget/klang/pianissimo` | Swedish Parakeet-based model by Klang AI, published as `KlangAI/pianissimo-sv` on Hugging Face. Uses Berget's realtime API. |
+| `berget/klang/pianissimo` | Swedish Parakeet-based model by Klang AI. [Klang's Swedish model page](https://klang.ai/pianissimo-sv/) and [Hugging Face model card](https://huggingface.co/KlangAI/pianissimo-sv). Uses Berget's realtime API. |
 | `berget/KBLab/kb-whisper-large` | Swedish-optimized KB Whisper Large. KBLab reports 50,000+ hours of Swedish speech training and 47% average WER reduction versus OpenAI Whisper Large V3 across FLEURS, CommonVoice, and NST. |
 | `berget/NbAiLab/nb-whisper-large` | Norwegian-optimized NB-Whisper Large. NbAiLab reports 66,000 hours of training data and support for Norwegian, Bokmal, Nynorsk, and English. |
 | `berget/openai/whisper-large-v3` | General-purpose multilingual Whisper Large V3. |
@@ -25,6 +25,8 @@ Berget documentation:
 Check [Berget's pricing](https://berget.ai/en/pricing) for current model-specific rates.
 
 ## Pianissimo params
+
+Want to keep audio on your own machine? [Klang Pianissimo](/guide/pianissimo) covers local Swedish (`parakeet/pianissimo-sv`) and Danish (`parakeet/pianissimo-da`) GGUF models, language settings, and CLI compatibility. These are separate from Berget's hosted Swedish model. Passing `language=da` to `berget/klang/pianissimo` does not select the Danish model.
 
 Authenticate with `ostt auth login`, choose Berget, then select Pianissimo with `ostt model`.
 

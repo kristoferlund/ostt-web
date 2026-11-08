@@ -15,11 +15,12 @@
 - [Commands](https://ostt.ai/guide/commands): Full CLI reference: record, transcribe, retry, replay, process (with --attach), agent list/models, paste output, auth, model, history, keyword, replace, config, logs, daemon, shell completions.
 - [Processing Actions](https://ostt.ai/guide/processing): Configure AI and bash post-processing actions to transform transcriptions. AI actions run an agent you already use (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot, Cursor, Grok, Pi, Oh My Pi, Hermes, OpenClaw, or one you add) with its tools switched off, and can take an attached image.
 - [Configuration](https://ostt.ai/guide/configuration): Full ostt.toml reference: audio, transcription params, paste output, text replace rules, popup, processing defaults and custom agents ([process.agents]).
-- [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Start with built-in local Parakeet and Whisper models with full GPU support; when to use cloud providers or external command/HTTP engines; Swedish and Norwegian models; retry comparisons.
+- [Choosing a Model](https://ostt.ai/guide/choosing-a-model): Local Parakeet and Whisper, Klang Pianissimo for Swedish and Danish, KB/NB-Whisper, GPU support, cloud providers, external engines, and retry comparisons.
 
 ## Models
 
-- [Local Models](https://ostt.ai/guide/local-models): Run Parakeet and Whisper models offline. No API key required.
+- [Local Models](https://ostt.ai/guide/local-models): Offline Parakeet and Whisper, including Klang Pianissimo Swedish and Danish Q8_0 GGUF models. Downloads, language params, CLI compatibility, and audio format requirements. No API key required.
+- [Klang Pianissimo for Swedish and Danish](https://ostt.ai/guide/pianissimo): Klang AI's language-specific Parakeet fine-tunes, parakeet/pianissimo-sv and parakeet/pianissimo-da. Official Klang model pages, Hugging Face model cards and GGUF files, 706 MiB downloads, required sv/da language settings with OSTT 0.0.35+, attributed benchmarks, precision variants, OSTT limitations, and the separate hosted Swedish Berget route.
 - [External Engines](https://ostt.ai/guide/external-engines): Connect command-based ASR tools and OpenAI-compatible HTTP transcription endpoints, including local or remote custom engines.
 - [GPU Acceleration](https://ostt.ai/guide/gpu-acceleration): Metal (macOS), CUDA (NVIDIA Linux), and Vulkan (AMD/Intel Linux) GPU backends.
 - [Daemon Mode](https://ostt.ai/guide/daemon): Keep a local model loaded in a background process. Install as systemd or launchd service.
@@ -50,7 +51,7 @@
 ## Landing Pages
 
 - [Omarchy Dictation That Takes Instructions](https://ostt.ai/omarchy): The OSTT dictation plugin for Omarchy 4.5: speak into any app with local Parakeet and Whisper transcription, and choose a processing action per app. Ghostwriter runs on your existing Claude Code, Codex, OpenCode or other agent subscription, reads a screenshot of the window, and writes what you ask for. Free, no account; the plugin is open source and MIT licensed.
-- [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish transcription with Klang AI Pianissimo through Berget. Sends completed recordings over WebSocket, with no live microphone transcription or keyword boosting.
+- [Klang Pianissimo Svenska](https://ostt.ai/lp/klang-pianissimo-svenska): Swedish Pianissimo locally with parakeet/pianissimo-sv or through Berget. Model links, Q8_0 setup and compatibility, privacy, OSTT limitations, and links to Danish Pianissimo.
 - [OSTT vs Superwhisper](https://ostt.ai/lp/ostt-vs-superwhisper): What OSTT gives you free that Superwhisper puts behind Pro, including context-aware dictation on your own AI agent subscription, local Parakeet with full GPU support, cloud providers, and file transcription.
 - [OSTT vs Voxtype](https://ostt.ai/lp/ostt-vs-voxtype): What OSTT adds over Voxtype: dictation per app, optional screen context, spoken instructions carried out by your own AI agent, eight cloud providers, and a retryable history.
 - [OSTT vs Hyprwhspr](https://ostt.ai/lp/ostt-vs-hyprwhspr): What OSTT adds over Hyprwhspr: dictation per app, optional screen context, spoken instructions carried out by your own AI agent, a retryable history, and macOS support.

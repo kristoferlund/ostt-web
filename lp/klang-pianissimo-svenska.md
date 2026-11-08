@@ -1,7 +1,7 @@
 ---
 layout: false
-title: "Klang Pianissimo i terminalen"
-description: "Använd Pianissimo, Klangs öppna taligenkänningsmodell för svenska, direkt från terminalen. OSTT kopplar modellen till ett kortkommando, urklipp, filer och dina egna skript på Linux och macOS, via svenska Berget AI."
+title: "Klang Pianissimo för svenska: lokalt eller via Berget"
+description: "Kör Klang Pianissimo för svenska lokalt med OSTT på Linux och macOS, eller via Berget AI. Q8_0 GGUF, språkval, modellänkar och den danska Pianissimo-modellen."
 ---
 
 <script setup>
@@ -15,8 +15,8 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
 
   <section class="landing-hero">
     <h1>Klang Pianissimo i terminalen.</h1>
-    <p class="lede">Pianissimo är Klangs öppna taligenkänningsmodell för svenska. Den bygger på Nvidia Parakeet, är tränad på svenska och svenska dialekter och är lika träffsäker som KB Whisper Large, men ungefär 60 gånger snabbare.</p>
-    <p class="lede">Med OSTT pratar du in text i vilken app som helst med ett kortkommando, eller transkriberar direkt i terminalen. Modellen körs hos <a href="https://berget.ai" target="_blank" rel="noopener">Berget AI</a> på europeisk infrastruktur. Fungerar på Linux och macOS.</p>
+    <p class="lede"><a href="https://klang.ai/pianissimo-sv/" target="_blank" rel="noopener">Pianissimo för svenska</a> är Klang AI:s öppna taligenkänningsmodell, finjusterad från NVIDIA Parakeet v3 för svenskt tal och svenska dialekter. Den sätter ut skiljetecken och stor bokstav.</p>
+    <p class="lede">Med OSTT kör du modellen lokalt på din egen CPU eller GPU, utan API-nyckel, eller hos <a href="https://berget.ai" target="_blank" rel="noopener">Berget AI</a>. Prata in text med ett kortkommando eller transkribera filer i terminalen på Linux och macOS. Klang har också en <a href="https://klang.ai/pianissimo-da/" target="_blank" rel="noopener">modell för danska</a>.</p>
     <button class="install-block" onclick="navigator.clipboard.writeText('curl -fsSL https://ostt.ai/install | bash'); const t = this; t.classList.add('copied'); setTimeout(() => t.classList.remove('copied'), 2000);" aria-label="Kopiera installationskommandot">
       <code>
         <span class="dim">curl -fsSL https://</span><span class="highlight">ostt.ai/install</span><span class="dim"> | bash</span>
@@ -32,11 +32,12 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
     <section class="landing-section split">
       <div>
         <p class="eyebrow">Klang Pianissimo</p>
-        <h2>Lika träffsäker som KB Whisper. 60 gånger snabbare.</h2>
-        <p>Pianissimo är utvecklad av Klang AI och släpptes som öppen källkod i september 2026. Klang har tagit Nvidias Parakeet-modell och anpassat den för svenska och svenska dialekter. I Klangs tester på Common Voice, FLEURS och Klangs egna dialektinspelningar är Pianissimo lika träffsäker som KB Whisper Large, Kungliga bibliotekets bästa öppna svenska modell. Samtidigt går den ungefär 60 gånger snabbare: en timmes ljud tar runt en sekund.</p>
+        <h2>Tränad för svenska. Körs på din dator.</h2>
+        <p>Klang har finjusterat en modell med ungefär 600 miljoner parametrar på cirka 50 000 timmar svenskt tal. OSTT använder Klangs rekommenderade Q8_0 GGUF: 706 MiB, med verifierad kontrollsumma. Modellvikterna är öppna under CC BY 4.0. Efter nedladdningen kan du transkribera offline utan Python eller NeMo.</p>
+        <p>Den lokala modellen heter <code>parakeet/pianissimo-sv</code> och behöver <code>language=sv</code>. Språkparametern kräver OSTT 0.0.35 eller senare. Se <a href="/guide/pianissimo#set-up-local-transcription">versionskrav och sparade språkinställningar</a> innan du börjar.</p>
       </div>
       <div class="command-card">
-        <pre><code># Logga in och välj Berget&#10;ostt auth login&#10;&#10;# Välj Pianissimo som standardmodell&#10;ostt model&#10;&#10;# Spela in och kopiera texten&#10;ostt -m berget/klang/pianissimo -c&#10;&#10;# Transkribera en ljudfil&#10;ostt transcribe intervju.mp3 -m berget/klang/pianissimo</code></pre>
+        <pre><code># Ladda ned den lokala svenska modellen&#10;ostt model local download parakeet/pianissimo-sv&#10;&#10;# Spela in och kopiera, med uttryckligt språkval&#10;ostt -m parakeet/pianissimo-sv --param language=sv -c&#10;&#10;# Transkribera en 16 kHz mono PCM16 WAV-fil&#10;ostt transcribe intervju.wav -m parakeet/pianissimo-sv --param language=sv</code></pre>
       </div>
     </section>
   </div>
@@ -44,28 +45,34 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
   <section class="landing-grid">
     <article>
       <h3>Byggd för svenska</h3>
-      <p>Pianissimo är tränad på svenska och svenska dialekter, och sätter själv ut skiljetecken och stor bokstav. Modellen finns öppet på Hugging Face som <a href="https://huggingface.co/KlangAI/pianissimo-sv" target="_blank" rel="noopener">KlangAI/pianissimo-sv</a>.</p>
+      <p>Läs om träningen hos <a href="https://klang.ai/pianissimo-sv/" target="_blank" rel="noopener">Klang AI</a>, i <a href="https://huggingface.co/KlangAI/pianissimo-sv" target="_blank" rel="noopener">modellkortet på Hugging Face</a> och bland <a href="https://huggingface.co/KlangAI/pianissimo-sv-gguf" target="_blank" rel="noopener">GGUF-filerna</a>. Klang rapporterar 4,46 % ordfel på Common Voice v26 och 6,51 % på FLEURS för originalmodellen. KB-Whisper large har lägre ordfel i samma utvärdering; jämför gärna på ditt eget ljud.</p>
     </article>
     <article>
-      <h3>Snabb även på långa inspelningar</h3>
-      <p>Klang mäter omkring 3600 gånger realtid. Det betyder att ett långt möte eller en intervju är transkriberad nästan direkt efter att ljudet har laddats upp.</p>
+      <h3>Byggd för snabb transkribering</h3>
+      <p>Klang rapporterar 2 500 gånger realtid för originalmodellen på en NVIDIA A100 med optimerade batcher. Det är inte ett hastighetslöfte för din dator eller OSTT:s GGUF-version. <a href="/guide/daemon">Daemon-läget</a> håller modellen laddad mellan inspelningar så att du slipper laddningstiden.</p>
     </article>
     <article>
-      <h3>Ljudet stannar i Europa</h3>
-      <p>Berget är en svensk molnleverantör. Ljudet behandlas på europeisk infrastruktur. Ett bra val när dataskydd och GDPR är viktigt.</p>
+      <h3>Lokalt eller via Berget</h3>
+      <p>Med <code>parakeet/pianissimo-sv</code> stannar ljudet på din dator. Molnalternativet <code>berget/klang/pianissimo</code> kräver en API-nyckel och skickar ljudet till Bergets europeiska infrastruktur. Se <a href="/reference/providers/berget#pianissimo-params">Berget-guiden</a> för inloggning och inställningar.</p>
     </article>
     <article>
       <h3>Hela texten när du är klar</h3>
-      <p>OSTT skickar ljudet till Berget när du har slutat spela in och ger dig sedan hela texten på en gång. Du ser alltså ingen text medan du pratar.</p>
+      <p>OSTT transkriberar när du har slutat spela in, både lokalt och via Berget. Du ser alltså ingen text medan du pratar. Resultatet är vanlig text; den lokala modellen ger inte tidsstämplar eller talaruppdelning genom OSTT.</p>
     </article>
     <article>
       <h3>Behöver du nyckelord?</h3>
-      <p>Pianissimo tar inte emot nyckelord, promptar eller temperatur, så dina OSTT-nyckelord skickas inte med. Behöver du lära modellen namn och facktermer passar <a href="/lp/berget-whisper-svenska">KB Whisper</a> bättre.</p>
+      <p>OSTT:s lokala Parakeet-motor och Berget-rutten använder inte dina sparade nyckelord eller kontextpromptar. Klang har ordförrådsstöd i andra implementationer, men det exponeras inte här. Använd <a href="/guide/configuration#text-replace">ersättningsregler</a> efter transkriberingen, eller jämför med <a href="/lp/berget-whisper-svenska">KB Whisper</a> om du behöver ordlistor.</p>
     </article>
     <article>
       <h3>Jämför utan att prata in igen</h3>
-      <p>OSTT sparar dina 10 senaste inspelningar. Kör <code>ostt retry -m berget/KBLab/kb-whisper-large</code> för att transkribera samma ljud med KB Whisper och se vilken modell som passar dig bäst. Vill du köra helt lokalt finns Parakeet- och Whisper-modeller, till exempel <code>whisper/kb-whisper-large</code>, under <code>ostt model</code>.</p>
+      <p>Spela in med en lokal modell och kör sedan <code>ostt retry -m whisper/kb-whisper-large</code> för att jämföra på samma ljud, när båda modellerna är nedladdade. Molninspelningar är normalt MP3 och behöver konverteras innan de kan transkriberas lokalt. Se <a href="/guide/local-models#audio-format">ljudformat</a>.</p>
     </article>
+  </section>
+
+  <section class="landing-section">
+    <p class="eyebrow">Också för danska</p>
+    <h2>Pianissimo för danska, i samma verktyg.</h2>
+    <p><a href="https://klang.ai/pianissimo-da/" target="_blank" rel="noopener">Klangs danska Pianissimo</a> är finjusterad på cirka 70 000 timmar danskt tal. Den finns som <a href="https://huggingface.co/KlangAI/pianissimo-da" target="_blank" rel="noopener">öppen modell på Hugging Face</a> och som <a href="https://huggingface.co/KlangAI/pianissimo-da-gguf" target="_blank" rel="noopener">GGUF</a>. Välj <code>parakeet/pianissimo-da</code> och använd <code>language=da</code>. Den är en separat lokal modell, inte ett språkbyte i Bergets svenska modell. <a href="/guide/pianissimo">Guiden för båda modellerna</a> beskriver nedladdning, versionskrav och begränsningar.</p>
   </section>
 
   <div class="surface-band">
@@ -74,7 +81,7 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
       <h2>Från tal till färdig text.</h2>
       <div class="steps">
         <div><strong>1. Spela in</strong><span>Tryck på ditt kortkommando eller kör <code>ostt</code> i terminalen.</span></div>
-        <div><strong>2. Transkribera</strong><span>Pianissimo gör om ljudet till text hos Berget.</span></div>
+        <div><strong>2. Transkribera</strong><span>Pianissimo gör om ljudet till text på din dator, eller hos Berget om du väljer molnmodellen.</span></div>
         <div><strong>3. Bearbeta</strong><span>Låt en AI-prompt eller ett eget skript putsa texten, om du vill.</span></div>
         <div><strong>4. Använd</strong><span>Kopiera till urklipp, spara till fil eller skicka vidare till nästa program.</span></div>
       </div>
@@ -88,7 +95,7 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
       <p>OSTT fungerar som vilket kommandoradsverktyg som helst. Texten skrivs till stdout, så du kan skicka den vidare till <code>jq</code>, <code>sed</code> eller dina egna skript. Med <code>-p</code> kör du en <a href="/guide/processing">bearbetning</a> direkt efter transkriberingen, till exempel för att städa upp texten eller skicka den till Claude Code.</p>
     </div>
     <div class="command-card">
-      <pre><code># Transkribera ett möte och spara texten&#10;ostt transcribe mote.mp3 -m berget/klang/pianissimo -o mote.md&#10;&#10;# Spela in, städa upp texten och kopiera&#10;ostt -m berget/klang/pianissimo -p clean -c&#10;&#10;# Skicka texten vidare till ett eget skript&#10;ostt -m berget/klang/pianissimo | mitt-skript.sh</code></pre>
+      <pre><code># Transkribera ett möte lokalt och spara texten&#10;ostt transcribe mote.wav -m parakeet/pianissimo-sv --param language=sv -o mote.md&#10;&#10;# Spela in och skicka texten till ett eget skript&#10;ostt -m parakeet/pianissimo-sv --param language=sv | mitt-skript.sh&#10;&#10;# Molnalternativet, med Bergets API-nyckel&#10;ostt transcribe mote.mp3 -m berget/klang/pianissimo -o mote.md</code></pre>
     </div>
   </section>
 
@@ -105,7 +112,8 @@ import SiteHeader from '../.vitepress/theme/components/SiteHeader.vue'
     </button>
     <div class="landing-actions">
       <a href="/guide/getting-started">Dokumentation</a>
-      <a href="/reference/providers/berget#pianissimo-params">Inställningar för Pianissimo</a>
+      <a href="/guide/pianissimo">Pianissimo: svenska och danska</a>
+      <a href="/reference/providers/berget#pianissimo-params">Pianissimo via Berget</a>
     </div>
   </section>
 

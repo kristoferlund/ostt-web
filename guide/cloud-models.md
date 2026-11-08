@@ -19,6 +19,8 @@ ostt model
 
 Models from providers you have a key for are listed in the **Cloud models** section of the picker. Keys are stored apart from the config, in `~/.local/share/ostt/credentials` with `0600` permissions.
 
+**Pianissimo also runs locally.** Berget's `berget/klang/pianissimo` is the hosted Swedish route. [Klang Pianissimo for Swedish and Danish](/guide/pianissimo) describes the separate local models `parakeet/pianissimo-sv` and `parakeet/pianissimo-da`, their requirements, and the official model links. Danish Pianissimo is not an additional Berget model in OSTT.
+
 ## When the Cloud Fits
 
 | Need | Good starting point | Why |
