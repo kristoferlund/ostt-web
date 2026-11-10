@@ -212,6 +212,20 @@ detect_os() {
   esac
 }
 
+check_macos_version() {
+  local version major
+  version="$(sw_vers -productVersion)" || die "could not determine the macOS version with sw_vers"
+  major="${version%%.*}"
+  case "$major" in
+  '' | *[!0-9]*) die "could not determine the macOS version: ${version}" ;;
+  esac
+
+  # Current release binaries link Metal APIs introduced in macOS 15.
+  if [ "$major" -lt 15 ]; then
+    die "OSTT requires macOS 15 (Sequoia) or later; this Mac is running macOS ${version}. Update macOS in System Settings > General > Software Update, then rerun the installer. --no-gpu cannot bypass this requirement."
+  fi
+}
+
 detect_arch() {
   case "$(uname -m)" in
   x86_64 | amd64) echo "x86_64" ;;
@@ -1690,6 +1704,10 @@ main() {
   local deps=()
 
   print_header
+  os="$(detect_os)"
+  if [ "$os" = "macos" ]; then
+    check_macos_version
+  fi
   check_prerequisites
 
   current_bin="$(installed_ostt_path)"
@@ -1711,7 +1729,6 @@ main() {
     source_label="pinned"
   fi
 
-  os="$(detect_os)"
   arch="$(detect_arch)"
   distro="unknown"
   session="unknown"
@@ -1847,6 +1864,9 @@ main() {
   fi
 
   if ! "$installed_bin" --version >/dev/null 2>&1; then
+    if [ "$os" = "macos" ]; then
+      die "installed binary at ${installed_bin} could not start; run '${installed_bin} --version' in Terminal to see the error"
+    fi
     die "installed binary at ${installed_bin} did not respond to '${BIN_NAME} --version'; reinstall with --no-gpu to force the CPU build"
   fi
 
